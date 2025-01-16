@@ -1,0 +1,3 @@
+1. dotnet tool install --global ErikEJ.EFCorePowerTools.Cli --version 9.1.463       
+2. export PATH="$PATH:/Users/camilo/.dotnet/tools"
+3. efcpt "connectionString" mssql
