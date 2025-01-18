@@ -90,6 +90,8 @@ builder.Services.AddScoped<IServicioDocumentoOrigen, ServicioDocumentoOrigen>();
 builder.Services.AddScoped<IServicioOrdenTransferencia, ServicioOrdenTransferencia>();
 builder.Services.AddScoped<IServicioMovValorPrecios, ServicioMovValorPrecios>();
 builder.Services.AddScoped<IServicioCargoFactura, ServicioCargoFactura>();
+builder.Services.AddScoped<IServicioSolicitud, ServicioSolicitud>();
+builder.Services.AddScoped<IServicioEstadoSolicitud, ServicioEstadoSolicitud>();
 builder.Services.AddScoped<IServicioNotas, ServicioNotas>();
 builder.Services.AddMemoryCache();
 var app = builder.Build();

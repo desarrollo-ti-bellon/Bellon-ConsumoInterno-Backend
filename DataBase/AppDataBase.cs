@@ -55,6 +55,14 @@ public partial class AppDataBase : DbContext
 
     public virtual DbSet<RecepcionMercancia> RecepcionMercancia { get; set; }
 
+    //CONSUMO INTERNO
+    public virtual DbSet<CabeceraSolicitudes> CabeceraSolicitudes { get; set; }
+
+    public virtual DbSet<EstadosSolicitudes> EstadosSolicitudes { get; set; }
+
+    public virtual DbSet<LineasSolicitudes> LineasSolicitudes { get; set; }
+
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var configuration = new ConfigurationBuilder()
@@ -337,6 +345,32 @@ public partial class AppDataBase : DbContext
         modelBuilder.Entity<Notas>(entity =>
         {
             entity.HasKey(e => e.id_nota).HasName("PK__Notas__26991D8CD3BDF6BB");
+        });
+
+        // CONSUMO  INTERNO
+        modelBuilder.Entity<CabeceraSolicitudes>(entity =>
+        {
+            entity.HasKey(e => e.id_cabecera_solicitud).HasName("PK_CabeceraSolicitudesActivas");
+
+            entity.HasOne(d => d.id_estado_solicitudNavigation).WithMany(p => p.CabeceraSolicitudes)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CabeceraSolicitudesActivas_EstadosSolicitudes");
+        });
+
+        modelBuilder.Entity<EstadosSolicitudes>(entity =>
+        {
+            entity.Property(e => e.id_estado_solicitud).ValueGeneratedNever();
+        });
+
+        modelBuilder.Entity<LineasSolicitudes>(entity =>
+        {
+            entity.HasKey(e => e.id_linea_solicitud).HasName("PK_LineasSolicitudesActivas");
+
+            entity.Property(e => e.id_producto).IsFixedLength();
+
+            entity.HasOne(d => d.cabecera_solicitud).WithMany(p => p.LineasSolicitudes)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_LineasSolicitudesActivas_CabeceraSolicitudesActivas");
         });
 
         OnModelCreatingPartial(modelBuilder);
