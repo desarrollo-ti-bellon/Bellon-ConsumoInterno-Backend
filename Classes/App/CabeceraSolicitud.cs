@@ -23,16 +23,16 @@ public class CabeceraSolicitud
     public string UsuarioResponsable { get; set; }
 
     [JsonPropertyName("usuario_despacho")]
-    public string UsuarioDespacho { get; set; }
+    public string? UsuarioDespacho { get; set; }
 
     [JsonPropertyName("usuario_asistente_control")]
-    public string UsuarioAsistenteControl { get; set; }
+    public string? UsuarioAsistenteControl { get; set; }
 
     [JsonPropertyName("usuario_asistente_contabilidad")]
-    public string UsuarioAsistenteContabilidad { get; set; }
+    public string? UsuarioAsistenteContabilidad { get; set; }
 
     [JsonPropertyName("id_departamento")]
-    public string IdDepartamento { get; set; }
+    public string? IdDepartamento { get; set; }
 
     [JsonPropertyName("id_estado_solicitud")]
     public int IdEstadoSolicitud { get; set; }

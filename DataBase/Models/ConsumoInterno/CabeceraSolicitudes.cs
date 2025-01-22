@@ -49,7 +49,7 @@ public partial class CabeceraSolicitudes
     [Required]
     [StringLength(20)]
     [Unicode(false)]
-    public string id_departamento { get; set; }
+    public string? id_departamento { get; set; }
 
     public int id_estado_solicitud { get; set; }
 

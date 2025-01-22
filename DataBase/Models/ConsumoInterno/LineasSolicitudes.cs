@@ -18,7 +18,7 @@ public partial class LineasSolicitudes
 
     [Required]
     [StringLength(20)]
-    public Guid id_producto { get; set; }
+    public string id_producto { get; set; }
 
     [Required]
     [StringLength(100)]
@@ -31,14 +31,14 @@ public partial class LineasSolicitudes
     public int cantidad { get; set; }
 
     [StringLength(20)]
-    public Guid id_unidad_medida { get; set; }
+    public string id_unidad_medida { get; set; }
 
     [Required]
     [StringLength(10)]
     [Unicode(false)]
     public string codigo_unidad_medida { get; set; }
     
-    public Guid? almacen_id { get; set; }
+    public string? almacen_id { get; set; }
 
     public string? almacen_codigo { get; set; }
 

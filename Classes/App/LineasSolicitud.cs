@@ -14,7 +14,7 @@ public class LineasSolicitud
     public int CabeceraSolicitudId { get; set; }
 
     [JsonPropertyName("id_producto")]
-    public Guid IdProducto { get; set; }
+    public string IdProducto { get; set; }
 
     [JsonPropertyName("descripcion")]
     public string Descripcion { get; set; }
@@ -26,13 +26,13 @@ public class LineasSolicitud
     public int Cantidad { get; set; }
 
     [JsonPropertyName("id_unidad_medida")]
-    public Guid IdUnidadMedida { get; set; }
+    public string IdUnidadMedida { get; set; }
 
     [JsonPropertyName("codigo_unidad_medida")]
     public string CodigoUnidadMedida { get; set; }
 
     [JsonPropertyName("almacen_id")]
-    public Guid? AlmacenId { get; set; }
+    public string? AlmacenId { get; set; }
 
     [JsonPropertyName("almacen_codigo")]
     public string? AlmacenCodigo { get; set; }
