@@ -44,6 +44,13 @@ public class ServicioSolicitud : IServicioSolicitud
         _servicioNumeroSerie = servicioNumeroSerie;
     }
 
+    public async Task<List<CabeceraSolicitud>> ObtenerSolicitudesDelUsuarioSolicitantePorEstado(int? estadoSolicitudId)
+    {
+        var allItems = await ObtenerSolicitudes();
+        var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+        return allItems.Where(i => i.CreadoPor == identity!.Name && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
+    }
+
     public Task<List<CabeceraSolicitud>> ObtenerSolicitudes()
     {
         var cache = _memoryCache.Get<List<CabeceraSolicitud>>("Solicitudes");
@@ -52,7 +59,21 @@ public class ServicioSolicitud : IServicioSolicitud
             cache = _context
                 .CabeceraSolicitudes.Select(i => new CabeceraSolicitud
                 {
-                  
+                    IdCabeceraSolicitud = i.id_cabecera_solicitud,
+                    FechaCreado = i.fecha_creado,
+                    Comentario = i.comentario,
+                    CreadoPor = i.creado_por,
+                    UsuarioResponsable = i.usuario_responsable,
+                    UsuarioDespacho = i.usuario_despacho,
+                    UsuarioAsistenteControl = i.usuario_asistente_control,
+                    UsuarioAsistenteContabilidad = i.usuario_asistente_contabilidad,
+                    IdDepartamento = i.id_departamento,
+                    IdEstadoSolicitud = i.id_estado_solicitud,
+                    IdClasificacion = i.id_clasificacion,
+                    IdSucursal = i.id_sucursal,
+                    FechaModificado = i.fecha_modificado,
+                    ModificadoPor = i.modificado_por,
+                    Total = i.total,
                 })
                 .ToList();
             _memoryCache.Set<List<CabeceraSolicitud>>(
@@ -61,38 +82,48 @@ public class ServicioSolicitud : IServicioSolicitud
                 DateTimeOffset.Now.AddMinutes(30)
             );
         }
-        return Task.FromResult(cache.OrderBy(i => i.IdSolicitud.Value).ToList());
+        return Task.FromResult(cache.OrderBy(i => i.IdCabeceraSolicitud.Value).ToList());
     }
 
     public async Task<List<CabeceraSolicitud>> ObtenerSolicitudesPorId(int idSolicitud)
     {
         var allItems = await ObtenerSolicitudes();
-        return allItems.Where(i => i.IdSolicitud == idSolicitud).ToList();
+        return allItems.Where(i => i.IdCabeceraSolicitud == idSolicitud).ToList();
     }
 
-    public async Task<List<CabeceraSolicitud>> ObtenerSolicitudesPorEstadoSolicitud(int estadoSolicitudId)
+    public async Task<List<CabeceraSolicitud>> ObtenerSolicitudesPorEstadoSolicitud(int? estadoSolicitudId)
     {
         var allItems = await ObtenerSolicitudes();
-        return allItems.Where(i => i.EstadoSolicitudId == estadoSolicitudId).ToList();
+        return allItems.Where(i => i.IdEstadoSolicitud == estadoSolicitudId).ToList();
     }
 
     public async Task<int> ObtenerCantidadSolicitudesPorEstadoSolicitud(int estadoSolicitudId)
     {
         var allItems = await ObtenerSolicitudes();
-        return allItems.Where(i => i.EstadoSolicitudId == estadoSolicitudId).ToList().Count;
+        return allItems.Where(i => i.IdEstadoSolicitud == estadoSolicitudId).ToList().Count;
     }
 
     public async Task<CabeceraSolicitud> ObtenerSolicitud(int id)
     {
         var allItems = await ObtenerSolicitudes();
-        var item = allItems.Where(i => i.IdSolicitud == id).FirstOrDefault().Clone();
+        var item = allItems.Where(i => i.IdCabeceraSolicitud == id).FirstOrDefault().Clone();
         if (item != null)
         {
             item.Lineas = _context
                 .LineasSolicitudes.Where(i => i.cabecera_solicitud_id == id)
                 .Select(i => new LineasSolicitud
                 {
-                   
+                    IdLineaSolicitud = i.id_linea_solicitud,
+                    CabeceraSolicitudId = i.cabecera_solicitud_id,
+                    IdProducto = i.id_producto,
+                    Descripcion = i.descripcion,
+                    PrecioUnitario = i.precio_unitario,
+                    Cantidad = i.cantidad,
+                    IdUnidadMedida = i.id_unidad_medida,
+                    CodigoUnidadMedida = i.codigo_unidad_medida,
+                    AlmacenId = i.almacen_id,
+                    AlmacenCodigo = i.almacen_codigo,
+                    Nota = i.nota,
                 })
                 .OrderBy(i => i.IdLineaSolicitud)
                 .ToList();
@@ -103,25 +134,28 @@ public class ServicioSolicitud : IServicioSolicitud
     public async Task<List<CabeceraSolicitud>> GuardarSolicitud(CabeceraSolicitud item)
     {
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
-        if (item.IdSolicitud.HasValue)
+        if (item.IdCabeceraSolicitud.HasValue)
         {
             var oldItem = _context
-                .CabeceraSolicitudes.Where(i => i.id_cabecera_solicitud == item.IdSolicitud.Value)
+                .CabeceraSolicitudes.Where(i => i.id_cabecera_solicitud == item.IdCabeceraSolicitud.Value)
                 .FirstOrDefault();
             if (oldItem != null)
             {
                 //ACTUALIZA EL OBJETO EXISTENTE
+                oldItem.id_cabecera_solicitud = item.IdCabeceraSolicitud.Value;
+                oldItem.fecha_creado = item.FechaCreado;
                 oldItem.comentario = item.Comentario;
+                oldItem.creado_por = item.CreadoPor;
+                oldItem.usuario_responsable = item.UsuarioResponsable;
+                oldItem.usuario_despacho = item.UsuarioDespacho;
                 oldItem.usuario_asistente_control = item.UsuarioAsistenteControl;
                 oldItem.usuario_asistente_contabilidad = item.UsuarioAsistenteContabilidad;
-                try
-                {
-                    _context.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Error al actualizar el registro: <" + ex.Message + ">");
-                }
+                oldItem.id_departamento = item.IdDepartamento;
+                oldItem.id_estado_solicitud = item.IdEstadoSolicitud;
+                oldItem.id_clasificacion = item.IdClasificacion;
+                oldItem.id_sucursal = item.IdSucursal;
+                oldItem.fecha_modificado = item.FechaModificado;
+                oldItem.modificado_por = item.ModificadoPor;
                 oldItem.total = item.Total;
                 oldItem.fecha_modificado = DateTime.UtcNow;
                 oldItem.modificado_por = identity!.Name;
@@ -146,7 +180,7 @@ public class ServicioSolicitud : IServicioSolicitud
             //SE INSERTA EL NUEVO ITEM
             var newItemData = new DataBase.Models.CabeceraSolicitudes
             {
-               
+
                 fecha_creado = item.FechaCreado,
                 comentario = item.Comentario,
                 creado_por = item.CreadoPor,
@@ -199,7 +233,27 @@ public class ServicioSolicitud : IServicioSolicitud
                         if (oldItem != null)
                         {
                             //ACTUALIZA EL OBJETO EXISTENTE
-                          
+                            var itemData = new DataBase.Models.LineasSolicitudes
+                            {
+                                cabecera_solicitud_id = item.CabeceraSolicitudId,
+                                id_producto = item.IdProducto,
+                                descripcion = item.Descripcion,
+                                cantidad = item.Cantidad,
+                                id_unidad_medida = item.IdUnidadMedida,
+                                precio_unitario = item.PrecioUnitario,
+                                nota = item.Nota,
+                            };
+                            var newItem = _context.LineasSolicitudes.Add(itemData);
+                            try
+                            {
+                                _context.SaveChanges();
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(
+                                    "Error al crear el registro: <" + ex.Message + ">"
+                                );
+                            }
                         }
                         else
                         {
@@ -213,7 +267,13 @@ public class ServicioSolicitud : IServicioSolicitud
                         //SE INSERTA EL NUEVO ITEM
                         var newItemData = new DataBase.Models.LineasSolicitudes
                         {
-                           
+                            cabecera_solicitud_id = item.CabeceraSolicitudId,
+                            id_producto = item.IdProducto,
+                            descripcion = item.Descripcion,
+                            cantidad = item.Cantidad,
+                            id_unidad_medida = item.IdUnidadMedida,
+                            precio_unitario = item.PrecioUnitario,
+                            nota = item.Nota,
                         };
                         var newItem = _context.LineasSolicitudes.Add(newItemData);
                         try
@@ -289,7 +349,7 @@ public class ServicioSolicitud : IServicioSolicitud
     public async Task<List<CabeceraSolicitud>> EliminarLineaSolicitud(int id)
     {
         var oldItem = _context.LineasSolicitudes.Where(i => i.id_linea_solicitud == id).FirstOrDefault();
-        if (oldItem!= null)
+        if (oldItem != null)
         {
             _context.LineasSolicitudes.Remove(oldItem);
             try
