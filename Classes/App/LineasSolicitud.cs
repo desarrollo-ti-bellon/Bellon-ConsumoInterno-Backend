@@ -19,10 +19,25 @@ public class LineasSolicitud
     [JsonPropertyName("descripcion")]
     public string Descripcion { get; set; }
 
-    [JsonPropertyName("precio")]
-    public decimal Precio { get; set; }
+    [JsonPropertyName("precio_unitario")]
+    public decimal PrecioUnitario { get; set; }
 
     [JsonPropertyName("cantidad")]
     public int Cantidad { get; set; }
+
+    [JsonPropertyName("id_unidad_medida")]
+    public Guid IdUnidadMedida { get; set; }
+
+    [JsonPropertyName("codigo_unidad_medida")]
+    public string CodigoUnidadMedida { get; set; }
+
+    [JsonPropertyName("almacen_id")]
+    public Guid? AlmacenId { get; set; }
+
+    [JsonPropertyName("almacen_codigo")]
+    public string? AlmacenCodigo { get; set; }
+
+    [JsonPropertyName("nota")]
+    public string? Nota { get; set; }
 
 }
