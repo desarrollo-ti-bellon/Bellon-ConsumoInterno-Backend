@@ -27,6 +27,21 @@ public class SolicitudController : ControllerBase
         _servicioSolicitud = servicioSolicitud;
     }
 
+    [HttpGet("EstadoSolicitud")]
+    public async Task<IActionResult> ObtenerSolicitudesPorEstadoSolicitud([FromQuery] int? estadoSolicitudId)
+    {
+        if (estadoSolicitudId.HasValue)
+        {
+            var data = await _servicioSolicitud.ObtenerSolicitudesDelUsuarioSolicitantePorEstado(estadoSolicitudId.Value);
+            return data != null ? Ok(data) : NoContent();
+        }
+        else
+        {
+            var data = await _servicioSolicitud.ObtenerSolicitudesPorEstadoSolicitud(null);
+            return data != null && data.Count > 0 ? Ok(data) : NoContent();
+        }
+    }
+
     [HttpGet]
     public async Task<IActionResult> Obtener([FromQuery] int? id)
     {
@@ -104,7 +119,7 @@ public class SolicitudController : ControllerBase
     {
         try
         {
-            var result = await _servicioSolicitud.ObtenerSolicitudesPorEstadoSolicitud(estadoSolicitudId ?? 0);
+            var result = await _servicioSolicitud.ObtenerCantidadSolicitudesPorEstadoSolicitud(estadoSolicitudId ?? 0);
             return Ok(result);
         }
         catch (Exception ex)
