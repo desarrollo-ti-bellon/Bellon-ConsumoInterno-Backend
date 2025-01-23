@@ -17,8 +17,12 @@ public partial class LineasSolicitudes
     public int cabecera_solicitud_id { get; set; }
 
     [Required]
-    [StringLength(20)]
+    [StringLength(100)]
     public string id_producto { get; set; }
+
+    [Required]
+    [StringLength(20)]
+    public string no_producto { get; set; }
 
     [Required]
     [StringLength(100)]
@@ -37,7 +41,7 @@ public partial class LineasSolicitudes
     [StringLength(10)]
     [Unicode(false)]
     public string codigo_unidad_medida { get; set; }
-    
+
     public string? almacen_id { get; set; }
 
     public string? almacen_codigo { get; set; }

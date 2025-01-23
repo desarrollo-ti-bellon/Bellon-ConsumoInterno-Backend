@@ -16,6 +16,9 @@ public class LineasSolicitud
     [JsonPropertyName("id_producto")]
     public string IdProducto { get; set; }
 
+    [JsonPropertyName("no_producto")]
+    public string NoProducto { get; set; }
+
     [JsonPropertyName("descripcion")]
     public string Descripcion { get; set; }
 

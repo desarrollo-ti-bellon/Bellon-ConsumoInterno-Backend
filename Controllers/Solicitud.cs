@@ -67,7 +67,7 @@ public class SolicitudController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Bellon.API.Liquidacion.Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -81,7 +81,7 @@ public class SolicitudController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Bellon.API.Liquidacion.Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
 
     }
@@ -96,7 +96,7 @@ public class SolicitudController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Bellon.API.Liquidacion.Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -110,7 +110,7 @@ public class SolicitudController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Bellon.API.Liquidacion.Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -124,7 +124,7 @@ public class SolicitudController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Bellon.API.Liquidacion.Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 }

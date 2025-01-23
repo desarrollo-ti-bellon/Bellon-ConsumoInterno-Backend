@@ -62,7 +62,7 @@ public partial class CabeceraSolicitudes
 
     [StringLength(50)]
     [Unicode(false)]
-    public string modificado_por { get; set; }
+    public string? modificado_por { get; set; }
 
     [Column(TypeName = "decimal(18, 0)")]
     public decimal total { get; set; }
