@@ -62,6 +62,12 @@ public partial class AppDataBase : DbContext
 
     public virtual DbSet<LineasSolicitudes> LineasSolicitudes { get; set; }
 
+    public virtual DbSet<Clasificaciones> Clasificaciones { get; set; }
+
+    public virtual DbSet<Posiciones> Posiciones { get; set; }
+
+    public virtual DbSet<Usuarios> Usuarios { get; set; }
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -372,6 +378,29 @@ public partial class AppDataBase : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_LineasSolicitudesActivas_CabeceraSolicitudesActivas");
         });
+
+        modelBuilder.Entity<Posiciones>(entity =>
+        {
+            entity.HasKey(e => e.posicion_id).HasName("PK_NewTable");
+        });
+
+        modelBuilder.Entity<Clasificaciones>(entity =>
+        {
+            entity.HasKey(e => e.id_clasificacion).HasName("PK_ClasificacionesConsumoInterno");
+        });
+
+        modelBuilder.Entity<Usuarios>(entity =>
+        {
+            entity.Property(e => e.codigo_departamento).IsFixedLength();
+            entity.Property(e => e.codigo_sucursal).IsFixedLength();
+            entity.Property(e => e.id_departamento).IsFixedLength();
+            entity.Property(e => e.id_sucursal).IsFixedLength();
+
+            entity.HasOne(d => d.posicion).WithMany(p => p.Usuarios)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Usuarios_Posicion");
+        });
+
 
         OnModelCreatingPartial(modelBuilder);
     }
