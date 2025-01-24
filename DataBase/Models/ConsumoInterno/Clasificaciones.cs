@@ -8,18 +8,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bellon.API.Liquidacion.DataBase.Models;
 
-[Table("EstadosSolicitudes", Schema = "ConsumoInterno")]
-public partial class EstadosSolicitudes
+[Table("Clasificaciones", Schema = "ConsumoInterno")]
+public partial class Clasificaciones
 {
     [Key]
-    public int id_estado_solicitud { get; set; }
+    public int id_clasificacion { get; set; }
 
     [Required]
     [StringLength(50)]
+    public string codigo_clasificacion { get; set; }
+
+    [Required]
     public string descripcion { get; set; }
 
     public bool estado { get; set; }
-
-    [InverseProperty("id_estado_solicitudNavigation")]
-    public virtual ICollection<CabeceraSolicitudes> CabeceraSolicitudes { get; set; } = new List<CabeceraSolicitudes>();
 }

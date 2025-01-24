@@ -14,6 +14,11 @@ public partial class CabeceraSolicitudes
     [Key]
     public int id_cabecera_solicitud { get; set; }
 
+    public int? no_serie_id { get; set; }
+
+    [StringLength(20)]
+    public string no_documento { get; set; }
+
     [Column(TypeName = "datetime")]
     public DateTime fecha_creado { get; set; }
 
@@ -31,25 +36,21 @@ public partial class CabeceraSolicitudes
     [Unicode(false)]
     public string usuario_responsable { get; set; }
 
-    [Required]
     [StringLength(100)]
     [Unicode(false)]
     public string usuario_despacho { get; set; }
 
-    [Required]
     [StringLength(100)]
     [Unicode(false)]
     public string usuario_asistente_control { get; set; }
 
-    [Required]
     [StringLength(100)]
     [Unicode(false)]
     public string usuario_asistente_contabilidad { get; set; }
 
-    [Required]
-    [StringLength(20)]
+    [StringLength(100)]
     [Unicode(false)]
-    public string? id_departamento { get; set; }
+    public string id_departamento { get; set; }
 
     public int id_estado_solicitud { get; set; }
 
@@ -62,7 +63,7 @@ public partial class CabeceraSolicitudes
 
     [StringLength(50)]
     [Unicode(false)]
-    public string? modificado_por { get; set; }
+    public string modificado_por { get; set; }
 
     [Column(TypeName = "decimal(18, 0)")]
     public decimal total { get; set; }
