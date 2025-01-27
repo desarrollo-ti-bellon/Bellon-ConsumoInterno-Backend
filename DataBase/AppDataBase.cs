@@ -401,7 +401,6 @@ public partial class AppDataBase : DbContext
                 .HasConstraintName("FK_Usuarios_Posicion");
         });
 
-
         OnModelCreatingPartial(modelBuilder);
     }
 

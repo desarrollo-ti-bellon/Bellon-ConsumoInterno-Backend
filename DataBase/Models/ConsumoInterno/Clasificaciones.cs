@@ -15,6 +15,10 @@ public partial class Clasificaciones
     public int id_clasificacion { get; set; }
 
     [Required]
+    [StringLength(100)]
+    public string id_grupo_cont_producto_general { get; set; }
+
+    [Required]
     [StringLength(50)]
     public string codigo_clasificacion { get; set; }
 
