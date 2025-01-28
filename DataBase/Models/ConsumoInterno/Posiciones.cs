@@ -16,12 +16,11 @@ public partial class Posiciones
 
     [Required]
     [StringLength(50)]
-    [Unicode(false)]
     public string descripcion { get; set; }
 
     [Column(TypeName = "decimal(18, 0)")]
     public decimal limite_maximo_permitido { get; set; }
 
-    [InverseProperty("posicion")]
-    public virtual ICollection<Usuarios> Usuarios { get; set; } = new List<Usuarios>();
+    // [InverseProperty("posicion")]
+    // public virtual ICollection<Usuarios> Usuarios { get; set; } = new List<Usuarios>();
 }

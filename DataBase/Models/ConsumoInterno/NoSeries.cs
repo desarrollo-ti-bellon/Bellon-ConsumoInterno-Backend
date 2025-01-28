@@ -47,4 +47,7 @@ public partial class NoSeries2
 
     [StringLength(100)]
     public string modificado_por { get; set; }
+
+    [InverseProperty("no_serie")]
+    public virtual ICollection<CabeceraSolicitudes> CabeceraSolicitudes { get; set; } = new List<CabeceraSolicitudes>();
 }

@@ -14,8 +14,9 @@ public partial class CabeceraSolicitudes
     [Key]
     public int id_cabecera_solicitud { get; set; }
 
-    public int? no_serie_id { get; set; }
+    public int no_serie_id { get; set; }
 
+    [Required]
     [StringLength(20)]
     public string no_documento { get; set; }
 
@@ -23,46 +24,42 @@ public partial class CabeceraSolicitudes
     public DateTime fecha_creado { get; set; }
 
     [Required]
-    [Unicode(false)]
     public string comentario { get; set; }
 
     [Required]
     [StringLength(100)]
-    [Unicode(false)]
     public string creado_por { get; set; }
 
     [Required]
     [StringLength(100)]
-    [Unicode(false)]
     public string usuario_responsable { get; set; }
 
+    [Required]
     [StringLength(100)]
-    [Unicode(false)]
     public string usuario_despacho { get; set; }
 
+    [Required]
     [StringLength(100)]
-    [Unicode(false)]
     public string usuario_asistente_control { get; set; }
 
+    [Required]
     [StringLength(100)]
-    [Unicode(false)]
     public string usuario_asistente_contabilidad { get; set; }
 
+    [Required]
     [StringLength(100)]
-    [Unicode(false)]
     public string id_departamento { get; set; }
 
     public int id_estado_solicitud { get; set; }
 
-    public int? id_clasificacion { get; set; }
+    public int id_clasificacion { get; set; }
 
-    public int? id_sucursal { get; set; }
+    public int id_sucursal { get; set; }
 
     [Column(TypeName = "datetime")]
     public DateTime? fecha_modificado { get; set; }
 
     [StringLength(50)]
-    [Unicode(false)]
     public string modificado_por { get; set; }
 
     [Column(TypeName = "decimal(18, 0)")]
@@ -71,7 +68,15 @@ public partial class CabeceraSolicitudes
     [InverseProperty("cabecera_solicitud")]
     public virtual ICollection<LineasSolicitudes> LineasSolicitudes { get; set; } = new List<LineasSolicitudes>();
 
+    // [ForeignKey("id_clasificacion")]
+    // [InverseProperty("CabeceraSolicitudes")]
+    // public virtual Clasificaciones id_clasificacionNavigation { get; set; }
+
     [ForeignKey("id_estado_solicitud")]
     [InverseProperty("CabeceraSolicitudes")]
     public virtual EstadosSolicitudes id_estado_solicitudNavigation { get; set; }
+
+    [ForeignKey("no_serie_id")]
+    [InverseProperty("CabeceraSolicitudes")]
+    public virtual NoSeries no_serie { get; set; }
 }

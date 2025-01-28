@@ -5,37 +5,40 @@ using System.Text.Json.Serialization;
 namespace Bellon.API.Liquidacion.Classes;
 
 [Serializable]
-public class Usuarios
+public class Usuario
 {
 
+    [JsonPropertyName("id_usuario_ci")]
+    public int? IdUsuarioCI { get; set; }
+
     [JsonPropertyName("id_usuario")]
-    public int? IdUsuario;
+    public string IdUsuario { get; set; }
 
     [JsonPropertyName("nombre_usuario")]
-    public string NombreUsuario;
+    public string NombreUsuario { get; set; }
 
     [JsonPropertyName("correo")]
-    public string Correo;
+    public string Correo { get; set; }
 
     [JsonPropertyName("codigo_sucursal")]
-    public string CodigoSucursal;
+    public string CodigoSucursal { get; set; }
 
     [JsonPropertyName("id_sucursal")]
-    public string IdSucursal;
+    public string IdSucursal { get; set; }
 
     [JsonPropertyName("codigo_departamento")]
-    public string CodigoDepartamento;
+    public string CodigoDepartamento { get; set; }
 
     [JsonPropertyName("id_departamento")]
-    public string IdDepartamento;
+    public string IdDepartamento { get; set; }
 
     [JsonPropertyName("limite")]
-    public decimal Limite;
+    public decimal Limite { get; set; }
 
     [JsonPropertyName("posicion_id")]
-    public string PosicionId;
+    public int PosicionId { get; set; }
 
     [JsonPropertyName("estado")]
-    public bool Estado;
+    public bool Estado { get; set; }
 
 }

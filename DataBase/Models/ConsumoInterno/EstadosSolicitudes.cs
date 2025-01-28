@@ -11,7 +11,7 @@ namespace Bellon.API.Liquidacion.DataBase.Models;
 [Table("EstadosSolicitudes", Schema = "ConsumoInterno")]
 public partial class EstadosSolicitudes
 {
-    [Key]
+        [Key]
     public int id_estado_solicitud { get; set; }
 
     [Required]

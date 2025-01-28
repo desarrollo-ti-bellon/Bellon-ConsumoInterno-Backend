@@ -6,5 +6,6 @@ public class AppSettings
     public int DocumentoLLegadaNoSerieId { get; set; }
     public int DocumentoTransitoNoSerieId { get; set; }
     public int DocumentoLiquidacionNoSerieId { get; set; }
+    public int DocumentoSolicitudConsumoInterno { get; set; }
     public int CantidadDigitosDocumento { get; set; }
 }

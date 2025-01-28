@@ -178,11 +178,16 @@ public class ServicioSolicitud : IServicioSolicitud
         else
         {
             //SE INSERTA EL NUEVO ITEM
+            var numeroSerie = await _servicioNumeroSerie.ObtenerNumeroDocumento(
+                _settings.DocumentoSolicitudConsumoInterno
+            );
             var newItemData = new DataBase.Models.CabeceraSolicitudes
             {
                 fecha_creado = item.FechaCreado,
                 comentario = item.Comentario,
                 creado_por = item.CreadoPor,
+                no_documento = numeroSerie,
+                no_serie_id = _settings.DocumentoSolicitudConsumoInterno,
                 usuario_responsable = item.UsuarioResponsable,
                 usuario_despacho = item.UsuarioDespacho,
                 usuario_asistente_control = item.UsuarioAsistenteControl,

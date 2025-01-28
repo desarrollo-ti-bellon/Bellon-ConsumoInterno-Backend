@@ -59,4 +59,7 @@ public partial class NoSeries
 
     [InverseProperty("no_serie")]
     public virtual ICollection<HistCabeceraTransitos> HistCabeceraTransitos { get; set; } = new List<HistCabeceraTransitos>();
+
+    [InverseProperty("no_serie")]
+    public virtual ICollection<CabeceraSolicitudes> CabeceraSolicitudes { get; set; } = new List<CabeceraSolicitudes>();
 }

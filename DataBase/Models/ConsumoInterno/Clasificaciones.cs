@@ -12,7 +12,7 @@ namespace Bellon.API.Liquidacion.DataBase.Models;
 public partial class Clasificaciones
 {
     [Key]
-    public int id_clasificacion { get; set; }
+    public int? id_clasificacion { get; set; }
 
     [Required]
     [StringLength(100)]
@@ -26,4 +26,7 @@ public partial class Clasificaciones
     public string descripcion { get; set; }
 
     public bool estado { get; set; }
+
+    // [InverseProperty("id_clasificacionNavigation")]
+    // public virtual ICollection<CabeceraSolicitudes> CabeceraSolicitudes { get; set; } = new List<CabeceraSolicitudes>();
 }

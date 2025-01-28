@@ -354,13 +354,9 @@ public partial class AppDataBase : DbContext
         });
 
         // CONSUMO  INTERNO
-        modelBuilder.Entity<CabeceraSolicitudes>(entity =>
+        modelBuilder.Entity<Clasificaciones>(entity =>
         {
-            entity.HasKey(e => e.id_cabecera_solicitud).HasName("PK_CabeceraSolicitudesActivas");
-
-            entity.HasOne(d => d.id_estado_solicitudNavigation).WithMany(p => p.CabeceraSolicitudes)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_CabeceraSolicitudesActivas_EstadosSolicitudes");
+            entity.HasKey(e => e.id_clasificacion).HasName("PK_ClasificacionesConsumoInterno");
         });
 
         modelBuilder.Entity<EstadosSolicitudes>(entity =>
@@ -372,21 +368,19 @@ public partial class AppDataBase : DbContext
         {
             entity.HasKey(e => e.id_linea_solicitud).HasName("PK_LineasSolicitudesActivas");
 
-            entity.Property(e => e.id_producto).IsFixedLength();
-
             entity.HasOne(d => d.cabecera_solicitud).WithMany(p => p.LineasSolicitudes)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_LineasSolicitudesActivas_CabeceraSolicitudesActivas");
+                .HasConstraintName("FK_LineasSolicitudes_CabeceraSolicitudes1");
+        });
+
+        modelBuilder.Entity<NoSeries>(entity =>
+        {
+            entity.HasKey(e => e.id_no_serie).HasName("FP_NoSeries_PK");
         });
 
         modelBuilder.Entity<Posiciones>(entity =>
         {
             entity.HasKey(e => e.posicion_id).HasName("PK_NewTable");
-        });
-
-        modelBuilder.Entity<Clasificaciones>(entity =>
-        {
-            entity.HasKey(e => e.id_clasificacion).HasName("PK_ClasificacionesConsumoInterno");
         });
 
         modelBuilder.Entity<Usuarios>(entity =>
@@ -396,9 +390,9 @@ public partial class AppDataBase : DbContext
             entity.Property(e => e.id_departamento).IsFixedLength();
             entity.Property(e => e.id_sucursal).IsFixedLength();
 
-            entity.HasOne(d => d.posicion).WithMany(p => p.Usuarios)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Usuarios_Posicion");
+            // entity.HasOne(d => d.posicion).WithMany(p => p.Usuarios)
+            //     .OnDelete(DeleteBehavior.ClientSetNull)
+            //     .HasConstraintName("FK_Usuarios_Posiciones");
         });
 
         OnModelCreatingPartial(modelBuilder);

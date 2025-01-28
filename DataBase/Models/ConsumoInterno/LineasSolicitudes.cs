@@ -26,7 +26,6 @@ public partial class LineasSolicitudes
 
     [Required]
     [StringLength(100)]
-    [Unicode(false)]
     public string descripcion { get; set; }
 
     [Column(TypeName = "decimal(18, 0)")]
@@ -48,7 +47,6 @@ public partial class LineasSolicitudes
     [StringLength(20)]
     public string almacen_codigo { get; set; }
 
-    [Unicode(false)]
     public string nota { get; set; }
 
     [ForeignKey("cabecera_solicitud_id")]

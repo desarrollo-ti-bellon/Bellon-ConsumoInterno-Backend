@@ -12,7 +12,11 @@ namespace Bellon.API.Liquidacion.DataBase.Models;
 public partial class Usuarios
 {
     [Key]
-    public int id_usuario { get; set; }
+    public int? id_usuario_ci { get; set; }
+
+    [Required]
+    [StringLength(100)]
+    public string id_usuario { get; set; }
 
     [Required]
     [StringLength(50)]
@@ -47,7 +51,7 @@ public partial class Usuarios
 
     public bool estado { get; set; }
 
-    [ForeignKey("posicion_id")]
-    [InverseProperty("Usuarios")]
-    public virtual Posiciones posicion { get; set; }
+    // [ForeignKey("posicion_id")]
+    // [InverseProperty("Usuarios")]
+    // public virtual Posiciones posicion { get; set; }
 }

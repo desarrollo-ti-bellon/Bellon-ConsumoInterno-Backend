@@ -7,12 +7,12 @@ namespace Bellon.API.Liquidacion.Classes;
 public class Posicion
 {
     [JsonPropertyName("posicion_id")]
-    public int? PosicionId;
+    public int? PosicionId { get; set; }
 
     [JsonPropertyName("descripcion")]
-    public string Descripcion;
+    public string Descripcion { get; set; }
 
     [JsonPropertyName("limite_maximo_permitido")]
-    public decimal LimiteMaximoPermitido;
+    public decimal LimiteMaximoPermitido { get; set; }
 
 }

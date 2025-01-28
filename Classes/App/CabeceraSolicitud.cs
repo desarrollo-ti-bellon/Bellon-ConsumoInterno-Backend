@@ -38,10 +38,10 @@ public class CabeceraSolicitud
     public int IdEstadoSolicitud { get; set; }
 
     [JsonPropertyName("id_clasificacion")]
-    public int? IdClasificacion { get; set; }
+    public int IdClasificacion { get; set; }
 
     [JsonPropertyName("id_sucursal")]
-    public int? IdSucursal { get; set; }
+    public int IdSucursal { get; set; }
 
     [JsonPropertyName("fecha_modificado")]
     public DateTime? FechaModificado { get; set; }

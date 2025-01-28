@@ -8,17 +8,17 @@ namespace Bellon.API.Liquidacion.Classes;
 public class Clasificacion
 {
     [JsonPropertyName("id_clasificacion")]
-    public int Id_clasificacion;
+    public int? IdClasificacion { get; set; }
 
     [JsonPropertyName("id_grupo_cont_producto_general")]
-    public string IdGrupoContProductoGeneral;
+    public string IdGrupoContProductoGeneral { get; set; }
 
     [JsonPropertyName("codigo_clasificacion")]
-    public string CodigoClasificacion;
+    public string CodigoClasificacion { get; set; }
 
     [JsonPropertyName("descripcion")]
-    public string Descripcion;
+    public string Descripcion { get; set; }
 
     [JsonPropertyName("estado")]
-    public bool Estado;
+    public bool Estado { get; set; }
 }

@@ -93,9 +93,13 @@ builder.Services.AddScoped<IServicioCargoFactura, ServicioCargoFactura>();
 builder.Services.AddScoped<IServicioSolicitud, ServicioSolicitud>();
 builder.Services.AddScoped<IServicioEstadoSolicitud, ServicioEstadoSolicitud>();
 builder.Services.AddScoped<IServicioNotas, ServicioNotas>();
+
 builder.Services.AddScoped<IServicioClasificacion, ServicioClasificacion>();
 builder.Services.AddScoped<IServicioDepartamento, ServicioDepartamento>();
 builder.Services.AddScoped<IServicioSucursal, ServicioSucursal>();
+builder.Services.AddScoped<IServicioUsuarioCI, ServicioUsuarioCI>();
+builder.Services.AddScoped<IServicioPosicion, ServicioPosicion>();
+
 builder.Services.AddMemoryCache();
 var app = builder.Build();
 
