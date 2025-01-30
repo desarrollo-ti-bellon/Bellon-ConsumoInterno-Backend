@@ -51,6 +51,52 @@ public class UsuariosCIController : ControllerBase
 
     }
 
+    [HttpGet("Correo")]
+    public async Task<IActionResult> ObtenerUsuarioCorreo([FromQuery] string? correo)
+    {
+        try
+        {
+            if (!String.IsNullOrEmpty(correo))
+            {
+                var data = await _servicioUsuarioCI.ObtenerUsuarioPorCorreo(correo);
+                return data != null ? Ok(data) : NoContent();
+            }
+            else
+            {
+                var data = await _servicioUsuarioCI.ObtenerUsuarios();
+                return data != null && data.Count > 0 ? Ok(data) : NoContent();
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
+
+    }
+
+    [HttpGet("Departamento")]
+    public async Task<IActionResult> ObtenerUsuarioResponsablesPorDepartamentos([FromQuery] string? departamentoId )
+    {
+        try
+        {
+            if (!String.IsNullOrEmpty(departamentoId))
+            {
+                var data = await _servicioUsuarioCI.ObtenerUsuarioResponsablesPorDepartamentos(departamentoId);
+                return data != null ? Ok(data) : NoContent();
+            }
+            else
+            {
+                var data = await _servicioUsuarioCI.ObtenerUsuarios();
+                return data != null && data.Count > 0 ? Ok(data) : NoContent();
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
+
+    }
+
     [HttpPost]
     public async Task<IActionResult> Guardar([FromBody] Classes.Usuario item)
     {
