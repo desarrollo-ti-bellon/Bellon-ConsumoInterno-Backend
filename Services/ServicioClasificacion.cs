@@ -40,7 +40,7 @@ public class ServicioClasificacion : IServicioClasificacion
 
     public async Task<List<LSCentralClasificacion>> ObtenerClasificacionesERP()
     {
-        var cache = _memoryCache.Get<LSCentralClasificacionArray>("Clasificaciones");
+        var cache = _memoryCache.Get<LSCentralClasificacionArray>("ClasificacionesERP");
         if (cache == null)
         {
             var token = await _servicioAutorizacion.ObtenerTokenBC();
@@ -58,7 +58,7 @@ public class ServicioClasificacion : IServicioClasificacion
                 if (cache != null)
                 {
                     _memoryCache.Set<LSCentralClasificacionArray>(
-                        "Clasificaciones",
+                        "ClasificacionesERP",
                         cache,
                         DateTimeOffset.Now.AddMinutes(60)
                     );
@@ -100,7 +100,7 @@ public class ServicioClasificacion : IServicioClasificacion
 
     public async Task<List<Classes.Clasificacion>> ObtenerClasificaciones()
     {
-        var cache = _memoryCache.Get<List<Clasificacion>>("UsuariosCI");
+        var cache = _memoryCache.Get<List<Clasificacion>>("Clasificaciones");
         if (cache == null)
         {
             cache = _context
@@ -114,7 +114,7 @@ public class ServicioClasificacion : IServicioClasificacion
                 })
                 .ToList();
             _memoryCache.Set<List<Clasificacion>>(
-                "Clasisificacion",
+                "Clasificaciones",
                 cache,
                 DateTimeOffset.Now.AddMinutes(5)
             );
@@ -146,7 +146,15 @@ public class ServicioClasificacion : IServicioClasificacion
                 oldItem.descripcion = item.Descripcion;
                 oldItem.estado = item.Estado;
 
-                _context.SaveChanges();
+                try
+                {
+                    _context.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al actualizar el registro: <" + ex.Message + ">");
+                }
+
                 await RefrescarCache();
                 return await ObtenerClasificacion(oldItem.id_clasificacion);
             }
@@ -163,7 +171,16 @@ public class ServicioClasificacion : IServicioClasificacion
             };
 
             _context.Clasificaciones.Add(newItem);
-            _context.SaveChanges();
+
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al actualizar el registro: <" + ex.Message + ">");
+            }
+
             await RefrescarCache();
             return await ObtenerClasificacion(newItem.id_clasificacion);
         }
