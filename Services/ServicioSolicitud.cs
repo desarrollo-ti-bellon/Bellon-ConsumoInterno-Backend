@@ -159,6 +159,7 @@ public class ServicioSolicitud : IServicioSolicitud
                 oldItem.total = item.Total;
                 oldItem.fecha_modificado = DateTime.UtcNow;
                 oldItem.modificado_por = identity!.Name;
+
                 try
                 {
                     _context.SaveChanges();
@@ -179,15 +180,15 @@ public class ServicioSolicitud : IServicioSolicitud
         {
             //SE INSERTA EL NUEVO ITEM
             var numeroSerie = await _servicioNumeroSerie.ObtenerNumeroDocumento(
-                _settings.DocumentoSolicitudConsumoInterno
+                _settings.DocumentoConsumoInternoNoSerieId
             );
             var newItemData = new DataBase.Models.CabeceraSolicitudes
             {
-                fecha_creado = item.FechaCreado,
+                fecha_creado = DateTime.UtcNow,
                 comentario = item.Comentario,
-                creado_por = item.CreadoPor,
+                creado_por = identity!.Name,
                 no_documento = numeroSerie,
-                no_serie_id = _settings.DocumentoSolicitudConsumoInterno,
+                no_serie_id = _settings.DocumentoConsumoInternoNoSerieId,
                 usuario_responsable = item.UsuarioResponsable,
                 usuario_despacho = item.UsuarioDespacho,
                 usuario_asistente_control = item.UsuarioAsistenteControl,
@@ -200,6 +201,7 @@ public class ServicioSolicitud : IServicioSolicitud
                 // modificado_por = item.ModificadoPor,
                 // fecha_modificado = item.FechaModificado,
             };
+
             var newItem = _context.CabeceraSolicitudes.Add(newItemData);
             try
             {
