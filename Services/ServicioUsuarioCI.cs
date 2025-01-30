@@ -44,7 +44,7 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
         var cache = _memoryCache.Get<List<Usuario>>("UsuariosCI");
         if (cache == null)
         {
-            cache = _context
+            cache = await _context
                 .Usuarios.Select(i => new Usuario
                 {
                     IdUsuarioCI = i.id_usuario_ci,
@@ -59,7 +59,7 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
                     PosicionId = i.posicion_id,
                     Estado = i.estado,
                 })
-                .ToList();
+                .ToListAsync();
             _memoryCache.Set<List<Usuario>>(
                 "UsuariosCI",
                 cache,
@@ -73,6 +73,21 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
     {
         var allItems = await ObtenerUsuarios();
         return allItems.Where(i => i.IdUsuarioCI == id).FirstOrDefault().Clone();
+    }
+
+    public async Task<Usuario> ObtenerUsuarioPorCorreo(string? correo)
+    {
+        var allItems = await ObtenerUsuarios();
+        return allItems.Where(i => i.Correo == correo).FirstOrDefault().Clone();
+    }
+
+    public async Task<List<Usuario>> ObtenerUsuarioResponsablesPorDepartamentos(string? departamentoId)
+    {
+        List<int> posiciones = new List<int> { 2, 3, 4 };
+        var allItems = await ObtenerUsuarios();
+        return allItems
+            .Where(i => posiciones.Contains(i.PosicionId) && i.IdDepartamento == departamentoId )
+            .OrderByDescending(i => i.PosicionId).ToList();
     }
 
     public async Task<Usuario> GuardarUsuario(Usuario item)
@@ -98,8 +113,15 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
                 oldItem.posicion_id = item.PosicionId;
                 oldItem.estado = item.Estado;
 
-                _context.Usuarios.Add(oldItem);
-                _context.SaveChanges();
+                try
+                {
+                    _context.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al actualizar el registro: <" + ex.Message + ">");
+                }
+
                 await RefrescarCache();
                 return await ObtenerUsuario(oldItem.id_usuario_ci);
             }
@@ -121,7 +143,15 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
             };
 
             _context.Usuarios.Add(newItem);
-            _context.SaveChanges();
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al actualizar el registro: <" + ex.Message + ">");
+            }
+
             await RefrescarCache();
             return await ObtenerUsuario(newItem.id_usuario_ci);
         }
