@@ -41,7 +41,7 @@ public class CabeceraSolicitud
     public int IdClasificacion { get; set; }
 
     [JsonPropertyName("id_sucursal")]
-    public int IdSucursal { get; set; }
+    public string IdSucursal { get; set; }
 
     [JsonPropertyName("fecha_modificado")]
     public DateTime? FechaModificado { get; set; }
