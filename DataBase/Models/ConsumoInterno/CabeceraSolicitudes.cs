@@ -54,7 +54,9 @@ public partial class CabeceraSolicitudes
 
     public int id_clasificacion { get; set; }
 
-    public int id_sucursal { get; set; }
+    [Required]
+    [StringLength(100)]
+    public string id_sucursal { get; set; }
 
     [Column(TypeName = "datetime")]
     public DateTime? fecha_modificado { get; set; }
