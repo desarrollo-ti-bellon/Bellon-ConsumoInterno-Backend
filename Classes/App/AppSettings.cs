@@ -1,4 +1,4 @@
-namespace Bellon.API.Liquidacion.Classes;
+namespace Bellon.API.ConsumoInterno.Classes;
 
 public class AppSettings
 {
@@ -8,4 +8,9 @@ public class AppSettings
     public int DocumentoLiquidacionNoSerieId { get; set; }
     public int DocumentoConsumoInternoNoSerieId { get; set; }
     public int CantidadDigitosDocumento { get; set; }
+    public string LSCentralTokenUrl { get; set; }
+    public string LSCentralTokenClientSecret { get; set; }
+    public string LSCentralAPIsComunes { get; set; }
+    public string LSCentralAPIsLiquidacion { get; set; }
+    public string DataBaseConnection { get; set; }
 }

@@ -2,7 +2,7 @@
 // Root myDeserializedClass = JsonSerializer.Deserialize<List<Root>>(myJsonResponse);
 using System.Text.Json.Serialization;
 
-namespace Bellon.API.Liquidacion.Classes;
+namespace Bellon.API.ConsumoInterno.Classes;
 
 [Serializable]
 public class Clasificacion

@@ -1,9 +1,8 @@
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text.Json;
-using Bellon.API.Liquidacion.Classes;
-using Bellon.API.Liquidacion.DataBase.Models;
-using Bellon.API.Liquidacion.Interfaces;
+using Bellon.API.ConsumoInterno.Classes;
+using Bellon.API.ConsumoInterno.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
@@ -12,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
-namespace Bellon.API.Liquidacion.Services;
+namespace Bellon.API.ConsumoInterno.Services;
 
 public class ServicioPosicion : IServicioPosicion
 {

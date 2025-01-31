@@ -1,10 +1,11 @@
-namespace Bellon.API.Liquidacion.Interfaces;
+using Bellon.API.ConsumoInterno.Classes;
 
+namespace Bellon.API.ConsumoInterno.Interfaces;
 public interface IServicioAlmacen
 {
-    Task<List<Classes.LSCentralAlmacen>> ObtenerAlmacenes();
+    Task<List<LSCentralAlmacen>> ObtenerAlmacenes();
 
-    Task<Classes.LSCentralAlmacen> ObtenerAlmacen(string id);
+    Task<LSCentralAlmacen> ObtenerAlmacen(string id);
 
     Task<bool> RefrescarCache();
 }

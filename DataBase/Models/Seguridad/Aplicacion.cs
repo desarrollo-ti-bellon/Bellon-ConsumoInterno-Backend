@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Bellon.API.Liquidacion.DataBase.Models;
+namespace Bellon.API.ConsumoInterno.DataBase.Models;
 
 [Table("Aplicacion", Schema = "Seguridad")]
 public class Aplicacion

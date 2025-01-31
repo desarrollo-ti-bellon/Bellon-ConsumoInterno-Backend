@@ -2,35 +2,33 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Security.Claims;
-using Bellon.API.Liquidacion.Interfaces;
-using Bellon.API.Liquidacion.Classes;
+using Bellon.API.ConsumoInterno.Interfaces;
+using Bellon.API.ConsumoInterno.Classes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
-namespace Bellon.API.Liquidacion.Services;
+namespace Bellon.API.ConsumoInterno.Services;
 
 public class ServicioEstadoSolicitud : IServicioEstadoSolicitud
 {
-    private readonly Liquidacion.DataBase.AppDataBase _context;
+    private readonly ConsumoInterno.DataBase.AppDataBase _context;
     private readonly AppSettings _settings;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IMemoryCache _memoryCache;
     IHttpContextAccessor _httpContextAccessor;
     private readonly IServicioAutorizacion _servicioAutorizacion;
     private readonly IServicioNumeroSerie _servicioNumeroSerie;
-    private readonly IServicioHistLlegada _servicioHistLlegada;
 
     public ServicioEstadoSolicitud(
         IHttpContextAccessor httpContextAccessor,
-        Liquidacion.DataBase.AppDataBase context,
+        ConsumoInterno.DataBase.AppDataBase context,
         IOptions<AppSettings> settings,
         IHttpClientFactory httpClientFactory,
         IMemoryCache memoryCache,
         IServicioAutorizacion servicioAutorizacion,
-        IServicioHistLlegada servicioHistLlegada,
         IServicioNumeroSerie servicioNumeroSerie
     )
     {
@@ -40,7 +38,6 @@ public class ServicioEstadoSolicitud : IServicioEstadoSolicitud
         _httpClientFactory = httpClientFactory;
         _memoryCache = memoryCache;
         _servicioAutorizacion = servicioAutorizacion;
-        _servicioHistLlegada = servicioHistLlegada;
         _servicioNumeroSerie = servicioNumeroSerie;
     }
 
@@ -104,7 +101,7 @@ public class ServicioEstadoSolicitud : IServicioEstadoSolicitud
         else
         {
             //SE INSERTA EL NUEVO ITEM
-            var newItemData = new DataBase.Models.EstadosSolicitudes
+            var newItemData = new DataBase.EstadosSolicitudes
             {
                 descripcion = item.Descripcion,
                 estado = item.Estado

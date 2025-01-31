@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text.Json;
-using Bellon.API.Liquidacion.Classes;
-using Bellon.API.Liquidacion.Interfaces;
+using Bellon.API.ConsumoInterno.Classes;
+using Bellon.API.ConsumoInterno.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
@@ -12,7 +12,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 
-namespace Bellon.API.Liquidacion.Services;
+namespace Bellon.API.ConsumoInterno.Services;
 
 public class ServicioNotas : IServicioNotas
 {
@@ -147,7 +147,7 @@ public class ServicioNotas : IServicioNotas
         else
         {
             var newItem = _context.Notas.Add(
-                new DataBase.Models.Notas
+                new DataBase.Notas
                 {
                     id_documento = item.IdDocumento,
                     tipo_documento = item.TipoDocumento,

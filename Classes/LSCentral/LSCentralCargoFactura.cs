@@ -1,7 +1,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace Bellon.API.Liquidacion.Classes;
+namespace Bellon.API.ConsumoInterno.Classes;
 
 [Serializable]
 public class LSCentralCargoFactura {

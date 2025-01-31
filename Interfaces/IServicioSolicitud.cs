@@ -1,12 +1,15 @@
-namespace Bellon.API.Liquidacion.Interfaces;
+namespace Bellon.API.ConsumoInterno.Interfaces;
 
 public interface IServicioSolicitud
 {
-
     Task<List<Classes.CabeceraSolicitud>> ObtenerSolicitudesDelUsuarioSolicitantePorEstado(int? estadoSolicitudId);
+
     Task<List<Classes.CabeceraSolicitud>> ObtenerSolicitudes();
+
     Task<Classes.CabeceraSolicitud> ObtenerSolicitudesPorId(int id);
+
     Task<List<Classes.CabeceraSolicitud>> ObtenerSolicitudesPorEstadoSolicitud(int? estadoSolicitudId);
+
     Task<int> ObtenerCantidadSolicitudesPorEstadoSolicitud(int estadoSolicitudId);
 
     Task<Classes.CabeceraSolicitud> ObtenerSolicitud(int id);

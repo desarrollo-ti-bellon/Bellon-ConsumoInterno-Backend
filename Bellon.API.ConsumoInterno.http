@@ -1,0 +1,6 @@
+@Bellon.API.ConsumoInterno_HostAddress = http://localhost:5209
+
+GET {{Bellon.API.ConsumoInterno}}/weatherforecast/
+Accept: application/json
+
+###

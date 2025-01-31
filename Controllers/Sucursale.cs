@@ -1,15 +1,14 @@
 using Azure;
-using Bellon.API.Liquidacion.Authorization;
-using Bellon.API.Liquidacion.Services;
+using Bellon.API.ConsumoInterno.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web.Resource;
 
-namespace Bellon.API.Liquidacion.Controllers;
+namespace Bellon.API.ConsumoInterno.Controllers;
 
 [Authorize]
 [AutorizacionBellon]
-[RequiredScope("App.Liquidacion")]
+[RequiredScope("App.ConsumoInterno")]
 [ApiController]
 [Route("[controller]")]
 public class SucursalController : ControllerBase

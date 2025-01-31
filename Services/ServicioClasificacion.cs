@@ -2,15 +2,15 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-using Bellon.API.Liquidacion.Classes;
-using Bellon.API.Liquidacion.Interfaces;
+using Bellon.API.ConsumoInterno.Classes;
+using Bellon.API.ConsumoInterno.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
-namespace Bellon.API.Liquidacion.Services;
+namespace Bellon.API.ConsumoInterno.Services;
 
 public class ServicioClasificacion : IServicioClasificacion
 {
@@ -133,8 +133,8 @@ public class ServicioClasificacion : IServicioClasificacion
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         if (item.IdClasificacion.HasValue)
         {
-            var oldItem = _context
-                .Clasificaciones.Where(i =>
+            var oldItem = _context.
+                Clasificaciones.Where(i =>
                     i.id_clasificacion == item.IdClasificacion.Value
                 )
                 .FirstOrDefault();
@@ -161,7 +161,7 @@ public class ServicioClasificacion : IServicioClasificacion
         }
         else
         {
-            var newItem = new DataBase.Models.Clasificaciones
+            var newItem = new DataBase.Clasificaciones
             {
                 id_clasificacion = item.IdClasificacion,
                 id_grupo_cont_producto_general = item.IdGrupoContProductoGeneral,

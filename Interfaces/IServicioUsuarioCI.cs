@@ -1,6 +1,6 @@
-using Bellon.API.Liquidacion.Classes;
+using Bellon.API.ConsumoInterno.Classes;
 
-namespace Bellon.API.Liquidacion.Interfaces;
+namespace Bellon.API.ConsumoInterno.Interfaces;
 
 public interface IServicioUsuarioCI
 {

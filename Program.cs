@@ -1,13 +1,123 @@
-using Bellon.API.Liquidacion.Authorization;
-using Bellon.API.Liquidacion.Classes;
-using Bellon.API.Liquidacion.Interfaces;
-using Bellon.API.Liquidacion.Services;
+using Azure.Core;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Bellon.API.ConsumoInterno.Authorization;
+using Bellon.API.ConsumoInterno.Classes;
+using Bellon.API.ConsumoInterno.Interfaces;
+using Bellon.API.ConsumoInterno.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
+AppSettings appSettings = new AppSettings();
+if (builder.Environment.IsDevelopment())
+{
+    //********************************************  LOCALHOST  ****************************************************************
+    //SI ES AMBIENTE DE DESARROLLO (LOCALHOST) LOS VALORES SE LEEN DE AQUI
+    appSettings = new AppSettings
+    {
+        AplicacionId = 1,
+        DocumentoLLegadaNoSerieId = 1,
+        DocumentoTransitoNoSerieId = 2,
+        DocumentoLiquidacionNoSerieId = 3,
+        DocumentoConsumoInternoNoSerieId = 4,
+        CantidadDigitosDocumento = 8,
+        LSCentralTokenClientSecret = "HH~8Q~25I9fMYRw46EIIveAuyWGZnCwtGvbH.aLo",
+        LSCentralTokenUrl =
+            "https://login.microsoftonline.com/a5aba6fb-8964-45ce-835a-20614cc908d3/oauth2/v2.0/token",
+        LSCentralAPIsComunes =
+            "https://api.businesscentral.dynamics.com/v2.0/Production/api/bellon/general/v1.0/companies(9780658e-9f4a-ef11-bfe2-6045bd39950a)/",
+        LSCentralAPIsLiquidacion =
+            "https://api.businesscentral.dynamics.com/v2.0/Production/api/bellon/liquidacion/v1.0/companies(9780658e-9f4a-ef11-bfe2-6045bd39950a)/",
+        DataBaseConnection =
+            "Server=tcp:bellonapps.database.windows.net,1433;Initial Catalog=bellonapps;Persist Security Info=False;User ID=bellonadmin;Password=B3ll0nD4t4B4s3;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
+    };
+    //*************************************************************************************************************************
+}
+else
+{
+    //******************************************  AZURE (PRODUCCION Y DESARROLLO)  ********************************************
+    //SI ES AMBIENTE DE AZURE (DESARROLLO O PRODUCCION) LOS VALORES SE LEEN DEL SERVICIO DE KEYVAULT DE AZURE
+    try
+    {
+        SecretClientOptions options = new SecretClientOptions()
+        {
+            Retry =
+            {
+                Delay = TimeSpan.FromSeconds(2),
+                MaxDelay = TimeSpan.FromSeconds(16),
+                MaxRetries = 5,
+                Mode = RetryMode.Exponential,
+            },
+        };
+        var client = new SecretClient(
+            new Uri(builder.Configuration["AzureKeyVault:Url"]!),
+            new DefaultAzureCredential(),
+            options
+        );
+
+        appSettings = new AppSettings
+        {
+            AplicacionId = Convert.ToInt32(
+                ((KeyVaultSecret)client.GetSecret("Liquidacion-AplicacionId")).Value
+            ),
+
+            DocumentoLLegadaNoSerieId = Convert.ToInt32(
+                ((KeyVaultSecret)client.GetSecret("Liquidacion-DocumentoLLegadaNoSerieId")).Value
+            ),
+            DocumentoTransitoNoSerieId = Convert.ToInt32(
+                ((KeyVaultSecret)client.GetSecret("Liquidacion-DocumentoTransitoNoSerieId")).Value
+            ),
+            DocumentoLiquidacionNoSerieId = Convert.ToInt32(
+                (
+                    (KeyVaultSecret)client.GetSecret("Liquidacion-DocumentoLiquidacionNoSerieId")
+                ).Value
+            ),
+            DocumentoConsumoInternoNoSerieId = Convert.ToInt32(
+                (
+                    (KeyVaultSecret)client.GetSecret("Liquidacion-DocumentoConsumoInternoNoSerieId")
+                ).Value
+            ),
+            CantidadDigitosDocumento = Convert.ToInt32(
+                ((KeyVaultSecret)client.GetSecret("Liquidacion-CantidadDigitosDocumento")).Value
+            ),
+            LSCentralTokenClientSecret = (
+                (KeyVaultSecret)client.GetSecret("Comun-LSCentralTokenClientSecret")
+            ).Value,
+            LSCentralTokenUrl = ((KeyVaultSecret)client.GetSecret("Comun-LSCentralTokenUrl")).Value,
+            LSCentralAPIsComunes = (
+                (KeyVaultSecret)client.GetSecret("Comun-LSCentralAPIUrl")
+            ).Value,
+            LSCentralAPIsLiquidacion = (
+                (KeyVaultSecret)client.GetSecret("Liquidacion-LSCentralAPIUrl")
+            ).Value,
+            DataBaseConnection = (
+                (KeyVaultSecret)client.GetSecret("Comun-DataBaseConnection")
+            ).Value,
+        };
+    }
+    catch (Exception ex)
+    {
+        appSettings = new AppSettings { LSCentralTokenUrl = ex.Message };
+    }
+    //*************************************************************************************************************************
+}
+builder.Services.Configure<AppSettings>(options =>
+{
+    options.AplicacionId = appSettings!.AplicacionId;
+    options.DocumentoLLegadaNoSerieId = appSettings.DocumentoLLegadaNoSerieId;
+    options.DocumentoTransitoNoSerieId = appSettings.DocumentoTransitoNoSerieId;
+    options.DocumentoLiquidacionNoSerieId = appSettings.DocumentoLLegadaNoSerieId;
+    options.DocumentoConsumoInternoNoSerieId = appSettings.DocumentoConsumoInternoNoSerieId;
+    options.CantidadDigitosDocumento = appSettings.CantidadDigitosDocumento;
+    options.LSCentralTokenUrl = appSettings.LSCentralTokenUrl;
+    options.LSCentralTokenClientSecret = appSettings.LSCentralTokenClientSecret;
+    options.LSCentralAPIsComunes = appSettings.LSCentralAPIsComunes;
+    options.LSCentralAPIsLiquidacion = appSettings.LSCentralAPIsLiquidacion;
+    options.DataBaseConnection = appSettings.DataBaseConnection;
+});
 
 // Add services to the container.
 
@@ -24,73 +134,45 @@ builder
 
 builder.Services.AddTransient<IServicioAutorizacion, ServicioAutorizacion>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddDbContext<Bellon.API.Liquidacion.DataBase.AppDataBase>();
-builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
-
-//Third APIs
-builder.Services.AddHttpClient(
-    "BusinessCentral-Token",
-    httpClient =>
-    {
-        httpClient.BaseAddress = new Uri(
-            builder.Configuration["AppSettings:BusinessCentral-Token"]!
-        );
-    }
-);
-builder.Services.AddHttpClient(
-    "BusinessCentral-APIs",
-    httpClient =>
-    {
-        httpClient.BaseAddress = new Uri(
-             builder.Configuration["AppSettings:BusinessCentral-APIs"]!
-        );
-    }
-);
-// ESTE ES SOLO PARA LAS APIS QUE PERTENECEN AL API GROUP DE LOS QUE SON GENERALES
-builder.Services.AddHttpClient(
-    "LSCentral-APIs",
-    httpClient =>
-    {
-        httpClient.BaseAddress = new Uri(
-             builder.Configuration["AppSettings:LSCentral-APIs"]!
-        );
-    }
-);
-// ESTE ES SOLO PARA LAS APIS QUE PERTENECEN AL API GROUP DE LIQUIDACION
-builder.Services.AddHttpClient(
-    "LSCentral-APIs-Liquidacion",
-    httpClient =>
-    {
-        httpClient.BaseAddress = new Uri(
-            builder.Configuration["AppSettings:LSCentral-APIs-Liquidacion"]!
-        );
-    }
-);
+builder.Services.AddDbContext<Bellon.API.ConsumoInterno.DataBase.AppDataBase>();
+if (!string.IsNullOrEmpty(appSettings.LSCentralTokenUrl))
+{
+    builder.Services.AddHttpClient(
+        "LSCentral-Token",
+        httpClient =>
+        {
+            httpClient.BaseAddress = new Uri(appSettings.LSCentralTokenUrl);
+        }
+    );
+}
+if (!string.IsNullOrEmpty(appSettings.LSCentralAPIsComunes))
+{
+    builder.Services.AddHttpClient(
+        "LSCentral-APIs-Comunes",
+        httpClient =>
+        {
+            httpClient.BaseAddress = new Uri(appSettings.LSCentralAPIsComunes);
+        }
+    );
+}
+if (!string.IsNullOrEmpty(appSettings.LSCentralAPIsLiquidacion))
+{
+    builder.Services.AddHttpClient(
+        "LSCentral-APIs-Liquidacion",
+        httpClient =>
+        {
+            httpClient.BaseAddress = new Uri(appSettings.LSCentralAPIsLiquidacion);
+        }
+    );
+}
 
 //App Services
 builder.Services.AddScoped<IServicioNumeroSerie, ServicioNumeroSerie>();
-builder.Services.AddScoped<IServicioAgente, ServicioAgente>();
-builder.Services.AddScoped<IServicioTipoContenedor, ServicioTipoContenedor>();
-builder.Services.AddScoped<IServicioCodigoArancelario, ServicioCodigoArancelario>();
-builder.Services.AddScoped<IServicioLlegada, ServicioLlegada>();
-builder.Services.AddScoped<IServicioHistLlegada, ServicioHistLlegada>();
-builder.Services.AddScoped<IServicioTransito, ServicioTransito>();
-builder.Services.AddScoped<IServicioHistTransito, ServicioHistTransito>();
-builder.Services.AddScoped<IServicioLiquidacion, ServicioLiquidacion>();
-builder.Services.AddScoped<IServicioHistLiquidacion, ServicioHistLiquidacion>();
-builder.Services.AddScoped<IServicioProveedor, ServicioProveedor>();
-builder.Services.AddScoped<IServicioCategoriaProducto, ServicioCategoriaProducto>();
-builder.Services.AddScoped<IServicioUsuario, ServicioUsuario>();
 builder.Services.AddScoped<IServicioAlmacen, ServicioAlmacen>();
-builder.Services.AddScoped<IServicioUnidadMedida, ServicioUnidadMedida>();
 builder.Services.AddScoped<IServicioPais, ServicioPais>();
-builder.Services.AddScoped<IServicioCargoProducto, ServicioCargoProducto>();
 builder.Services.AddScoped<IServicioProducto, ServicioProducto>();
-builder.Services.AddScoped<IServicioDocumentoOrigen, ServicioDocumentoOrigen>();
-builder.Services.AddScoped<IServicioOrdenTransferencia, ServicioOrdenTransferencia>();
-builder.Services.AddScoped<IServicioMovValorPrecios, ServicioMovValorPrecios>();
-builder.Services.AddScoped<IServicioCargoFactura, ServicioCargoFactura>();
-
+builder.Services.AddScoped<IServicioProveedor, ServicioProveedor>();
+builder.Services.AddScoped<IServicioUnidadMedida, ServicioUnidadMedida>();
 builder.Services.AddScoped<IServicioSolicitud, ServicioSolicitud>();
 builder.Services.AddScoped<IServicioEstadoSolicitud, ServicioEstadoSolicitud>();
 builder.Services.AddScoped<IServicioNotas, ServicioNotas>();
@@ -98,8 +180,8 @@ builder.Services.AddScoped<IServicioClasificacion, ServicioClasificacion>();
 builder.Services.AddScoped<IServicioDepartamento, ServicioDepartamento>();
 builder.Services.AddScoped<IServicioSucursal, ServicioSucursal>();
 builder.Services.AddScoped<IServicioUsuarioCI, ServicioUsuarioCI>();
+builder.Services.AddScoped<IServicioUsuario, ServicioUsuario>();
 builder.Services.AddScoped<IServicioPosicion, ServicioPosicion>();
-
 builder.Services.AddMemoryCache();
 var app = builder.Build();
 

@@ -1,10 +1,10 @@
 using System.Text.Json.Serialization;
-using Bellon.API.Liquidacion.Interfaces;
+using Bellon.API.ConsumoInterno.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Bellon.API.Liquidacion.Authorization;
+namespace Bellon.API.ConsumoInterno.Authorization;
 
 public class AutorizacionBellon : Attribute, IAsyncAuthorizationFilter
 {

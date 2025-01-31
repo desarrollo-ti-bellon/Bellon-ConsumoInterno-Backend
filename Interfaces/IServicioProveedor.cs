@@ -1,4 +1,4 @@
-namespace Bellon.API.Liquidacion.Interfaces;
+namespace Bellon.API.ConsumoInterno.Interfaces;
 
 public interface IServicioProveedor
 {

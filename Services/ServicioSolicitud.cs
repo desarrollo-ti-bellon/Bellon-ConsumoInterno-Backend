@@ -2,35 +2,34 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Security.Claims;
-using Bellon.API.Liquidacion.Interfaces;
-using Bellon.API.Liquidacion.Classes;
+using Bellon.API.ConsumoInterno.Interfaces;
+using Bellon.API.ConsumoInterno.Classes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using Bellon.API.ConsumoInterno.DataBase;
 
-namespace Bellon.API.Liquidacion.Services;
+namespace Bellon.API.ConsumoInterno.Services;
 
 public class ServicioSolicitud : IServicioSolicitud
 {
-    private readonly Liquidacion.DataBase.AppDataBase _context;
+    private readonly AppDataBase _context;
     private readonly AppSettings _settings;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IMemoryCache _memoryCache;
     IHttpContextAccessor _httpContextAccessor;
     private readonly IServicioAutorizacion _servicioAutorizacion;
     private readonly IServicioNumeroSerie _servicioNumeroSerie;
-    private readonly IServicioHistLlegada _servicioHistLlegada;
 
     public ServicioSolicitud(
         IHttpContextAccessor httpContextAccessor,
-        DataBase.AppDataBase context,
+        AppDataBase context,
         IOptions<AppSettings> settings,
         IHttpClientFactory httpClientFactory,
         IMemoryCache memoryCache,
         IServicioAutorizacion servicioAutorizacion,
-        IServicioHistLlegada servicioHistLlegada,
         IServicioNumeroSerie servicioNumeroSerie
     )
     {
@@ -40,7 +39,6 @@ public class ServicioSolicitud : IServicioSolicitud
         _httpClientFactory = httpClientFactory;
         _memoryCache = memoryCache;
         _servicioAutorizacion = servicioAutorizacion;
-        _servicioHistLlegada = servicioHistLlegada;
         _servicioNumeroSerie = servicioNumeroSerie;
     }
 
@@ -182,7 +180,7 @@ public class ServicioSolicitud : IServicioSolicitud
             var numeroSerie = await _servicioNumeroSerie.ObtenerNumeroDocumento(
                 _settings.DocumentoConsumoInternoNoSerieId
             );
-            var newItemData = new DataBase.Models.CabeceraSolicitudes
+            var newItemData = new DataBase.CabeceraSolicitudes
             {
                 fecha_creado = DateTime.UtcNow,
                 comentario = item.Comentario,
@@ -271,7 +269,7 @@ public class ServicioSolicitud : IServicioSolicitud
                     else
                     {
                         //SE INSERTA EL NUEVO ITEM
-                        var newItemData = new DataBase.Models.LineasSolicitudes
+                        var newItemData = new DataBase.LineasSolicitudes
                         {
                             cabecera_solicitud_id = item.CabeceraSolicitudId,
                             id_producto = item.IdProducto,

@@ -1,15 +1,15 @@
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Bellon.API.Liquidacion.Classes;
-using Bellon.API.Liquidacion.Interfaces;
+using Bellon.API.ConsumoInterno.Classes;
+using Bellon.API.ConsumoInterno.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
-namespace Bellon.API.Liquidacion.Services;
+namespace Bellon.API.ConsumoInterno.Services;
 
 public class ServicioAutorizacion : IServicioAutorizacion
 {

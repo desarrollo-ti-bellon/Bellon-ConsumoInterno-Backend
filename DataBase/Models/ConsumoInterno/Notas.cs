@@ -8,31 +8,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bellon.API.ConsumoInterno.DataBase;
 
-[Table("NoSeries", Schema = "ConsumoInterno")]
-[Index("codigo", Name = "FP_NoSeries_UQ_Codigo", IsUnique = true)]
-public partial class NoSeries
+[Table("Notas", Schema = "ConsumoInterno")]
+public partial class Notas
 {
     [Key]
-    public int id_no_serie { get; set; }
+    public int id_nota { get; set; }
+
+    public int id_documento { get; set; }
 
     [Required]
-    [StringLength(10)]
-    public string codigo { get; set; }
+    [StringLength(3)]
+    public string tipo_documento { get; set; }
 
     [Required]
-    [StringLength(50)]
+    [StringLength(20)]
+    public string no_documento { get; set; }
+
+    [StringLength(100)]
+    public string usuario_destino { get; set; }
+
+    [Required]
+    [StringLength(150)]
     public string descripcion { get; set; }
-
-    [Required]
-    [StringLength(20)]
-    public string secuencia_inicial { get; set; }
-
-    [Required]
-    [StringLength(20)]
-    public string ultima_secuencia_utilizada { get; set; }
-
-    [Column(TypeName = "datetime")]
-    public DateTime fecha_ultima_secuencia_utilizada { get; set; }
 
     [Column(TypeName = "datetime")]
     public DateTime fecha_creado { get; set; }
@@ -46,7 +43,4 @@ public partial class NoSeries
 
     [StringLength(100)]
     public string modificado_por { get; set; }
-
-    [InverseProperty("no_serie")]
-    public virtual ICollection<CabeceraSolicitudes> CabeceraSolicitudes { get; set; } = new List<CabeceraSolicitudes>();
 }
