@@ -43,7 +43,7 @@ public class ServicioUnidadMedida : IServicioUnidadMedida
         if (cache == null)
         {
             var token = await _servicioAutorizacion.ObtenerTokenBC();
-            var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs");
+            var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
             var httpResponseMessage = await httpClient.GetAsync("UnidadesDeMedidas");
             if (httpResponseMessage.IsSuccessStatusCode)
@@ -82,8 +82,8 @@ public class ServicioUnidadMedida : IServicioUnidadMedida
     public async Task<LSCentralUnidadMedida> ObtenerUnidadMedida(string id)
     {
         var token = await _servicioAutorizacion.ObtenerTokenBC();
-        var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs");
-        httpClient = _httpClientFactory.CreateClient("LSCentral-APIs");
+        var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
+        httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
         var httpResponseMessage = await httpClient.GetAsync("UnidadesDeMedidas(" + id + ")");
         if (httpResponseMessage.IsSuccessStatusCode)

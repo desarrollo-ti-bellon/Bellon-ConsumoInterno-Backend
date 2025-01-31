@@ -44,7 +44,7 @@ public class ServicioProducto : IServicioProducto
         if (cache == null)
         {
             var token = await _servicioAutorizacion.ObtenerTokenBC();
-            var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs");
+            var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
             var httpResponseMessage = await httpClient.GetAsync("Productos");
             if (httpResponseMessage.IsSuccessStatusCode)
@@ -77,8 +77,8 @@ public class ServicioProducto : IServicioProducto
     public async Task<LSCentralProducto> ObtenerProducto(string id)
     {
         var token = await _servicioAutorizacion.ObtenerTokenBC();
-        var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs");
-        httpClient = _httpClientFactory.CreateClient("LSCentral-APIs");
+        var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
+        httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
         var httpResponseMessage = await httpClient.GetAsync(
             "Productos("
@@ -105,7 +105,7 @@ public class ServicioProducto : IServicioProducto
         if (cache == null)
         {
             var token = await _servicioAutorizacion.ObtenerTokenBC();
-            var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs");
+            var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
             var httpResponseMessage = await httpClient.GetAsync("TraduccionesProducto?$filter=codigo_idioma eq 'DGA'");
             if (httpResponseMessage.IsSuccessStatusCode)

@@ -43,7 +43,7 @@ public class ServicioUsuario : IServicioUsuario
         if (cache == null)
         {
             var token = await _servicioAutorizacion.ObtenerTokenBC();
-            var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs");
+            var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
             var httpResponseMessage = await httpClient.GetAsync("Usuarios");
             if (httpResponseMessage.IsSuccessStatusCode)
@@ -72,8 +72,8 @@ public class ServicioUsuario : IServicioUsuario
     public async Task<LSCentralUsuario> ObtenerUsuario(string id)
     {
         var token = await _servicioAutorizacion.ObtenerTokenBC();
-        var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs");
-        httpClient = _httpClientFactory.CreateClient("LSCentral-APIs");
+        var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
+        httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
         var httpResponseMessage = await httpClient.GetAsync("Usuarios(" + id + ")");
         if (httpResponseMessage.IsSuccessStatusCode)

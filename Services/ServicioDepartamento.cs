@@ -44,7 +44,7 @@ public class ServicioDepartamento : IServicioDepartamento
         if (cache == null)
         {
             var token = await _servicioAutorizacion.ObtenerTokenBC();
-            var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs");
+            var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
             var httpResponseMessage = await httpClient.GetAsync(
                 "ValoresDimension?$filter=codigo_dimension eq 'DPTO-OP'"
@@ -79,7 +79,7 @@ public class ServicioDepartamento : IServicioDepartamento
     public async Task<LSCentralDepartamento> ObtenerDepartamento(string id)
     {
         var token = await _servicioAutorizacion.ObtenerTokenBC();
-        var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs");
+        var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
         var httpResponseMessage = await httpClient.GetAsync(
             "ValoresDimension?$filter=codigo_dimension eq 'DPTO-OP'"

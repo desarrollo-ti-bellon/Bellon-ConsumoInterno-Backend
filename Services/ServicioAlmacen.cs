@@ -43,7 +43,7 @@ public class ServicioAlmacen : IServicioAlmacen
         if (cache == null)
         {
             var token = await _servicioAutorizacion.ObtenerTokenBC();
-            var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs");
+            var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
             var httpResponseMessage = await httpClient.GetAsync("Almacenes");
             if (httpResponseMessage.IsSuccessStatusCode)
@@ -72,8 +72,8 @@ public class ServicioAlmacen : IServicioAlmacen
     public async Task<LSCentralAlmacen> ObtenerAlmacen(string id)
     {
         var token = await _servicioAutorizacion.ObtenerTokenBC();
-        var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs");
-        httpClient = _httpClientFactory.CreateClient("LSCentral-APIs");
+        var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
+        httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
         var httpResponseMessage = await httpClient.GetAsync("Almacenes(" + id + ")");
         if (httpResponseMessage.IsSuccessStatusCode)

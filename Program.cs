@@ -18,10 +18,7 @@ if (builder.Environment.IsDevelopment())
     //SI ES AMBIENTE DE DESARROLLO (LOCALHOST) LOS VALORES SE LEEN DE AQUI
     appSettings = new AppSettings
     {
-        AplicacionId = 1,
-        DocumentoLLegadaNoSerieId = 1,
-        DocumentoTransitoNoSerieId = 2,
-        DocumentoLiquidacionNoSerieId = 3,
+        AplicacionId = 4,
         DocumentoConsumoInternoNoSerieId = 4,
         CantidadDigitosDocumento = 8,
         LSCentralTokenClientSecret = "HH~8Q~25I9fMYRw46EIIveAuyWGZnCwtGvbH.aLo",
@@ -29,8 +26,6 @@ if (builder.Environment.IsDevelopment())
             "https://login.microsoftonline.com/a5aba6fb-8964-45ce-835a-20614cc908d3/oauth2/v2.0/token",
         LSCentralAPIsComunes =
             "https://api.businesscentral.dynamics.com/v2.0/Production/api/bellon/general/v1.0/companies(9780658e-9f4a-ef11-bfe2-6045bd39950a)/",
-        LSCentralAPIsLiquidacion =
-            "https://api.businesscentral.dynamics.com/v2.0/Production/api/bellon/liquidacion/v1.0/companies(9780658e-9f4a-ef11-bfe2-6045bd39950a)/",
         DataBaseConnection =
             "Server=tcp:bellonapps.database.windows.net,1433;Initial Catalog=bellonapps;Persist Security Info=False;User ID=bellonadmin;Password=B3ll0nD4t4B4s3;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
     };
@@ -61,27 +56,15 @@ else
         appSettings = new AppSettings
         {
             AplicacionId = Convert.ToInt32(
-                ((KeyVaultSecret)client.GetSecret("Liquidacion-AplicacionId")).Value
-            ),
-
-            DocumentoLLegadaNoSerieId = Convert.ToInt32(
-                ((KeyVaultSecret)client.GetSecret("Liquidacion-DocumentoLLegadaNoSerieId")).Value
-            ),
-            DocumentoTransitoNoSerieId = Convert.ToInt32(
-                ((KeyVaultSecret)client.GetSecret("Liquidacion-DocumentoTransitoNoSerieId")).Value
-            ),
-            DocumentoLiquidacionNoSerieId = Convert.ToInt32(
-                (
-                    (KeyVaultSecret)client.GetSecret("Liquidacion-DocumentoLiquidacionNoSerieId")
-                ).Value
+                ((KeyVaultSecret)client.GetSecret("ConsumoInterno-AplicacionId")).Value
             ),
             DocumentoConsumoInternoNoSerieId = Convert.ToInt32(
                 (
-                    (KeyVaultSecret)client.GetSecret("Liquidacion-DocumentoConsumoInternoNoSerieId")
+                    (KeyVaultSecret)client.GetSecret("ConsumoInterno-DocumentoConsumoInternoNoSerieId")
                 ).Value
             ),
             CantidadDigitosDocumento = Convert.ToInt32(
-                ((KeyVaultSecret)client.GetSecret("Liquidacion-CantidadDigitosDocumento")).Value
+                ((KeyVaultSecret)client.GetSecret("ConsumoInterno-CantidadDigitosDocumento")).Value
             ),
             LSCentralTokenClientSecret = (
                 (KeyVaultSecret)client.GetSecret("Comun-LSCentralTokenClientSecret")
@@ -89,9 +72,6 @@ else
             LSCentralTokenUrl = ((KeyVaultSecret)client.GetSecret("Comun-LSCentralTokenUrl")).Value,
             LSCentralAPIsComunes = (
                 (KeyVaultSecret)client.GetSecret("Comun-LSCentralAPIUrl")
-            ).Value,
-            LSCentralAPIsLiquidacion = (
-                (KeyVaultSecret)client.GetSecret("Liquidacion-LSCentralAPIUrl")
             ).Value,
             DataBaseConnection = (
                 (KeyVaultSecret)client.GetSecret("Comun-DataBaseConnection")
@@ -107,15 +87,11 @@ else
 builder.Services.Configure<AppSettings>(options =>
 {
     options.AplicacionId = appSettings!.AplicacionId;
-    options.DocumentoLLegadaNoSerieId = appSettings.DocumentoLLegadaNoSerieId;
-    options.DocumentoTransitoNoSerieId = appSettings.DocumentoTransitoNoSerieId;
-    options.DocumentoLiquidacionNoSerieId = appSettings.DocumentoLLegadaNoSerieId;
     options.DocumentoConsumoInternoNoSerieId = appSettings.DocumentoConsumoInternoNoSerieId;
     options.CantidadDigitosDocumento = appSettings.CantidadDigitosDocumento;
     options.LSCentralTokenUrl = appSettings.LSCentralTokenUrl;
     options.LSCentralTokenClientSecret = appSettings.LSCentralTokenClientSecret;
     options.LSCentralAPIsComunes = appSettings.LSCentralAPIsComunes;
-    options.LSCentralAPIsLiquidacion = appSettings.LSCentralAPIsLiquidacion;
     options.DataBaseConnection = appSettings.DataBaseConnection;
 });
 
@@ -135,6 +111,7 @@ builder
 builder.Services.AddTransient<IServicioAutorizacion, ServicioAutorizacion>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<Bellon.API.ConsumoInterno.DataBase.AppDataBase>();
+
 if (!string.IsNullOrEmpty(appSettings.LSCentralTokenUrl))
 {
     builder.Services.AddHttpClient(
@@ -152,16 +129,6 @@ if (!string.IsNullOrEmpty(appSettings.LSCentralAPIsComunes))
         httpClient =>
         {
             httpClient.BaseAddress = new Uri(appSettings.LSCentralAPIsComunes);
-        }
-    );
-}
-if (!string.IsNullOrEmpty(appSettings.LSCentralAPIsLiquidacion))
-{
-    builder.Services.AddHttpClient(
-        "LSCentral-APIs-Liquidacion",
-        httpClient =>
-        {
-            httpClient.BaseAddress = new Uri(appSettings.LSCentralAPIsLiquidacion);
         }
     );
 }

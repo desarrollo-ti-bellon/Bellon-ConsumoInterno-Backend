@@ -44,7 +44,7 @@ public class ServicioClasificacion : IServicioClasificacion
         if (cache == null)
         {
             var token = await _servicioAutorizacion.ObtenerTokenBC();
-            var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs");
+            var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
             var httpResponseMessage = await httpClient.GetAsync(
                 "GruposContProductoGeneral?$expand=GruposContIVAProducto"
@@ -79,7 +79,7 @@ public class ServicioClasificacion : IServicioClasificacion
     public async Task<LSCentralClasificacion> ObtenerClasificacionERP(string id)
     {
         var token = await _servicioAutorizacion.ObtenerTokenBC();
-        var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs");
+        var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
         var httpResponseMessage = await httpClient.GetAsync(
             "GruposContProductoGeneral?$expand=GruposContIVAProducto"

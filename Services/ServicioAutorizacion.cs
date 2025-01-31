@@ -59,13 +59,13 @@ public class ServicioAutorizacion : IServicioAutorizacion
         var token = _memoryCache.Get<Classes.BusinessCentralToken>("Token-BusinessCentral");
         if (token == null)
         {
-            var httpClient = _httpClientFactory.CreateClient("BusinessCentral-Token");
+            var httpClient = _httpClientFactory.CreateClient("LSCentral-Token");
             List<KeyValuePair<string, string>> parameters = new List<KeyValuePair<string, string>>()
             {
                 new KeyValuePair<string, string>("grant_type", "client_credentials"),
                 new KeyValuePair<string, string>(
                     "client_secret",
-                    "HH~8Q~25I9fMYRw46EIIveAuyWGZnCwtGvbH.aLo"
+                    _settings.LSCentralTokenClientSecret
                 ),
                 new KeyValuePair<string, string>(
                     "client_id",
