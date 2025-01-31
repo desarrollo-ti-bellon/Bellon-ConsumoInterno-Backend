@@ -224,7 +224,7 @@ public class ServicioSolicitud : IServicioSolicitud
         if (items.Count > 0)
         {
             var parent = _context
-                .LineasSolicitudes.Where(i => i.cabecera_solicitud_id == items[0].CabeceraSolicitudId)
+                .CabeceraSolicitudes.Where(i => i.id_cabecera_solicitud == items[0].CabeceraSolicitudId)
                 .FirstOrDefault();
 
             if (parent != null)
@@ -253,7 +253,6 @@ public class ServicioSolicitud : IServicioSolicitud
                             oldItem.almacen_id = item.AlmacenId;
                             oldItem.almacen_codigo = item.AlmacenCodigo;
                             oldItem.nota = item.Nota;
-
                             try
                             {
                                 _context.SaveChanges();
@@ -269,7 +268,7 @@ public class ServicioSolicitud : IServicioSolicitud
                     else
                     {
                         //SE INSERTA EL NUEVO ITEM
-                        var newItemData = new DataBase.LineasSolicitudes
+                        var newItemData = new LineasSolicitudes
                         {
                             cabecera_solicitud_id = item.CabeceraSolicitudId,
                             id_producto = item.IdProducto,

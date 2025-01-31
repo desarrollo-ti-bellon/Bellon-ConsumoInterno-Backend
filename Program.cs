@@ -19,7 +19,7 @@ if (builder.Environment.IsDevelopment())
     appSettings = new AppSettings
     {
         AplicacionId = 4,
-        DocumentoConsumoInternoNoSerieId = 4,
+        DocumentoConsumoInternoNoSerieId = 1,
         CantidadDigitosDocumento = 8,
         LSCentralTokenClientSecret = "HH~8Q~25I9fMYRw46EIIveAuyWGZnCwtGvbH.aLo",
         LSCentralTokenUrl =
