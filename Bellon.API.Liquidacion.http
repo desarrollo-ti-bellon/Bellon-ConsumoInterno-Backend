@@ -1,6 +1,0 @@
-@Bellon.API.Liquidacion_HostAddress = http://localhost:5209
-
-GET {{Bellon.API.Liquidacion_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
