@@ -58,6 +58,7 @@ public class ServicioSolicitud : IServicioSolicitud
                 .CabeceraSolicitudes.Select(i => new CabeceraSolicitud
                 {
                     IdCabeceraSolicitud = i.id_cabecera_solicitud,
+                    NoDocumento = i.no_documento,
                     FechaCreado = i.fecha_creado,
                     Comentario = i.comentario,
                     CreadoPor = i.creado_por,

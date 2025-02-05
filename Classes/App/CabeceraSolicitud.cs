@@ -10,6 +10,9 @@ public class CabeceraSolicitud
     [JsonPropertyName("id_cabecera_solicitud")]
     public int? IdCabeceraSolicitud { get; set; }
 
+    [JsonPropertyName("no_documento")]
+    public string NoDocumento { get; set; }
+
     [JsonPropertyName("fecha_creado")]
     public DateTime FechaCreado { get; set; }
 
