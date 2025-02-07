@@ -37,7 +37,7 @@ public partial class CabeceraSolicitudes
 
     [Required]
     [StringLength(100)]
-    public string usuario_asistente_control { get; set; }
+    public string usuario_asistente_inventario { get; set; }
 
     [Required]
     [StringLength(100)]
@@ -67,6 +67,14 @@ public partial class CabeceraSolicitudes
     [Column(TypeName = "decimal(18, 0)")]
     public decimal total { get; set; }
 
+    public int id_usuario_responsable { get; set; }
+
+    public int? id_usuario_despacho { get; set; }
+
+    public int? id_usuario_asistente_inventario { get; set; }
+
+    public int? id_usuario_asistente_contabilidad { get; set; }
+
     [InverseProperty("cabecera_solicitud")]
     public virtual ICollection<LineasSolicitudes> LineasSolicitudes { get; set; } = new List<LineasSolicitudes>();
 
@@ -77,6 +85,22 @@ public partial class CabeceraSolicitudes
     [ForeignKey("id_estado_solicitud")]
     [InverseProperty("CabeceraSolicitudes")]
     public virtual EstadosSolicitudes id_estado_solicitudNavigation { get; set; }
+
+    [ForeignKey("id_usuario_asistente_contabilidad")]
+    [InverseProperty("CabeceraSolicitudesAsistenteContabilidad")]
+    public virtual Usuarios id_usuario_asistente_contabilidadNavigation { get; set; }
+
+    [ForeignKey("id_usuario_asistente_inventario")]
+    [InverseProperty("CabeceraSolicitudesAsistenteInventario")]
+    public virtual Usuarios id_usuario_asistente_inventarioNavigation { get; set; }
+
+    [ForeignKey("id_usuario_despacho")]
+    [InverseProperty("CabeceraSolicitudesDespacho")]
+    public virtual Usuarios id_usuario_despachoNavigation { get; set; }
+
+    [ForeignKey("id_usuario_responsable")]
+    [InverseProperty("CabeceraSolicitudesResponsable")]
+    public virtual Usuarios id_usuario_responsableNavigation { get; set; }
 
     [ForeignKey("no_serie_id")]
     [InverseProperty("CabeceraSolicitudes")]

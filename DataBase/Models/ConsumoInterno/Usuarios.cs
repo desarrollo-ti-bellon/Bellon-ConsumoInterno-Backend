@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Bellon.API.ConsumoInterno.Classes;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bellon.API.ConsumoInterno.DataBase;
@@ -49,6 +50,20 @@ public partial class Usuarios
 
     public bool estado { get; set; }
 
+    // Cambié los nombres de las propiedades para que sean más consistentes y legibles
+    [InverseProperty("id_usuario_asistente_contabilidadNavigation")]
+    public virtual ICollection<CabeceraSolicitudes> CabeceraSolicitudesAsistenteContabilidad { get; set; } = new List<CabeceraSolicitudes>();
+
+    [InverseProperty("id_usuario_asistente_inventarioNavigation")]
+    public virtual ICollection<CabeceraSolicitudes> CabeceraSolicitudesAsistenteInventario { get; set; } = new List<CabeceraSolicitudes>();
+
+    [InverseProperty("id_usuario_despachoNavigation")]
+    public virtual ICollection<CabeceraSolicitudes> CabeceraSolicitudesDespacho { get; set; } = new List<CabeceraSolicitudes>();
+
+    [InverseProperty("id_usuario_responsableNavigation")]
+    public virtual ICollection<CabeceraSolicitudes> CabeceraSolicitudesResponsable { get; set; } = new List<CabeceraSolicitudes>();
+
+    // Relación con la entidad Posiciones
     [ForeignKey("posicion_id")]
     [InverseProperty("Usuarios")]
     public virtual Posiciones posicion { get; set; }

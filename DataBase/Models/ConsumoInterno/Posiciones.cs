@@ -18,8 +18,15 @@ public partial class Posiciones
     [StringLength(50)]
     public string descripcion { get; set; }
 
-    [Column(TypeName = "decimal(18, 0)")]
-    public decimal limite_maximo_permitido { get; set; }
+    public bool? crear_solicitud { get; set; }
+
+    public bool? enviar_solicitud { get; set; }
+
+    public bool? registrar_solicitud { get; set; }
+
+    public bool? aprobar_rechazar_solicitud { get; set; }
+
+    public bool? ver_solicitudes { get; set; }
 
     [InverseProperty("posicion")]
     public virtual ICollection<Usuarios> Usuarios { get; set; } = new List<Usuarios>();

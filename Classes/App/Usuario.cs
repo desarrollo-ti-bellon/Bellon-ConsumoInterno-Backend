@@ -1,5 +1,6 @@
 
 // Root myDeserializedClass = JsonSerializer.Deserialize<List<Root>>(myJsonResponse);
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace Bellon.API.ConsumoInterno.Classes;
@@ -40,5 +41,9 @@ public class Usuario
 
     [JsonPropertyName("estado")]
     public bool Estado { get; set; }
+
+    [JsonPropertyName("posicion")]
+    [InverseProperty("Usuario")]
+    public virtual Posicion Posicion { get; set; }
 
 }

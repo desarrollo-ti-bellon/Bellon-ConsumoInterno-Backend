@@ -11,7 +11,7 @@ public class CabeceraSolicitud
     public int? IdCabeceraSolicitud { get; set; }
 
     [JsonPropertyName("no_documento")]
-    public string NoDocumento { get; set; }
+    public string? NoDocumento { get; set; }
 
     [JsonPropertyName("fecha_creado")]
     public DateTime FechaCreado { get; set; }
@@ -54,6 +54,18 @@ public class CabeceraSolicitud
 
     [JsonPropertyName("total")]
     public decimal Total { get; set; }
+
+    [JsonPropertyName("id_usuario_responsable")]
+    public int IdUsuarioResponsable { get; set; }
+
+    [JsonPropertyName("id_usuario_despacho")]
+    public int? IdUsuarioDespacho { get; set; }
+
+    [JsonPropertyName("id_usuario_asistente_inventario")]
+    public int?IdUsuarioAsistenteInventario { get; set; }
+
+    [JsonPropertyName("id_usuario_asistente_contabilidad")]
+    public int? IdUsuarioAsistenteContabilidad { get; set; }
 
     [JsonPropertyName("lineas")]
     public List<LineasSolicitud>? Lineas { get; set; }
