@@ -64,7 +64,6 @@ public class ServicioSolicitud : IServicioSolicitud
                     CreadoPor = i.creado_por,
                     UsuarioResponsable = i.usuario_responsable,
                     UsuarioDespacho = i.usuario_despacho,
-                    UsuarioAsistenteControl = i.usuario_asistente_control,
                     UsuarioAsistenteContabilidad = i.usuario_asistente_contabilidad,
                     IdDepartamento = i.id_departamento,
                     IdEstadoSolicitud = i.id_estado_solicitud,
@@ -73,6 +72,9 @@ public class ServicioSolicitud : IServicioSolicitud
                     FechaModificado = i.fecha_modificado,
                     ModificadoPor = i.modificado_por,
                     Total = i.total,
+                    IdUsuarioResponsable = i.id_usuario_responsable,
+                    IdUsuarioAsistenteInventario = i.id_usuario_asistente_inventario,
+                    IdUsuarioAsistenteContabilidad = i.id_usuario_asistente_contabilidad
                 })
                 .ToList();
             _memoryCache.Set<List<CabeceraSolicitud>>(
@@ -149,13 +151,16 @@ public class ServicioSolicitud : IServicioSolicitud
                 oldItem.creado_por = item.CreadoPor;
                 oldItem.usuario_responsable = item.UsuarioResponsable;
                 oldItem.usuario_despacho = item.UsuarioDespacho;
-                oldItem.usuario_asistente_control = item.UsuarioAsistenteControl;
                 oldItem.usuario_asistente_contabilidad = item.UsuarioAsistenteContabilidad;
                 oldItem.id_departamento = item.IdDepartamento;
                 oldItem.id_estado_solicitud = item.IdEstadoSolicitud;
                 oldItem.id_clasificacion = item.IdClasificacion;
                 oldItem.id_sucursal = item.IdSucursal;
                 oldItem.total = item.Total;
+                oldItem.id_usuario_responsable = item.IdUsuarioResponsable;
+                oldItem.id_usuario_despacho = item.IdUsuarioResponsable;
+                oldItem.id_usuario_asistente_inventario = item.IdUsuarioResponsable;
+                oldItem.id_usuario_asistente_contabilidad = item.IdUsuarioResponsable;
                 oldItem.fecha_modificado = DateTime.UtcNow;
                 oldItem.modificado_por = identity!.Name;
 
@@ -190,12 +195,15 @@ public class ServicioSolicitud : IServicioSolicitud
                 no_serie_id = _settings.DocumentoConsumoInternoNoSerieId,
                 usuario_responsable = item.UsuarioResponsable,
                 usuario_despacho = item.UsuarioDespacho,
-                usuario_asistente_control = item.UsuarioAsistenteControl,
                 usuario_asistente_contabilidad = item.UsuarioAsistenteContabilidad,
                 id_departamento = item.IdDepartamento,
                 id_estado_solicitud = item.IdEstadoSolicitud,
                 id_clasificacion = item.IdClasificacion,
                 id_sucursal = item.IdSucursal,
+                id_usuario_responsable = item.IdUsuarioResponsable,
+                id_usuario_despacho = item.IdUsuarioDespacho,
+                id_usuario_asistente_inventario = item.IdUsuarioAsistenteInventario,
+                id_usuario_asistente_contabilidad = item.IdUsuarioAsistenteContabilidad,
                 total = item.Total,
                 // modificado_por = item.ModificadoPor,
                 // fecha_modificado = item.FechaModificado,

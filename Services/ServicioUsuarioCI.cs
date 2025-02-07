@@ -57,7 +57,7 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
                     IdDepartamento = i.id_departamento,
                     Limite = i.limite,
                     PosicionId = i.posicion_id,
-                    Estado = i.estado,
+                    Estado = i.estado
                 })
                 .ToListAsync();
             _memoryCache.Set<List<Usuario>>(
@@ -86,7 +86,7 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
         List<int> posiciones = new List<int> { 2, 3, 4 };
         var allItems = await ObtenerUsuarios();
         return allItems
-            .Where(i => posiciones.Contains(i.PosicionId) && i.IdDepartamento == departamentoId )
+            .Where(i => posiciones.Contains(i.PosicionId) && i.IdDepartamento == departamentoId)
             .OrderByDescending(i => i.PosicionId).ToList();
     }
 

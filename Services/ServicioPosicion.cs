@@ -48,7 +48,11 @@ public class ServicioPosicion : IServicioPosicion
                 {
                     PosicionId = i.posicion_id,
                     Descripcion = i.descripcion,
-                    LimiteMaximoPermitido = i.limite_maximo_permitido,
+                    CrearSolicitud = i.crear_solicitud,
+                    EnviarSolicitud = i.enviar_solicitud,
+                    RegistrarSolicitud = i.registrar_solicitud,
+                    AprobarRechazarSolicitud = i.aprobar_rechazar_solicitud,
+                    VerSolicitudes = i.ver_solicitudes
                 })
                 .ToList();
             _memoryCache.Set<List<Posicion>>(
