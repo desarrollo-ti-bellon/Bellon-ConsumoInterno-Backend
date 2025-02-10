@@ -159,9 +159,9 @@ public class ServicioSolicitud : IServicioSolicitud
                 oldItem.id_sucursal = item.IdSucursal;
                 oldItem.total = item.Total;
                 oldItem.id_usuario_responsable = item.IdUsuarioResponsable;
-                oldItem.id_usuario_despacho = item.IdUsuarioResponsable;
-                oldItem.id_usuario_asistente_inventario = item.IdUsuarioResponsable;
-                oldItem.id_usuario_asistente_contabilidad = item.IdUsuarioResponsable;
+                oldItem.id_usuario_despacho = item.IdUsuarioDespacho;
+                oldItem.id_usuario_asistente_inventario = item.IdUsuarioAsistenteInventario;
+                oldItem.id_usuario_asistente_contabilidad = item.IdUsuarioAsistenteContabilidad;
                 oldItem.fecha_modificado = DateTime.Now;
                 oldItem.modificado_por = identity!.Name;
 
