@@ -10,14 +10,14 @@ public class CabeceraSolicitud
     [JsonPropertyName("id_cabecera_solicitud")]
     public int? IdCabeceraSolicitud { get; set; }
 
+    [JsonPropertyName("no_serie_id")]
+    public int? NoSerieId { get; set; }
+
     [JsonPropertyName("no_documento")]
     public string? NoDocumento { get; set; }
 
     [JsonPropertyName("fecha_creado")]
     public DateTime FechaCreado { get; set; }
-
-    [JsonPropertyName("comentario")]
-    public string Comentario { get; set; }
 
     [JsonPropertyName("creado_por")]
     public string CreadoPor { get; set; }
@@ -28,8 +28,8 @@ public class CabeceraSolicitud
     [JsonPropertyName("usuario_despacho")]
     public string? UsuarioDespacho { get; set; }
 
-    [JsonPropertyName("usuario_asistente_control")]
-    public string? UsuarioAsistenteControl { get; set; }
+    [JsonPropertyName("usuario_asistente_inventario")]
+    public string? usuario_asistente_inventario { get; set; }
 
     [JsonPropertyName("usuario_asistente_contabilidad")]
     public string? UsuarioAsistenteContabilidad { get; set; }
@@ -52,6 +52,9 @@ public class CabeceraSolicitud
     [JsonPropertyName("modificado_por")]
     public string? ModificadoPor { get; set; }
 
+    [JsonPropertyName("comentario")]
+    public string Comentario { get; set; }
+
     [JsonPropertyName("total")]
     public decimal Total { get; set; }
 
@@ -62,7 +65,7 @@ public class CabeceraSolicitud
     public int? IdUsuarioDespacho { get; set; }
 
     [JsonPropertyName("id_usuario_asistente_inventario")]
-    public int?IdUsuarioAsistenteInventario { get; set; }
+    public int? IdUsuarioAsistenteInventario { get; set; }
 
     [JsonPropertyName("id_usuario_asistente_contabilidad")]
     public int? IdUsuarioAsistenteContabilidad { get; set; }

@@ -14,11 +14,11 @@ public partial class CabeceraSolicitudes
     [Key]
     public int id_cabecera_solicitud { get; set; }
 
-    public int no_serie_id { get; set; }
+    public int? no_serie_id { get; set; }
 
     [Required]
     [StringLength(20)]
-    public string no_documento { get; set; }
+    public string? no_documento { get; set; }
 
     [Column(TypeName = "datetime")]
     public DateTime fecha_creado { get; set; }
@@ -59,7 +59,7 @@ public partial class CabeceraSolicitudes
     public DateTime? fecha_modificado { get; set; }
 
     [StringLength(50)]
-    public string modificado_por { get; set; }
+    public string? modificado_por { get; set; }
 
     [Required]
     public string comentario { get; set; }
