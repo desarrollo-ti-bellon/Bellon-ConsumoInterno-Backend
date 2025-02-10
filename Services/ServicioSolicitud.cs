@@ -161,7 +161,7 @@ public class ServicioSolicitud : IServicioSolicitud
                 oldItem.id_usuario_despacho = item.IdUsuarioResponsable;
                 oldItem.id_usuario_asistente_inventario = item.IdUsuarioResponsable;
                 oldItem.id_usuario_asistente_contabilidad = item.IdUsuarioResponsable;
-                oldItem.fecha_modificado = DateTime.UtcNow;
+                oldItem.fecha_modificado = DateTime.Now;
                 oldItem.modificado_por = identity!.Name;
 
                 try
@@ -188,7 +188,7 @@ public class ServicioSolicitud : IServicioSolicitud
             );
             var newItemData = new DataBase.CabeceraSolicitudes
             {
-                fecha_creado = DateTime.UtcNow,
+                fecha_creado = DateTime.Now,
                 comentario = item.Comentario,
                 creado_por = identity!.Name,
                 no_documento = numeroSerie,
