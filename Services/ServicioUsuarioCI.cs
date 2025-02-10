@@ -44,27 +44,80 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
         var cache = _memoryCache.Get<List<Usuario>>("UsuariosCI");
         if (cache == null)
         {
-            cache = await _context
-                .Usuarios.Select(i => new Usuario
+
+            /* COMENTÉ ESTE CODIGO POR QUE NECESITO QUE ESTE OBJETO ME TRAIGA TAMBIEN EL PERFIL DEL USUARIO
+                cache = await _context
+                    .Usuarios.Select(i => new Usuario
+                    {
+                        IdUsuarioCI = i.id_usuario_ci,
+                        IdUsuario = i.id_usuario,
+                        NombreUsuario = i.nombre_usuario,
+                        Correo = i.correo,
+                        CodigoSucursal = i.codigo_sucursal,
+                        IdSucursal = i.id_sucursal,
+                        CodigoDepartamento = i.codigo_departamento,
+                        IdDepartamento = i.id_departamento,
+                        Limite = i.limite,
+                        PosicionId = i.posicion_id,
+                        Estado = i.estado
+                    })
+                    .ToListAsync();
+                _memoryCache.Set<List<Usuario>>(
+                    "UsuariosCI",
+                    cache,
+                    DateTimeOffset.Now.AddMinutes(5)
+                );
+            */
+
+            var usuarios = await _context.Usuarios
+                .Select(i => new
                 {
-                    IdUsuarioCI = i.id_usuario_ci,
-                    IdUsuario = i.id_usuario,
-                    NombreUsuario = i.nombre_usuario,
-                    Correo = i.correo,
-                    CodigoSucursal = i.codigo_sucursal,
-                    IdSucursal = i.id_sucursal,
-                    CodigoDepartamento = i.codigo_departamento,
-                    IdDepartamento = i.id_departamento,
-                    Limite = i.limite,
-                    PosicionId = i.posicion_id,
-                    Estado = i.estado
+                    i.id_usuario_ci,
+                    i.id_usuario,
+                    i.nombre_usuario,
+                    i.correo,
+                    i.codigo_sucursal,
+                    i.id_sucursal,
+                    i.codigo_departamento,
+                    i.id_departamento,
+                    i.limite,
+                    i.posicion_id,
+                    i.estado,
+                    i.posicion
                 })
                 .ToListAsync();
+
+            cache = usuarios.Select(i => new Usuario
+            {
+                IdUsuarioCI = i.id_usuario_ci,
+                IdUsuario = i.id_usuario,
+                NombreUsuario = i.nombre_usuario,
+                Correo = i.correo,
+                CodigoSucursal = i.codigo_sucursal,
+                IdSucursal = i.id_sucursal,
+                CodigoDepartamento = i.codigo_departamento,
+                IdDepartamento = i.id_departamento,
+                Limite = i.limite,
+                PosicionId = i.posicion_id,
+                Estado = i.estado,
+                Posicion = new Posicion
+                {
+                    PosicionId = i.posicion.posicion_id,
+                    Descripcion = i.posicion.descripcion,
+                    CrearSolicitud = i.posicion.crear_solicitud,
+                    EnviarSolicitud = i.posicion.enviar_solicitud,
+                    RegistrarSolicitud = i.posicion.registrar_solicitud,
+                    AprobarRechazarSolicitud = i.posicion.aprobar_rechazar_solicitud,
+                    VerSolicitudes = i.posicion.ver_solicitudes
+                }
+            }).ToList();
+
             _memoryCache.Set<List<Usuario>>(
                 "UsuariosCI",
                 cache,
                 DateTimeOffset.Now.AddMinutes(5)
             );
+
         }
         return cache;
     }
