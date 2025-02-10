@@ -47,7 +47,7 @@ public class ServicioNumeroSerie : IServicioNumeroSerie
                     ? int.Parse(item.secuencia_inicial)
                     : int.Parse(item.ultima_secuencia_utilizada) + 1;
             item.ultima_secuencia_utilizada = consecutivo.ToString();
-            item.fecha_ultima_secuencia_utilizada = DateTime.UtcNow;
+            item.fecha_ultima_secuencia_utilizada = DateTime.Now;
             _context.SaveChanges();
 
             return string.Format(

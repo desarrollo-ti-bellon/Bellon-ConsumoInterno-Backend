@@ -137,7 +137,7 @@ public class ServicioNotas : IServicioNotas
                 oldItem.no_documento = item.NoDocumento;
                 oldItem.usuario_destino = item.UsuarioDestino;
                 oldItem.descripcion = item.Descripcion;
-                oldItem.fecha_modificado = DateTime.UtcNow;
+                oldItem.fecha_modificado = DateTime.Now;
                 oldItem.modificado_por = identity.Name;
                 _context.SaveChanges();
                 await RefrescarCache();
@@ -154,7 +154,7 @@ public class ServicioNotas : IServicioNotas
                     no_documento = item.NoDocumento,
                     usuario_destino = item.UsuarioDestino,
                     descripcion = item.Descripcion,
-                    fecha_creado = DateTime.UtcNow,
+                    fecha_creado = DateTime.Now,
                     creado_por = identity.Name,
                 }
             );
