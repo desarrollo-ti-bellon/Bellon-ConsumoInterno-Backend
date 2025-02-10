@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Bellon.API.ConsumoInterno.DataBase;
+using Microsoft.Data.SqlClient;
 
 namespace Bellon.API.ConsumoInterno.Services;
 
@@ -161,12 +162,17 @@ public class ServicioSolicitud : IServicioSolicitud
                 oldItem.id_usuario_despacho = item.IdUsuarioResponsable;
                 oldItem.id_usuario_asistente_inventario = item.IdUsuarioResponsable;
                 oldItem.id_usuario_asistente_contabilidad = item.IdUsuarioResponsable;
-                oldItem.fecha_modificado = DateTime.UtcNow;
+                oldItem.fecha_modificado = DateTime.Now;
                 oldItem.modificado_por = identity!.Name;
 
                 try
                 {
                     _context.SaveChanges();
+                }
+                catch (SqlException sqlEx)
+                {
+                    // Manejo específico de error SQL
+                    throw new Exception("Error de base de datos: " + sqlEx.Message);
                 }
                 catch (Exception ex)
                 {
@@ -179,6 +185,10 @@ public class ServicioSolicitud : IServicioSolicitud
                 //SE RETORNA EL OBJETO MODIFICADO
                 return await ObtenerSolicitudesPorId(oldItem.id_cabecera_solicitud);
             }
+            else
+            {
+                throw new Exception("El registro no existe para ser actualizado.");
+            }
         }
         else
         {
@@ -188,7 +198,7 @@ public class ServicioSolicitud : IServicioSolicitud
             );
             var newItemData = new DataBase.CabeceraSolicitudes
             {
-                fecha_creado = DateTime.UtcNow,
+                fecha_creado = DateTime.Now,
                 comentario = item.Comentario,
                 creado_por = identity!.Name,
                 no_documento = numeroSerie,
@@ -213,6 +223,11 @@ public class ServicioSolicitud : IServicioSolicitud
             try
             {
                 _context.SaveChanges();
+            }
+            catch (SqlException sqlEx)
+            {
+                // Manejo específico de error SQL
+                throw new Exception("Error de base de datos: " + sqlEx.Message);
             }
             catch (Exception ex)
             {
@@ -305,6 +320,11 @@ public class ServicioSolicitud : IServicioSolicitud
                     }
                 }
             }
+            else
+            {
+                throw new Exception("El registro no existe para ser actualizado.");
+            }
+
             //SE ACTUALIZA EL TOTAL DE LA CABECERA
             CalcularTotalCabecera(items[0].CabeceraSolicitudId);
 
