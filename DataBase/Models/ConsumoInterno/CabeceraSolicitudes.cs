@@ -33,15 +33,15 @@ public partial class CabeceraSolicitudes
 
     [Required]
     [StringLength(100)]
-    public string usuario_despacho { get; set; }
+    public string? usuario_despacho { get; set; }
 
     [Required]
     [StringLength(100)]
-    public string usuario_asistente_inventario { get; set; }
+    public string? usuario_asistente_inventario { get; set; }
 
     [Required]
     [StringLength(100)]
-    public string usuario_asistente_contabilidad { get; set; }
+    public string? usuario_asistente_contabilidad { get; set; }
 
     [Required]
     [StringLength(100)]
