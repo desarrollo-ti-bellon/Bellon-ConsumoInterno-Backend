@@ -28,8 +28,8 @@ public partial class AppDataBase : DbContext
     public virtual DbSet<Posiciones> Posiciones { get; set; }
 
     public virtual DbSet<Usuarios> Usuarios { get; set; }
-    //CONSUMO INTERNO
 
+    public virtual DbSet<HistorialMovimientosSolicitudes> HistorialMovimientosSolicitudes { get; set; }
 
     private readonly Classes.AppSettings _settings;
 
@@ -108,6 +108,11 @@ public partial class AppDataBase : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Usuarios_Posiciones");
         });
+
+        modelBuilder.Entity<HistorialMovimientosSolicitudes>(entity =>
+       {
+           entity.HasKey(e => e.id_hist_solicitud).HasName("PK__Historia__D655A71D4DC2C063");
+       });
 
         OnModelCreatingPartial(modelBuilder);
     }
