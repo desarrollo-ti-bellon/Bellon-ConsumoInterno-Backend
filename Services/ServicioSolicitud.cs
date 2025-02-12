@@ -71,14 +71,14 @@ public class ServicioSolicitud : IServicioSolicitud
                     IdEstadoSolicitud = i.id_estado_solicitud,
                     IdClasificacion = i.id_clasificacion,
                     IdSucursal = i.id_sucursal,
-                    // FechaModificado = i.fecha_modificado,
-                    // ModificadoPor = i.modificado_por,
                     Total = i.total,
                     IdUsuarioResponsable = i.id_usuario_responsable,
                     IdUsuarioDespacho = i.id_usuario_despacho,
                     IdUsuarioAsistenteInventario = i.id_usuario_asistente_inventario,
                     IdUsuarioAsistenteContabilidad = i.id_usuario_asistente_contabilidad,
                     CantidadLineas = i.LineasSolicitudes.Count
+                    // FechaModificado = i.fecha_modificado,
+                    // ModificadoPor = i.modificado_por,
                 })
                 .ToList();
             _memoryCache.Set<List<CabeceraSolicitud>>(
@@ -163,65 +163,103 @@ public class ServicioSolicitud : IServicioSolicitud
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         if (item.IdCabeceraSolicitud.HasValue)
         {
-            var oldItem = _context
-                .CabeceraSolicitudes.Where(i => i.id_cabecera_solicitud == item.IdCabeceraSolicitud.Value)
-                .FirstOrDefault();
+            // Intentamos obtener el registro para actualizarlo
+            var oldItem = await _context.CabeceraSolicitudes
+                .Where(i => i.id_cabecera_solicitud == item.IdCabeceraSolicitud.Value)
+                .FirstOrDefaultAsync();
 
-            if (oldItem != null)
-            {
-                //ACTUALIZA EL OBJETO EXISTENTE
-                // oldItem.id_cabecera_solicitud = item.IdCabeceraSolicitud.Value;
-                oldItem.fecha_creado = item.FechaCreado;
-                oldItem.comentario = item.Comentario;
-                oldItem.creado_por = item.CreadoPor;
-                oldItem.usuario_responsable = item.UsuarioResponsable;
-                oldItem.usuario_despacho = item.UsuarioDespacho;
-                oldItem.usuario_asistente_contabilidad = item.UsuarioAsistenteContabilidad;
-                oldItem.id_departamento = item.IdDepartamento;
-                oldItem.id_estado_solicitud = item.IdEstadoSolicitud;
-                oldItem.id_clasificacion = item.IdClasificacion;
-                oldItem.id_sucursal = item.IdSucursal;
-                oldItem.total = item.Total;
-                oldItem.id_usuario_responsable = item.IdUsuarioResponsable;
-                oldItem.id_usuario_despacho = item.IdUsuarioDespacho;
-                oldItem.id_usuario_asistente_inventario = item.IdUsuarioAsistenteInventario;
-                oldItem.id_usuario_asistente_contabilidad = item.IdUsuarioAsistenteContabilidad;
-                // oldItem.fecha_modificado = DateTime.Now;
-                // oldItem.modificado_por = identity!.Name;
-
-                try
-                {
-                    _context.SaveChanges();
-                }
-                catch (SqlException sqlEx)
-                {
-                    // Manejo específico de error SQL
-                    throw new Exception("Error de base de datos: " + sqlEx.Message);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Error al actualizar el registro: <" + ex.Message + ">");
-                }
-
-                CalcularTotalCabecera(oldItem.id_cabecera_solicitud);
-
-                //SE LIMPIA LA CACHE Y SE VUELVE A POBLAR
-                await RefrescarCache();
-
-                //SE RETORNA EL OBJETO MODIFICADO
-                return await ObtenerSolicitudesPorId(oldItem.id_cabecera_solicitud);
-            }
-            else
+            if (oldItem == null)
             {
                 throw new Exception("El registro no existe para ser actualizado.");
             }
+
+            var cambioEstadoSolicitud = oldItem.id_estado_solicitud != item.IdEstadoSolicitud;
+
+            // Actualizamos el objeto existente
+            oldItem.fecha_creado = item.FechaCreado;
+            oldItem.comentario = item.Comentario;
+            oldItem.creado_por = item.CreadoPor;
+            oldItem.usuario_responsable = item.UsuarioResponsable;
+            oldItem.usuario_despacho = item.UsuarioDespacho;
+            oldItem.usuario_asistente_contabilidad = item.UsuarioAsistenteContabilidad;
+            oldItem.id_departamento = item.IdDepartamento;
+            oldItem.id_estado_solicitud = item.IdEstadoSolicitud;
+            oldItem.id_clasificacion = item.IdClasificacion;
+            oldItem.id_sucursal = item.IdSucursal;
+            oldItem.total = item.Total;
+            oldItem.id_usuario_responsable = item.IdUsuarioResponsable;
+            oldItem.id_usuario_despacho = item.IdUsuarioDespacho;
+            oldItem.id_usuario_asistente_inventario = item.IdUsuarioAsistenteInventario;
+            oldItem.id_usuario_asistente_contabilidad = item.IdUsuarioAsistenteContabilidad;
+
+            // Usamos una transacción para asegurar que todo se guarde correctamente
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    // Guardamos los cambios en la CabeceraSolicitud
+                    await _context.SaveChangesAsync();
+
+                    if (cambioEstadoSolicitud)
+                    {
+                        var buscarNoSerieId = await _context.CabeceraSolicitudes.FirstOrDefaultAsync(el => el.id_cabecera_solicitud == item.IdCabeceraSolicitud);
+
+                        // Registramos el historial de la solicitud
+                        var nuevoItem = new HistorialMovimientosSolicitudes
+                        {
+                            id_cabecera_solicitud = oldItem.id_cabecera_solicitud,
+                            no_serie_id = buscarNoSerieId.no_serie_id,
+                            no_documento = item.NoDocumento,
+                            fecha_creado = DateTime.Now,
+                            creado_por = item.CreadoPor,
+                            usuario_responsable = item.UsuarioResponsable,
+                            usuario_despacho = item.UsuarioDespacho,
+                            usuario_asistente_inventario = item.UsuarioAsistenteInventario,
+                            usuario_asistente_contabilidad = item.UsuarioAsistenteContabilidad,
+                            id_departamento = item.IdDepartamento,
+                            id_estado_solicitud = item.IdEstadoSolicitud,
+                            id_clasificacion = item.IdClasificacion,
+                            id_sucursal = item.IdSucursal,
+                            fecha_modificado = item.FechaModificado,
+                            modificado_por = item.ModificadoPor,
+                            comentario = item.Comentario,
+                            total = item.Total,
+                            id_usuario_responsable = item.IdUsuarioResponsable,
+                            id_usuario_despacho = item.IdUsuarioDespacho,
+                            id_usuario_asistente_inventario = item.IdUsuarioAsistenteInventario,
+                            id_usuario_asistente_contabilidad = item.IdUsuarioAsistenteContabilidad
+                        };
+
+                        _context.HistorialMovimientosSolicitudes.Add(nuevoItem);
+
+                        // Guardamos los cambios en el historial
+                        await _context.SaveChangesAsync();
+                    }
+
+                    // Completamos la transacción si todo ha sido exitoso
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    // Si ocurre un error, deshacemos la transacción
+                    await transaction.RollbackAsync();
+                    throw new Exception("Error al actualizar el registro: " + ex.Message);
+                }
+            }
+
+            // Calculamos el total de la cabecera actualizada
+            CalcularTotalCabecera(oldItem.id_cabecera_solicitud);
+
+            // Limpiamos la caché y la volvemos a poblar
+            await RefrescarCache();
+
+            // Retornamos el objeto actualizado
+            return await ObtenerSolicitudesPorId(oldItem.id_cabecera_solicitud);
         }
         else
         {
-            //SE INSERTA EL NUEVO ITEM
-            var numeroSerie = await _servicioNumeroSerie.ObtenerNumeroDocumento(
-                _settings.DocumentoConsumoInternoNoSerieId
-            );
+            // Si el IdCabeceraSolicitud no está presente, es una nueva solicitud
+            var numeroSerie = await _servicioNumeroSerie.ObtenerNumeroDocumento(_settings.DocumentoConsumoInternoNoSerieId);
 
             var newItemData = new DataBase.CabeceraSolicitudes
             {
@@ -242,35 +280,70 @@ public class ServicioSolicitud : IServicioSolicitud
                 id_usuario_despacho = item.IdUsuarioDespacho,
                 id_usuario_asistente_inventario = item.IdUsuarioAsistenteInventario,
                 id_usuario_asistente_contabilidad = item.IdUsuarioAsistenteContabilidad,
-                total = item.Total,
-                // modificado_por = item.ModificadoPor,
-                // fecha_modificado = item.FechaModificado,
+                total = item.Total
             };
 
             var newItem = _context.CabeceraSolicitudes.Add(newItemData);
-            try
+
+            // Usamos una transacción para asegurar que todo se guarde correctamente
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                _context.SaveChanges();
-            }
-            catch (SqlException sqlEx)
-            {
-                // Manejo específico de error SQL
-                throw new Exception("Error de base de datos: " + sqlEx.Message);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al crear el registro: <" + ex.Message + ">");
+                try
+                {
+                    // Guardamos los cambios en la nueva CabeceraSolicitud
+                    await _context.SaveChangesAsync();
+
+                    // Registramos el historial de la nueva solicitud
+                    var nuevoItem = new HistorialMovimientosSolicitudes
+                    {
+                        id_cabecera_solicitud = newItem.Entity.id_cabecera_solicitud,
+                        no_serie_id = _settings.DocumentoConsumoInternoNoSerieId,
+                        no_documento = numeroSerie,
+                        fecha_creado = DateTime.Now,
+                        creado_por = item.CreadoPor,
+                        usuario_responsable = item.UsuarioResponsable,
+                        usuario_despacho = item.UsuarioDespacho,
+                        usuario_asistente_inventario = item.UsuarioAsistenteInventario,
+                        usuario_asistente_contabilidad = item.UsuarioAsistenteContabilidad,
+                        id_departamento = item.IdDepartamento,
+                        id_estado_solicitud = item.IdEstadoSolicitud,
+                        id_clasificacion = item.IdClasificacion,
+                        id_sucursal = item.IdSucursal,
+                        fecha_modificado = item.FechaModificado,
+                        modificado_por = item.ModificadoPor,
+                        comentario = item.Comentario,
+                        total = item.Total,
+                        id_usuario_responsable = item.IdUsuarioResponsable,
+                        id_usuario_despacho = item.IdUsuarioDespacho,
+                        id_usuario_asistente_inventario = item.IdUsuarioAsistenteInventario,
+                        id_usuario_asistente_contabilidad = item.IdUsuarioAsistenteContabilidad
+                    };
+
+                    _context.HistorialMovimientosSolicitudes.Add(nuevoItem);
+
+                    // Guardamos los cambios en el historial
+                    await _context.SaveChangesAsync();
+
+                    // Completamos la transacción si todo ha sido exitoso
+                    await transaction.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    // Si ocurre un error, deshacemos la transacción
+                    await transaction.RollbackAsync();
+                    throw new Exception("Error al crear el registro: " + ex.Message);
+                }
             }
 
+            // Calculamos el total de la nueva cabecera
             CalcularTotalCabecera(newItem.Entity.id_cabecera_solicitud);
 
-            //SE LIMPIA LA CACHE Y SE VUELVE A POBLAR
+            // Limpiamos la caché y la volvemos a poblar
             await RefrescarCache();
 
-            //SE RETORNA EL OBJETO CREADO
+            // Retornamos el objeto creado
             return await ObtenerSolicitudesPorId(newItem.Entity.id_cabecera_solicitud);
         }
-        return null;
     }
 
     public async Task<CabeceraSolicitud> GuardarLineasSolicitud(List<LineasSolicitud> items)
@@ -442,5 +515,6 @@ public class ServicioSolicitud : IServicioSolicitud
         await ObtenerSolicitudes();
         return true;
     }
+
 }
 
