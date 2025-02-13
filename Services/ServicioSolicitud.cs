@@ -47,7 +47,28 @@ public class ServicioSolicitud : IServicioSolicitud
     {
         var allItems = await ObtenerSolicitudes();
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
-        return allItems.Where(i => i.CreadoPor == identity!.Name && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
+        var usuario = await _context.Usuarios.FirstOrDefaultAsync(el => el.correo == identity.Name);
+
+        if (usuario != null)
+        {
+            switch (usuario.posicion_id)
+            {
+                case 1:  // Administrador
+                    return allItems.Where(i => i.IdSucursal == usuario.id_sucursal && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
+                case 2:  // Director
+                    return allItems.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdDepartamento == usuario.id_departamento && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
+                case 3:  // Gerente Tienda
+                case 4:  // Gerente Area
+                    return allItems.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdSucursal == usuario.id_sucursal && i.IdDepartamento == usuario.id_departamento && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
+                case 5:  // Solicitante
+                    return allItems.Where(i => i.CreadoPor == usuario.correo && i.IdDepartamento == usuario.id_departamento && i.IdSucursal == usuario.id_sucursal && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
+                case 6:  // Asistente Con. Inventario
+                case 7:  // Asistente Contabilidad
+                case 8:  // Depachador
+                    return allItems.Where(i => i.IdSucursal == usuario.id_sucursal && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
+            }
+        }
+        return null;
     }
 
     public Task<List<CabeceraSolicitud>> ObtenerSolicitudes()
