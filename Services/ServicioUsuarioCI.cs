@@ -83,6 +83,8 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
                     i.limite,
                     i.posicion_id,
                     i.estado,
+                    i.codigo_almacen,
+                    i.id_almacen,
                     i.posicion
                 })
                 .ToListAsync();
@@ -100,6 +102,8 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
                 Limite = i.limite,
                 PosicionId = i.posicion_id,
                 Estado = i.estado,
+                IdAlmacen = i.id_almacen,
+                CodigoAlmacen = i.codigo_almacen,
                 Posicion = new Posicion
                 {
                     PosicionId = i.posicion.posicion_id,
@@ -165,6 +169,8 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
                 oldItem.limite = item.Limite;
                 oldItem.posicion_id = item.PosicionId;
                 oldItem.estado = item.Estado;
+                oldItem.id_almacen = item.IdAlmacen;
+                oldItem.codigo_almacen = item.CodigoAlmacen;
 
                 try
                 {
@@ -193,6 +199,8 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
                 limite = item.Limite,
                 posicion_id = item.PosicionId,
                 estado = item.Estado,
+                id_almacen = item.IdAlmacen,
+                codigo_almacen = item.CodigoAlmacen
             };
 
             _context.Usuarios.Add(newItem);

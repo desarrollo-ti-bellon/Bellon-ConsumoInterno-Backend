@@ -50,6 +50,12 @@ public partial class Usuarios
 
     public bool estado { get; set; }
 
+    [StringLength(100)]
+    public string id_almacen { get; set; }
+
+    [StringLength(100)]
+    public string codigo_almacen { get; set; }
+
     // Cambié los nombres de las propiedades para que sean más consistentes y legibles
     [InverseProperty("id_usuario_asistente_contabilidadNavigation")]
     public virtual ICollection<CabeceraSolicitudes> CabeceraSolicitudesAsistenteContabilidad { get; set; } = new List<CabeceraSolicitudes>();

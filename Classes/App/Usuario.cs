@@ -42,8 +42,14 @@ public class Usuario
     [JsonPropertyName("estado")]
     public bool Estado { get; set; }
 
+    [JsonPropertyName("id_almacen")]
+    public string? IdAlmacen { get; set; }
+
+    [JsonPropertyName("codigo_almacen")]
+    public string? CodigoAlmacen { get; set; }
+
     [JsonPropertyName("posicion")]
     [InverseProperty("Usuario")]
-    public virtual Posicion Posicion { get; set; }
+    public virtual Posicion? Posicion { get; set; }
 
 }
