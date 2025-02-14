@@ -34,14 +34,14 @@ public partial class LineasSolicitudes
     public int cantidad { get; set; }
 
     [Required]
-    [StringLength(20)]
+    [StringLength(100)]
     public string id_unidad_medida { get; set; }
 
     [Required]
     [StringLength(20)]
     public string codigo_unidad_medida { get; set; }
 
-    [StringLength(20)]
+    [StringLength(100)]
     public string almacen_id { get; set; }
 
     [StringLength(20)]
