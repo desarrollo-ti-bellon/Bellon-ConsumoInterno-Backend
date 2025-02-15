@@ -111,8 +111,11 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
                     CrearSolicitud = i.posicion.crear_solicitud,
                     EnviarSolicitud = i.posicion.enviar_solicitud,
                     RegistrarSolicitud = i.posicion.registrar_solicitud,
-                    AprobarRechazarSolicitud = i.posicion.aprobar_rechazar_solicitud,
-                    VerSolicitudes = i.posicion.ver_solicitudes
+                    AprobarSolicitud = i.posicion.aprobar_solicitud,
+                    RechazarSolicitud = i.posicion.rechazar_solicitud,
+                    ConfirmarSolicitud = i.posicion.confirmar_solicitud,
+                    TerminarSolicitud = i.posicion.terminar_solicitud,
+                    EntregarSolicitud = i.posicion.entregar_solicitud,
                 }
             }).ToList();
 

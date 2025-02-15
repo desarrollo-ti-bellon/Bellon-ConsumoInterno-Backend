@@ -40,23 +40,26 @@ public class ServicioPosicion : IServicioPosicion
     }
     public async Task<List<Posicion>> ObtenerPosiciones()
     {
-        var cache = _memoryCache.Get<List<Posicion>>("Posicion");
+        var cache = _memoryCache.Get<List<Posicion>>("Posiciones");
         if (cache == null)
         {
             cache = _context
-                .Posiciones.Select(i => new Posicion
-                {
-                    PosicionId = i.posicion_id,
-                    Descripcion = i.descripcion,
-                    CrearSolicitud = i.crear_solicitud,
-                    EnviarSolicitud = i.enviar_solicitud,
-                    RegistrarSolicitud = i.registrar_solicitud,
-                    AprobarRechazarSolicitud = i.aprobar_rechazar_solicitud,
-                    VerSolicitudes = i.ver_solicitudes
-                })
-                .ToList();
+            .Posiciones.Select(i => new Posicion
+            {
+                PosicionId = i.posicion_id,
+                Descripcion = i.descripcion,
+                CrearSolicitud = i.crear_solicitud,
+                EnviarSolicitud = i.enviar_solicitud,
+                RegistrarSolicitud = i.registrar_solicitud,
+                AprobarSolicitud = i.aprobar_solicitud,
+                RechazarSolicitud = i.rechazar_solicitud,
+                ConfirmarSolicitud = i.confirmar_solicitud,
+                TerminarSolicitud = i.terminar_solicitud,
+                EntregarSolicitud = i.entregar_solicitud
+            })
+            .ToList();
             _memoryCache.Set<List<Posicion>>(
-                "Posicion",
+                "Posiciones",
                 cache,
                 DateTimeOffset.Now.AddMinutes(30)
             );
