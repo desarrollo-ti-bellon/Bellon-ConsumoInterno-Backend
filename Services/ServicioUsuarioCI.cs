@@ -140,7 +140,10 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
 
     public async Task<List<Usuario>> ObtenerUsuarioResponsablesPorDepartamentos(string? departamentoId)
     {
-        List<int> posiciones = new List<int> { 2, 3, 4 };
+        List<int> posiciones = new List<int> {
+            2, // Director
+            3, // Gerente Area
+        };
         var allItems = await ObtenerUsuarios();
         return allItems
             .Where(i => posiciones.Contains(i.PosicionId) && i.IdDepartamento == departamentoId)
