@@ -195,23 +195,73 @@ public class ServicioSolicitud : IServicioSolicitud
             }
 
             var cambioEstadoSolicitud = oldItem.id_estado_solicitud != item.IdEstadoSolicitud;
+            var datosUsuario = await _context.Usuarios.FirstOrDefaultAsync(i => i.correo == identity!.Name);
+            var posicion_id = datosUsuario!.posicion_id;
+            var usuario_id = datosUsuario!.id_usuario_ci;
 
             // Actualizamos el objeto existente
             oldItem.fecha_creado = item.FechaCreado;
             oldItem.comentario = item.Comentario;
             oldItem.creado_por = item.CreadoPor;
+            oldItem.id_usuario_responsable = item.IdUsuarioResponsable;
             oldItem.usuario_responsable = item.UsuarioResponsable;
-            oldItem.usuario_despacho = item.UsuarioDespacho;
-            oldItem.usuario_asistente_contabilidad = item.UsuarioAsistenteContabilidad;
             oldItem.id_departamento = item.IdDepartamento;
             oldItem.id_estado_solicitud = item.IdEstadoSolicitud;
             oldItem.id_clasificacion = item.IdClasificacion;
             oldItem.id_sucursal = item.IdSucursal;
             oldItem.total = item.Total;
-            oldItem.id_usuario_responsable = item.IdUsuarioResponsable;
-            oldItem.id_usuario_despacho = item.IdUsuarioDespacho;
-            oldItem.id_usuario_asistente_inventario = item.IdUsuarioAsistenteInventario;
-            oldItem.id_usuario_asistente_contabilidad = item.IdUsuarioAsistenteContabilidad;
+
+            if (cambioEstadoSolicitud)
+            {
+                switch (posicion_id)
+                {
+                    case 1: //	Administrador
+                        switch (item.IdEstadoSolicitud)
+                        {
+                            case 1: //Nueva
+
+                                break;
+                            case 2: //Pendiente
+
+                                break;
+                            case 3: //Aprobada
+
+                                break;
+                            case 4: //Rechazada
+
+                                break;
+                            case 5: //Entregada
+
+                                break;
+                            case 6: //Confirmada
+
+                                break;
+                            case 7: //Terminada
+
+                                break;
+                        }
+                        break;
+                    case 2: //	Director
+                    case 3: //	Gerente Area
+
+                        break;
+                    case 4: //	Depachador
+                        oldItem.id_usuario_despacho = datosUsuario.id_usuario_ci;
+                        oldItem.usuario_despacho = datosUsuario.nombre_usuario;
+
+                        break;
+                    case 5: //	Asistente Inventario
+                        oldItem.id_usuario_asistente_inventario = datosUsuario.id_usuario_ci;
+                        oldItem.usuario_asistente_inventario = datosUsuario.nombre_usuario;
+                        break;
+                    case 6: //	Asistente Contabilidad
+                        oldItem.id_usuario_asistente_contabilidad = datosUsuario.id_usuario_ci;
+                        oldItem.usuario_asistente_contabilidad = datosUsuario.nombre_usuario;
+                        break;
+                }
+                oldItem.modificado_por = datosUsuario.nombre_usuario;
+                oldItem.fecha_creado = DateTime.Now;
+            }
 
             // Usamos una transacción para asegurar que todo se guarde correctamente
             using (var transaction = await _context.Database.BeginTransactionAsync())
