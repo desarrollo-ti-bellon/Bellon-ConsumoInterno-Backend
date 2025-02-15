@@ -36,5 +36,4 @@ public class Posicion
     [JsonPropertyName("entregar_solicitud")]
     public bool? EntregarSolicitud { get; set; }
 
-    
 }
