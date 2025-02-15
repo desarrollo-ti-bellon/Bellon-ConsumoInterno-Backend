@@ -24,9 +24,15 @@ public partial class Posiciones
 
     public bool? registrar_solicitud { get; set; }
 
-    public bool? aprobar_rechazar_solicitud { get; set; }
+    public bool? aprobar_solicitud { get; set; }
 
-    public bool? ver_solicitudes { get; set; }
+    public bool? rechazar_solicitud { get; set; }
+
+    public bool? confirmar_solicitud { get; set; }
+
+    public bool? terminar_solicitud { get; set; }
+
+    public bool? entregar_solicitud { get; set; }
 
     [InverseProperty("posicion")]
     public virtual ICollection<Usuarios> Usuarios { get; set; } = new List<Usuarios>();

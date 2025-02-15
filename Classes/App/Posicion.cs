@@ -21,9 +21,20 @@ public class Posicion
     [JsonPropertyName("registrar_solicitud")]
     public bool? RegistrarSolicitud { get; set; }
 
-    [JsonPropertyName("aprobar_rechazar_solicitud")]
-    public bool? AprobarRechazarSolicitud { get; set; }
+    [JsonPropertyName("aprobar_solicitud")]
+    public bool? AprobarSolicitud { get; set; }
 
-    [JsonPropertyName("ver_solicitudes")]
-    public bool? VerSolicitudes { get; set; }
+    [JsonPropertyName("rechazar_solicitud")]
+    public bool? RechazarSolicitud { get; set; }
+
+    [JsonPropertyName("confirmar_solicitud")]
+    public bool? ConfirmarSolicitud { get; set; }
+
+    [JsonPropertyName("terminar_solicitud")]
+    public bool? TerminarSolicitud { get; set; }
+
+    [JsonPropertyName("entregar_solicitud")]
+    public bool? EntregarSolicitud { get; set; }
+
+    
 }
