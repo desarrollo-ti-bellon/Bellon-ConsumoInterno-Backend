@@ -40,12 +40,12 @@ public partial class LineasSolicitudesCI
     public string codigo_unidad_medida { get; set; }
 
     [StringLength(100)]
-    public string almacen_id { get; set; }
+    public string? almacen_id { get; set; }
 
     [StringLength(100)]
-    public string almacen_codigo { get; set; }
+    public string? almacen_codigo { get; set; }
 
-    public string nota { get; set; }
+    public string? nota { get; set; }
 
     [ForeignKey("cabecera_solicitud_id")]
     [InverseProperty("LineasSolicitudesCI")]

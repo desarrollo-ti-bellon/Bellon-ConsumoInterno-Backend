@@ -164,7 +164,7 @@ public class ServicioSolicitud : IServicioSolicitud
                     CodigoUnidadMedida = i.codigo_unidad_medida,
                     AlmacenId = i.almacen_id,
                     AlmacenCodigo = i.almacen_codigo,
-                    Nota = i.nota
+                    Nota = i.nota ?? ""
                 })
                 .OrderBy(i => i.IdLineaSolicitud)
                 .ToList();
@@ -413,7 +413,7 @@ public class ServicioSolicitud : IServicioSolicitud
                             oldItem.codigo_unidad_medida = item.CodigoUnidadMedida;
                             oldItem.almacen_id = item.AlmacenId;
                             oldItem.almacen_codigo = item.AlmacenCodigo;
-                            oldItem.nota = item.Nota;
+                            oldItem.nota = item.Nota ?? "";
                             try
                             {
                                 _context.SaveChanges();
