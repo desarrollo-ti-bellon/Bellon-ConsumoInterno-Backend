@@ -43,13 +43,13 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
         _servicioNumeroSerie = servicioNumeroSerie;
     }
 
-    public Task<List<HistorialMovimientoSolicitud>> ObtenerHistorialMovimientosSolicitudes()
+    public Task<List<HistorialMovimientoSolicitudCI>> ObtenerHistorialMovimientosSolicitudes()
     {
-        var cache = _memoryCache.Get<List<HistorialMovimientoSolicitud>>("HistorialMovimientosSolicitudes");
+        var cache = _memoryCache.Get<List<HistorialMovimientoSolicitudCI>>("HistorialMovimientosSolicitudesCI");
         if (cache == null)
         {
             cache = _context
-                .HistorialMovimientosSolicitudes.Select(i => new HistorialMovimientoSolicitud
+                .HistorialMovimientosSolicitudesCI.Select(i => new HistorialMovimientoSolicitudCI
                 {
                     IdCabeceraSolicitud = i.id_cabecera_solicitud,
                     NoDocumento = i.no_documento,
@@ -58,8 +58,6 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
                     CreadoPor = i.creado_por,
                     UsuarioResponsable = i.usuario_responsable ?? "",
                     UsuarioDespacho = i.usuario_despacho ?? "",
-                    UsuarioAsistenteInventario = i.usuario_asistente_inventario ?? "",
-                    UsuarioAsistenteContabilidad = i.usuario_asistente_contabilidad ?? "",
                     IdDepartamento = i.id_departamento,
                     IdEstadoSolicitud = i.id_estado_solicitud,
                     IdClasificacion = i.id_clasificacion,
@@ -67,14 +65,12 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
                     Total = i.total,
                     IdUsuarioResponsable = i.id_usuario_responsable,
                     IdUsuarioDespacho = i.id_usuario_despacho,
-                    IdUsuarioAsistenteInventario = i.id_usuario_asistente_inventario,
-                    IdUsuarioAsistenteContabilidad = i.id_usuario_asistente_contabilidad,
                     // FechaModificado = i.fecha_modificado,
                     // ModificadoPor = i.modificado_por,
                 })
                 .ToList();
-            _memoryCache.Set<List<HistorialMovimientoSolicitud>>(
-                "HistorialMovimientosSolicitudes",
+            _memoryCache.Set<List<HistorialMovimientoSolicitudCI>>(
+                "HistorialMovimientosSolicitudesCI",
                 cache,
                 DateTimeOffset.Now.AddMinutes(30)
             );
@@ -82,16 +78,16 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
         return Task.FromResult(cache.OrderBy(i => i.IdCabeceraSolicitud.Value).ToList());
     }
 
-    public async Task<List<HistorialMovimientoSolicitud>> ObtenerHistorialMovimientoSolicitud(int? id)
+    public async Task<List<HistorialMovimientoSolicitudCI>> ObtenerHistorialMovimientoSolicitud(int? id)
     {
         var allItems = await ObtenerHistorialMovimientosSolicitudes();
         return allItems.Where(i => i.IdCabeceraSolicitud == id).OrderBy(i => i.FechaCreado).ToList();
     }
 
-    public async Task<List<HistorialMovimientoSolicitud>> GuardarHistorialMovimientoSolicitud(HistorialMovimientoSolicitud item)
+    public async Task<List<HistorialMovimientoSolicitudCI>> GuardarHistorialMovimientoSolicitud(HistorialMovimientoSolicitudCI item)
     {
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
-        var newItemData = new DataBase.HistorialMovimientosSolicitudes
+        var newItemData = new DataBase.HistorialMovimientosSolicitudesCI
         {
             fecha_creado = DateTime.Now,
             comentario = item.Comentario,
@@ -99,20 +95,16 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
             no_serie_id = _settings.DocumentoConsumoInternoNoSerieId,
             usuario_responsable = item.UsuarioResponsable ?? "",
             usuario_despacho = item.UsuarioDespacho ?? "",
-            usuario_asistente_contabilidad = item.UsuarioAsistenteContabilidad ?? "",
-            usuario_asistente_inventario = item.UsuarioAsistenteInventario ?? "",
             id_departamento = item.IdDepartamento,
             id_estado_solicitud = item.IdEstadoSolicitud,
             id_clasificacion = item.IdClasificacion,
             id_sucursal = item.IdSucursal,
             id_usuario_responsable = item.IdUsuarioResponsable,
             id_usuario_despacho = item.IdUsuarioDespacho,
-            id_usuario_asistente_inventario = item.IdUsuarioAsistenteInventario,
-            id_usuario_asistente_contabilidad = item.IdUsuarioAsistenteContabilidad,
             total = item.Total
         };
 
-        var newItem = _context.HistorialMovimientosSolicitudes.Add(newItemData);
+        var newItem = _context.HistorialMovimientosSolicitudesCI.Add(newItemData);
         try
         {
             _context.SaveChanges();
@@ -137,14 +129,14 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
 
     }
 
-    public Task<List<HistorialMovimientoSolicitud>> EliminarHistorialMovimientoSolicitud(int id)
+    public Task<List<HistorialMovimientoSolicitudCI>> EliminarHistorialMovimientoSolicitud(int id)
     {
         throw new NotImplementedException();
     }
 
     public async Task<bool> RefrescarCache()
     {
-        _memoryCache.Remove("HistorialMovimientosSolicitudes");
+        _memoryCache.Remove("HistorialMovimientosSolicitudesCI");
         await ObtenerHistorialMovimientosSolicitudes();
         return true;
     }

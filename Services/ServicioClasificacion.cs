@@ -98,13 +98,13 @@ public class ServicioClasificacion : IServicioClasificacion
         }
     }
 
-    public async Task<List<Classes.Clasificacion>> ObtenerClasificaciones()
+    public async Task<List<Classes.ClasificacionCI>> ObtenerClasificaciones()
     {
-        var cache = _memoryCache.Get<List<Clasificacion>>("Clasificaciones");
+        var cache = _memoryCache.Get<List<ClasificacionCI>>("ClasificacionesCI");
         if (cache == null)
         {
             cache = _context
-                .Clasificaciones.Select(i => new Clasificacion
+                .ClasificacionesCI.Select(i => new ClasificacionCI
                 {
                     IdClasificacion = i.id_clasificacion,
                     IdGrupoContProductoGeneral = i.id_grupo_cont_producto_general,
@@ -113,8 +113,8 @@ public class ServicioClasificacion : IServicioClasificacion
                     Estado = i.estado,
                 })
                 .ToList();
-            _memoryCache.Set<List<Clasificacion>>(
-                "Clasificaciones",
+            _memoryCache.Set<List<ClasificacionCI>>(
+                "ClasificacionesCI",
                 cache,
                 DateTimeOffset.Now.AddMinutes(5)
             );
@@ -122,19 +122,19 @@ public class ServicioClasificacion : IServicioClasificacion
         return cache;
     }
 
-    public async Task<Classes.Clasificacion> ObtenerClasificacion(int? id)
+    public async Task<Classes.ClasificacionCI> ObtenerClasificacion(int? id)
     {
         var allItems = await ObtenerClasificaciones();
         return allItems.Where(i => i.IdClasificacion == id).FirstOrDefault().Clone();
     }
 
-    public async Task<Classes.Clasificacion> GuardarClasificacion(Classes.Clasificacion item)
+    public async Task<Classes.ClasificacionCI> GuardarClasificacion(Classes.ClasificacionCI item)
     {
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         if (item.IdClasificacion.HasValue)
         {
             var oldItem = _context.
-                Clasificaciones.Where(i =>
+                ClasificacionesCI.Where(i =>
                     i.id_clasificacion == item.IdClasificacion.Value
                 )
                 .FirstOrDefault();
@@ -161,16 +161,15 @@ public class ServicioClasificacion : IServicioClasificacion
         }
         else
         {
-            var newItem = new DataBase.Clasificaciones
+            var newItem = new DataBase.ClasificacionesCI
             {
-                id_clasificacion = item.IdClasificacion,
                 id_grupo_cont_producto_general = item.IdGrupoContProductoGeneral,
                 codigo_clasificacion = item.CodigoClasificacion,
                 descripcion = item.Descripcion,
                 estado = item.Estado,
             };
 
-            _context.Clasificaciones.Add(newItem);
+            _context.ClasificacionesCI.Add(newItem);
 
             try
             {
@@ -187,13 +186,13 @@ public class ServicioClasificacion : IServicioClasificacion
         return null;
     }
 
-    public async Task<Classes.Clasificacion> EliminarClasificacion(int id)
+    public async Task<Classes.ClasificacionCI> EliminarClasificacion(int id)
     {
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
-        var oldItem = _context.Clasificaciones.Where(i => i.id_clasificacion == id).FirstOrDefault();
+        var oldItem = _context.ClasificacionesCI.Where(i => i.id_clasificacion == id).FirstOrDefault();
         if (oldItem != null)
         {
-            _context.Clasificaciones.Remove(oldItem);
+            _context.ClasificacionesCI.Remove(oldItem);
             try
             {
                 _context.SaveChanges();
@@ -210,7 +209,7 @@ public class ServicioClasificacion : IServicioClasificacion
 
     public async Task<bool> RefrescarCache()
     {
-        _memoryCache.Remove("Clasificaciones");
+        _memoryCache.Remove("ClasificacionesCI");
         await ObtenerClasificacionesERP();
         await ObtenerClasificaciones();
         return true;

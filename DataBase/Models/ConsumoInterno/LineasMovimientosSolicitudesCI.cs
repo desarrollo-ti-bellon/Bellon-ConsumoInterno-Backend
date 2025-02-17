@@ -1,0 +1,55 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+
+namespace Bellon.API.ConsumoInterno.DataBase;
+
+[Table("LineasMovimientosSolicitudesCI", Schema = "ConsumoInterno")]
+public partial class LineasMovimientosSolicitudesCI
+{
+    [Key]
+    public int id_linea_hist_mov_solicitud { get; set; }
+
+    public int cabecera_hist_mov_solicitud_id { get; set; }
+
+    public int? cabecera_solicitud_id { get; set; }
+
+    [Required]
+    [StringLength(100)]
+    public string id_producto { get; set; }
+
+    [Required]
+    [StringLength(20)]
+    public string no_producto { get; set; }
+
+    [Required]
+    [StringLength(100)]
+    public string descripcion { get; set; }
+
+    [Column(TypeName = "decimal(18, 0)")]
+    public decimal precio_unitario { get; set; }
+
+    public int cantidad { get; set; }
+
+    [Required]
+    [StringLength(100)]
+    public string id_unidad_medida { get; set; }
+
+    [Required]
+    [StringLength(20)]
+    public string codigo_unidad_medida { get; set; }
+
+    [StringLength(100)]
+    public string almacen_id { get; set; }
+
+    [StringLength(100)]
+    public string almacen_codigo { get; set; }
+
+    public string nota { get; set; }
+
+    [ForeignKey("cabecera_hist_mov_solicitud_id")]
+    [InverseProperty("LineasMovimientosSolicitudesCI")]
+    public virtual HistorialMovimientosSolicitudesCI cabecera_hist_mov_solicitud { get; set; }
+}

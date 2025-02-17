@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace Bellon.API.ConsumoInterno.Classes;
 
 [Serializable]
-public class LineasSolicitud
+public class LineasSolicitudCI
 {
 
     [JsonPropertyName("id_linea_solicitud")]

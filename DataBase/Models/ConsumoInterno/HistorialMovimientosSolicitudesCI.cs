@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bellon.API.ConsumoInterno.DataBase;
 
-[Table("HistorialMovimientosSolicitudes", Schema = "ConsumoInterno")]
-public partial class HistorialMovimientosSolicitudes
+[Table("HistorialMovimientosSolicitudesCI", Schema = "ConsumoInterno")]
+public partial class HistorialMovimientosSolicitudesCI
 {
     [Key]
-    public int id_hist_solicitud { get; set; }
+    public int id_hist_mov_solicitud { get; set; }
 
     public int? id_cabecera_solicitud { get; set; }
 
@@ -67,7 +67,6 @@ public partial class HistorialMovimientosSolicitudes
 
     public int? id_usuario_despacho { get; set; }
 
-    public int? id_usuario_asistente_inventario { get; set; }
-
-    public int? id_usuario_asistente_contabilidad { get; set; }
+    [InverseProperty("cabecera_hist_mov_solicitud")]
+    public virtual ICollection<LineasMovimientosSolicitudesCI> LineasMovimientosSolicitudesCI { get; set; } = new List<LineasMovimientosSolicitudesCI>();
 }

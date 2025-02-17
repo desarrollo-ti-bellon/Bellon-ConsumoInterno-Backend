@@ -4,9 +4,9 @@ public interface IServicioClasificacion
 {
     Task<List<Classes.LSCentralClasificacion>> ObtenerClasificacionesERP();
     Task<Classes.LSCentralClasificacion> ObtenerClasificacionERP(string id);
-    Task<List<Classes.Clasificacion>> ObtenerClasificaciones();
-    Task<Classes.Clasificacion> ObtenerClasificacion(int? id);
-    Task<Classes.Clasificacion> GuardarClasificacion(Classes.Clasificacion item);
-    Task<Classes.Clasificacion> EliminarClasificacion(int id);
+    Task<List<Classes.ClasificacionCI>> ObtenerClasificaciones();
+    Task<Classes.ClasificacionCI> ObtenerClasificacion(int? id);
+    Task<Classes.ClasificacionCI> GuardarClasificacion(Classes.ClasificacionCI item);
+    Task<Classes.ClasificacionCI> EliminarClasificacion(int id);
     Task<bool> RefrescarCache();
 }

@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace Bellon.API.ConsumoInterno.Classes;
 
 [Serializable]
-public class Usuario
+public class UsuarioCI
 {
 
     [JsonPropertyName("id_usuario_ci")]
@@ -50,6 +50,6 @@ public class Usuario
 
     [JsonPropertyName("posicion")]
     [InverseProperty("Usuario")]
-    public virtual Posicion? Posicion { get; set; }
+    public virtual PosicionUsuarioCI? PosicionUsuarioCI { get; set; }
 
 }

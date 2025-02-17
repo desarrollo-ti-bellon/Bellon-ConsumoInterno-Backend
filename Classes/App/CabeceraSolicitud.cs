@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace Bellon.API.ConsumoInterno.Classes;
 
 [Serializable]
-public class CabeceraSolicitud
+public class CabeceraSolicitudCI
 {
 
     [JsonPropertyName("id_cabecera_solicitud")]
@@ -27,12 +27,6 @@ public class CabeceraSolicitud
 
     [JsonPropertyName("usuario_despacho")]
     public string? UsuarioDespacho { get; set; } = null;
-
-    [JsonPropertyName("usuario_asistente_inventario")]
-    public string? UsuarioAsistenteInventario { get; set; } = null;
-
-    [JsonPropertyName("usuario_asistente_contabilidad")]
-    public string? UsuarioAsistenteContabilidad { get; set; } = null;
 
     [JsonPropertyName("id_departamento")]
     public string IdDepartamento { get; set; }
@@ -64,14 +58,8 @@ public class CabeceraSolicitud
     [JsonPropertyName("id_usuario_despacho")]
     public int? IdUsuarioDespacho { get; set; }
 
-    [JsonPropertyName("id_usuario_asistente_inventario")]
-    public int? IdUsuarioAsistenteInventario { get; set; }
-
-    [JsonPropertyName("id_usuario_asistente_contabilidad")]
-    public int? IdUsuarioAsistenteContabilidad { get; set; }
-
     [JsonPropertyName("lineas")]
-    public List<LineasSolicitud>? Lineas { get; set; } = new List<LineasSolicitud>();
+    public List<LineasSolicitudCI>? Lineas { get; set; } = new List<LineasSolicitudCI>();
 
     [JsonPropertyName("cantidad_lineas")]
     public int? CantidadLineas { get; set; }

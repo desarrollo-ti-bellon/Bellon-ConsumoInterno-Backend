@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace Bellon.API.ConsumoInterno.Classes;
 
 [Serializable]
-public class Clasificacion
+public class ClasificacionCI
 {
     [JsonPropertyName("id_clasificacion")]
     public int? IdClasificacion { get; set; }

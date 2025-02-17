@@ -38,28 +38,26 @@ public class ServicioPosicion : IServicioPosicion
         _memoryCache = memoryCache;
         _servicioAutorizacion = servicioAutorizacion;
     }
-    public async Task<List<Posicion>> ObtenerPosiciones()
+    public async Task<List<PosicionUsuarioCI>> ObtenerPosiciones()
     {
-        var cache = _memoryCache.Get<List<Posicion>>("Posiciones");
+        var cache = _memoryCache.Get<List<PosicionUsuarioCI>>("PosicionesCI");
         if (cache == null)
         {
             cache = _context
-            .Posiciones.Select(i => new Posicion
+            .PosicionesUsuariosCI.Select(i => new PosicionUsuarioCI
             {
                 PosicionId = i.posicion_id,
                 Descripcion = i.descripcion,
                 CrearSolicitud = i.crear_solicitud,
                 EnviarSolicitud = i.enviar_solicitud,
-                RegistrarSolicitud = i.registrar_solicitud,
                 AprobarSolicitud = i.aprobar_solicitud,
                 RechazarSolicitud = i.rechazar_solicitud,
                 ConfirmarSolicitud = i.confirmar_solicitud,
-                TerminarSolicitud = i.terminar_solicitud,
                 EntregarSolicitud = i.entregar_solicitud
             })
             .ToList();
-            _memoryCache.Set<List<Posicion>>(
-                "Posiciones",
+            _memoryCache.Set<List<PosicionUsuarioCI>>(
+                "PosicionesCI",
                 cache,
                 DateTimeOffset.Now.AddMinutes(30)
             );
@@ -67,7 +65,7 @@ public class ServicioPosicion : IServicioPosicion
         return cache.OrderBy(i => i.PosicionId.Value).ToList();
     }
 
-    public async Task<Posicion> ObtenerPosicion(int? id)
+    public async Task<PosicionUsuarioCI> ObtenerPosicion(int? id)
     {
         var allItems = await ObtenerPosiciones();
         return allItems.Where(i => i.PosicionId == id).FirstOrDefault().Clone() ?? null;

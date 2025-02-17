@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace Bellon.API.ConsumoInterno.Classes;
 
 [Serializable]
-public class EstadoSolicitud
+public class EstadoSolicitudCI
 {
     [JsonPropertyName("id_estado_solicitud")]
     public int? IdEstadoSolicitud { get; set; }

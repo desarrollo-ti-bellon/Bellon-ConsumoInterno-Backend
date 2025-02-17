@@ -73,7 +73,7 @@ public class ClasificacionController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Guardar([FromBody] Classes.Clasificacion? item)
+    public async Task<IActionResult> Guardar([FromBody] Classes.ClasificacionCI? item)
     {
         try
         {

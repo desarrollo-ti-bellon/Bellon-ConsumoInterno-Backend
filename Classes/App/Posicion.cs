@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace Bellon.API.ConsumoInterno.Classes;
 
 [Serializable]
-public class Posicion
+public class PosicionUsuarioCI
 {
     [JsonPropertyName("posicion_id")]
     public int? PosicionId { get; set; }
@@ -18,9 +18,6 @@ public class Posicion
     [JsonPropertyName("enviar_solicitud")]
     public bool? EnviarSolicitud { get; set; }
 
-    [JsonPropertyName("registrar_solicitud")]
-    public bool? RegistrarSolicitud { get; set; }
-
     [JsonPropertyName("aprobar_solicitud")]
     public bool? AprobarSolicitud { get; set; }
 
@@ -29,9 +26,6 @@ public class Posicion
 
     [JsonPropertyName("confirmar_solicitud")]
     public bool? ConfirmarSolicitud { get; set; }
-
-    [JsonPropertyName("terminar_solicitud")]
-    public bool? TerminarSolicitud { get; set; }
 
     [JsonPropertyName("entregar_solicitud")]
     public bool? EntregarSolicitud { get; set; }

@@ -41,20 +41,20 @@ public class ServicioEstadoSolicitud : IServicioEstadoSolicitud
         _servicioNumeroSerie = servicioNumeroSerie;
     }
 
-    public Task<List<EstadoSolicitud>> ObtenerEstadoSolicitudes()
+    public Task<List<EstadoSolicitudCI>> ObtenerEstadoSolicitudes()
     {
-        var cache = _memoryCache.Get<List<EstadoSolicitud>>("EstadoSolicitudes");
+        var cache = _memoryCache.Get<List<EstadoSolicitudCI>>("EstadoSolicitudes");
         if (cache == null)
         {
             cache = _context
-                .EstadosSolicitudes.Select(i => new EstadoSolicitud
+                .EstadosSolicitudesCI.Select(i => new EstadoSolicitudCI
                 {
                     IdEstadoSolicitud = i.id_estado_solicitud,
                     Descripcion = i.descripcion,
                     Estado = i.estado
                 })
                 .ToList();
-            _memoryCache.Set<List<EstadoSolicitud>>(
+            _memoryCache.Set<List<EstadoSolicitudCI>>(
                 "EstadoSolicitudes",
                 cache,
                 DateTimeOffset.Now.AddMinutes(30)
@@ -63,18 +63,18 @@ public class ServicioEstadoSolicitud : IServicioEstadoSolicitud
         return Task.FromResult(cache.OrderBy(i => i.IdEstadoSolicitud.Value).ToList());
     }
 
-     public async Task<List<EstadoSolicitud>> ObtenerEstadoSolicitud(int id)
+     public async Task<List<EstadoSolicitudCI>> ObtenerEstadoSolicitud(int id)
     {
         var allItems = await ObtenerEstadoSolicitudes();
         return allItems.Where(i => i.IdEstadoSolicitud == id).ToList();
     }
 
-    public async Task<List<EstadoSolicitud>> GuardarEstadoSolicitud(EstadoSolicitud item)
+    public async Task<List<EstadoSolicitudCI>> GuardarEstadoSolicitud(EstadoSolicitudCI item)
     {
         if (item.IdEstadoSolicitud.HasValue)
         {
             var oldItem = _context
-                .EstadosSolicitudes.Where(i => i.id_estado_solicitud == item.IdEstadoSolicitud.Value)
+                .EstadosSolicitudesCI.Where(i => i.id_estado_solicitud == item.IdEstadoSolicitud.Value)
                 .FirstOrDefault();
             if (oldItem != null)
             {
@@ -101,12 +101,12 @@ public class ServicioEstadoSolicitud : IServicioEstadoSolicitud
         else
         {
             //SE INSERTA EL NUEVO ITEM
-            var newItemData = new DataBase.EstadosSolicitudes
+            var newItemData = new DataBase.EstadosSolicitudesCI
             {
                 descripcion = item.Descripcion,
                 estado = item.Estado
             };
-            var newItem = _context.EstadosSolicitudes.Add(newItemData);
+            var newItem = _context.EstadosSolicitudesCI.Add(newItemData);
             try
             {
                 _context.SaveChanges();
@@ -125,12 +125,12 @@ public class ServicioEstadoSolicitud : IServicioEstadoSolicitud
         return null;
     }
 
-    public async Task<List<EstadoSolicitud>> EliminarEstadoSolicitud(int id)
+    public async Task<List<EstadoSolicitudCI>> EliminarEstadoSolicitud(int id)
     {
-        var oldItem = _context.EstadosSolicitudes.Where(i => i.id_estado_solicitud == id).FirstOrDefault();
+        var oldItem = _context.EstadosSolicitudesCI.Where(i => i.id_estado_solicitud == id).FirstOrDefault();
         if (oldItem != null)
         {
-            _context.EstadosSolicitudes.Remove(oldItem);
+            _context.EstadosSolicitudesCI.Remove(oldItem);
             try
             {
                 _context.SaveChanges();
@@ -147,7 +147,7 @@ public class ServicioEstadoSolicitud : IServicioEstadoSolicitud
 
     public async Task<bool> RefrescarCache()
     {
-        _memoryCache.Remove("Solicitudes");
+        _memoryCache.Remove("EstadoSolicitudes");
         await ObtenerEstadoSolicitudes();
         return true;
     }

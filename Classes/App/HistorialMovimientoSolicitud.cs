@@ -4,11 +4,11 @@ using System.Text.Json.Serialization;
 namespace Bellon.API.ConsumoInterno.Classes;
 
 [Serializable]
-public class HistorialMovimientoSolicitud
+public class HistorialMovimientoSolicitudCI
 {
 
-    [JsonPropertyName("id_hist_solicitud")]
-    public int IdHistSolicitud { get; set; }
+    [JsonPropertyName("id_hist_mov_solicitud")]
+    public int IdHistMovSolicitud { get; set; }
 
     [JsonPropertyName("id_cabecera_solicitud")]
     public int? IdCabeceraSolicitud { get; set; }
@@ -30,12 +30,6 @@ public class HistorialMovimientoSolicitud
 
     [JsonPropertyName("usuario_despacho")]
     public string UsuarioDespacho { get; set; }
-
-    [JsonPropertyName("usuario_asistente_inventario")]
-    public string UsuarioAsistenteInventario { get; set; }
-
-    [JsonPropertyName("usuario_asistente_contabilidad")]
-    public string UsuarioAsistenteContabilidad { get; set; }
 
     [JsonPropertyName("id_departamento")]
     public string IdDepartamento { get; set; }
@@ -66,11 +60,5 @@ public class HistorialMovimientoSolicitud
 
     [JsonPropertyName("id_usuario_despacho")]
     public int? IdUsuarioDespacho { get; set; }
-
-    [JsonPropertyName("id_usuario_asistente_inventario")]
-    public int? IdUsuarioAsistenteInventario { get; set; }
-
-    [JsonPropertyName("id_usuario_asistente_contabilidad")]
-    public int? IdUsuarioAsistenteContabilidad { get; set; }
 
 }

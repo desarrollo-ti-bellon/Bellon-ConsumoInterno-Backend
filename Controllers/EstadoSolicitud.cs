@@ -44,7 +44,7 @@ public class EstadoSolicitudController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> GuardarLinea([FromBody] Classes.EstadoSolicitud item)
+    public async Task<IActionResult> GuardarLinea([FromBody] Classes.EstadoSolicitudCI item)
     {
         try
         {

@@ -39,9 +39,9 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
         _servicioAutorizacion = servicioAutorizacion;
     }
 
-    public async Task<List<Usuario>> ObtenerUsuarios()
+    public async Task<List<UsuarioCI>> ObtenerUsuarios()
     {
-        var cache = _memoryCache.Get<List<Usuario>>("UsuariosCI");
+        var cache = _memoryCache.Get<List<UsuarioCI>>("UsuariosCI");
         if (cache == null)
         {
 
@@ -69,7 +69,7 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
                 );
             */
 
-            var usuarios = await _context.Usuarios
+            var usuarios = await _context.UsuariosCI
                 .Select(i => new
                 {
                     i.id_usuario_ci,
@@ -89,7 +89,7 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
                 })
                 .ToListAsync();
 
-            cache = usuarios.Select(i => new Usuario
+            cache = usuarios.Select(i => new UsuarioCI
             {
                 IdUsuarioCI = i.id_usuario_ci,
                 IdUsuario = i.id_usuario,
@@ -104,22 +104,20 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
                 Estado = i.estado,
                 IdAlmacen = i.id_almacen,
                 CodigoAlmacen = i.codigo_almacen,
-                Posicion = new Posicion
+                PosicionUsuarioCI = new PosicionUsuarioCI
                 {
                     PosicionId = i.posicion.posicion_id,
                     Descripcion = i.posicion.descripcion,
                     CrearSolicitud = i.posicion.crear_solicitud,
                     EnviarSolicitud = i.posicion.enviar_solicitud,
-                    RegistrarSolicitud = i.posicion.registrar_solicitud,
                     AprobarSolicitud = i.posicion.aprobar_solicitud,
                     RechazarSolicitud = i.posicion.rechazar_solicitud,
                     ConfirmarSolicitud = i.posicion.confirmar_solicitud,
-                    TerminarSolicitud = i.posicion.terminar_solicitud,
                     EntregarSolicitud = i.posicion.entregar_solicitud,
                 }
             }).ToList();
 
-            _memoryCache.Set<List<Usuario>>(
+            _memoryCache.Set<List<UsuarioCI>>(
                 "UsuariosCI",
                 cache,
                 DateTimeOffset.Now.AddMinutes(5)
@@ -129,19 +127,19 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
         return cache;
     }
 
-    public async Task<Usuario> ObtenerUsuario(int? id)
+    public async Task<UsuarioCI> ObtenerUsuario(int? id)
     {
         var allItems = await ObtenerUsuarios();
         return allItems.Where(i => i.IdUsuarioCI == id).FirstOrDefault().Clone();
     }
 
-    public async Task<Usuario> ObtenerUsuarioPorCorreo(string? correo)
+    public async Task<UsuarioCI> ObtenerUsuarioPorCorreo(string? correo)
     {
         var allItems = await ObtenerUsuarios();
         return allItems.Where(i => i.Correo == correo).FirstOrDefault().Clone();
     }
 
-    public async Task<List<Usuario>> ObtenerUsuarioResponsablesPorDepartamentos(string? departamentoId)
+    public async Task<List<UsuarioCI>> ObtenerUsuarioResponsablesPorDepartamentos(string? departamentoId)
     {
         List<int> posiciones = new List<int> {
             2, // Director
@@ -153,13 +151,13 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
             .OrderByDescending(i => i.PosicionId).ToList();
     }
 
-    public async Task<Usuario> GuardarUsuario(Usuario item)
+    public async Task<UsuarioCI> GuardarUsuario(UsuarioCI item)
     {
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         if (item.IdUsuarioCI.HasValue)
         {
             var oldItem = _context
-                .Usuarios.Where(i =>
+                .UsuariosCI.Where(i =>
                     i.id_usuario_ci == item.IdUsuarioCI.Value
                 )
                 .FirstOrDefault();
@@ -193,7 +191,7 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
         }
         else
         {
-            var newItem = new DataBase.Usuarios
+            var newItem = new DataBase.UsuariosCI
             {
                 id_usuario = item.IdUsuario,
                 nombre_usuario = item.NombreUsuario,
@@ -209,7 +207,7 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
                 codigo_almacen = item.CodigoAlmacen
             };
 
-            _context.Usuarios.Add(newItem);
+            _context.UsuariosCI.Add(newItem);
             try
             {
                 _context.SaveChanges();
@@ -225,13 +223,13 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
         return null;
     }
 
-    public async Task<Usuario> EliminarUsuario(int id)
+    public async Task<UsuarioCI> EliminarUsuario(int id)
     {
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
-        var oldItem = _context.Usuarios.Where(i => i.id_usuario_ci == id).FirstOrDefault();
+        var oldItem = _context.UsuariosCI.Where(i => i.id_usuario_ci == id).FirstOrDefault();
         if (oldItem != null)
         {
-            _context.Usuarios.Remove(oldItem);
+            _context.UsuariosCI.Remove(oldItem);
             try
             {
                 _context.SaveChanges();

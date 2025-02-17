@@ -98,7 +98,7 @@ public class UsuariosCIController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Guardar([FromBody] Classes.Usuario item)
+    public async Task<IActionResult> Guardar([FromBody] Classes.UsuarioCI item)
     {
         var result = await _servicioUsuarioCI.GuardarUsuario(item);
         return result != null ? Ok(result) : NoContent();

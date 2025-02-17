@@ -59,7 +59,7 @@ public class SolicitudController : ControllerBase
     }
 
     [HttpPost("Cabecera")]
-    public async Task<IActionResult> GuardarCabecera([FromBody] Classes.CabeceraSolicitud item)
+    public async Task<IActionResult> GuardarCabecera([FromBody] Classes.CabeceraSolicitudCI item)
     {
         try
         {
@@ -88,7 +88,7 @@ public class SolicitudController : ControllerBase
     }
 
     [HttpPost("Linea")]
-    public async Task<IActionResult> GuardarLinea([FromBody] List<Classes.LineasSolicitud> items)
+    public async Task<IActionResult> GuardarLinea([FromBody] List<Classes.LineasSolicitudCI> items)
     {
         try
         {

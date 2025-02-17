@@ -2,27 +2,27 @@ namespace Bellon.API.ConsumoInterno.Interfaces;
 
 public interface IServicioSolicitud
 {
-    Task<List<Classes.CabeceraSolicitud>> ObtenerSolicitudesDelUsuarioSolicitantePorEstado(int? estadoSolicitudId);
+    Task<List<Classes.CabeceraSolicitudCI>> ObtenerSolicitudesDelUsuarioSolicitantePorEstado(int? estadoSolicitudId);
 
-    Task<List<Classes.CabeceraSolicitud>> ObtenerSolicitudes();
+    Task<List<Classes.CabeceraSolicitudCI>> ObtenerSolicitudes();
 
-    Task<Classes.CabeceraSolicitud> ObtenerSolicitudesPorId(int id);
+    Task<Classes.CabeceraSolicitudCI> ObtenerSolicitudesPorId(int id);
 
-    Task<List<Classes.CabeceraSolicitud>> ObtenerSolicitudesPorEstadoSolicitud(int? estadoSolicitudId);
+    Task<List<Classes.CabeceraSolicitudCI>> ObtenerSolicitudesPorEstadoSolicitud(int? estadoSolicitudId);
 
     Task<int> ObtenerCantidadSolicitudesPorEstadoSolicitud(int estadoSolicitudId);
 
-    Task<Classes.CabeceraSolicitud> ObtenerSolicitud(int id);
+    Task<Classes.CabeceraSolicitudCI> ObtenerSolicitud(int id);
 
-    Task<Classes.CabeceraSolicitud> GuardarSolicitud(Classes.CabeceraSolicitud item);
+    Task<Classes.CabeceraSolicitudCI> GuardarSolicitud(Classes.CabeceraSolicitudCI item);
 
-    Task<Classes.CabeceraSolicitud> GuardarLineasSolicitud(List<Classes.LineasSolicitud> productos);
+    Task<Classes.CabeceraSolicitudCI> GuardarLineasSolicitud(List<Classes.LineasSolicitudCI> productos);
 
-    Task<List<Classes.CabeceraSolicitud>> RecuperarSolicitud(int id);
+    Task<List<Classes.CabeceraSolicitudCI>> RecuperarSolicitud(int id);
 
-    Task<Classes.CabeceraSolicitud> EliminarSolicitud(int id);
+    Task<Classes.CabeceraSolicitudCI> EliminarSolicitud(int id);
 
-    Task<Classes.CabeceraSolicitud> EliminarLineaSolicitud(int id);
+    Task<Classes.CabeceraSolicitudCI> EliminarLineaSolicitud(int id);
 
     Task<bool> RefrescarCache();
 }

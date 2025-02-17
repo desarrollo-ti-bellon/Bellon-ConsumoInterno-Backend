@@ -38,6 +38,61 @@ public class ServicioProducto : IServicioProducto
         _servicioAutorizacion = servicioAutorizacion;
     }
 
+    // public async Task<List<LSCentralDisponibilidadProducto>> DisponibilidadProducto(string no)
+    // {
+    //     var token = await _servicioAutorizacion.ObtenerTokenBC();
+    //     var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
+    //     httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
+    //     var httpResponseMessage = await httpClient.GetAsync($"QDisponibilidadesProducto?$filter=no_producto eq '{no}'");
+
+    //     if (httpResponseMessage.IsSuccessStatusCode)
+    //     {
+    //         using var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
+    //         var data = await JsonSerializer.DeserializeAsync<Classes.LSCentralDisponibilidadProductoArray>(contentStream);
+    //         var almacenes = await _servicioAlmacen.ObtenerAlmacenes();
+    //         if (data.value != null && data.value.Length > 0)
+    //         {
+    //             var disponibilidadProductos = data.value.ToList();
+    //             foreach (var almacen in almacenes)
+    //             {
+    //                 if (!disponibilidadProductos.Any(dp => dp.CodigoAlmacen == almacen.Codigo))
+    //                 {
+    //                     disponibilidadProductos.Add(new LSCentralDisponibilidadProducto
+    //                     {
+    //                         CodigoAlmacen = almacen.Codigo,
+    //                         NombreAlmacen = almacen.Nombre,
+    //                         NoProducto = no,
+    //                         Cantidad = 0
+    //                     });
+    //                 }
+    //             }
+    //             return disponibilidadProductos.OrderBy(i => i.CodigoAlmacen).ToList();
+    //         }
+    //         else
+    //         {
+    //             var disponibilidadProductos = new List<LSCentralDisponibilidadProducto>();
+
+    //             foreach (var almacen in almacenes)
+    //             {
+    //                 disponibilidadProductos.Add(new LSCentralDisponibilidadProducto
+    //                 {
+    //                     CodigoAlmacen = almacen.Codigo,
+    //                     NombreAlmacen = almacen.Nombre,
+    //                     NoProducto = no,
+    //                     Cantidad = 0
+    //                 });
+    //             }
+
+    //             return disponibilidadProductos.OrderBy(i => i.CodigoAlmacen).ToList();
+    //         }
+    //     }
+    //     else
+    //     {
+    //         var errorMessage = await httpResponseMessage.Content.ReadAsStringAsync();
+    //         throw new Exception($"Error en el servicio de Producto de LS Central: {errorMessage}");
+    //     }
+    // }
+
     public async Task<List<LSCentralProducto>> ObtenerProductos()
     {
         var cache = _memoryCache.Get<LSCentralProductoArray>("Productos");

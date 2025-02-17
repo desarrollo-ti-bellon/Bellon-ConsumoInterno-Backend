@@ -4,6 +4,6 @@ namespace Bellon.API.ConsumoInterno.Interfaces;
 
 public interface IServicioPosicion
 {
-    Task<List<Posicion>> ObtenerPosiciones();
-    Task<Posicion> ObtenerPosicion(int? id);
+    Task<List<PosicionUsuarioCI>> ObtenerPosiciones();
+    Task<PosicionUsuarioCI> ObtenerPosicion(int? id);
 }

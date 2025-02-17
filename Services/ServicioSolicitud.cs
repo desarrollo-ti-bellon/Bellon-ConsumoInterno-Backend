@@ -43,11 +43,11 @@ public class ServicioSolicitud : IServicioSolicitud
         _servicioNumeroSerie = servicioNumeroSerie;
     }
 
-    public async Task<List<CabeceraSolicitud>> ObtenerSolicitudesDelUsuarioSolicitantePorEstado(int? estadoSolicitudId)
+    public async Task<List<CabeceraSolicitudCI>> ObtenerSolicitudesDelUsuarioSolicitantePorEstado(int? estadoSolicitudId)
     {
         var allItems = await ObtenerSolicitudes();
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
-        var usuario = await _context.Usuarios.FirstOrDefaultAsync(el => el.correo == identity.Name);
+        var usuario = await _context.UsuariosCI.FirstOrDefaultAsync(el => el.correo == identity.Name);
 
         if (usuario != null)
         {
@@ -57,27 +57,24 @@ public class ServicioSolicitud : IServicioSolicitud
                     return allItems.Where(i => i.IdSucursal == usuario.id_sucursal && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
                 case 2:  // Director
                     return allItems.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdDepartamento == usuario.id_departamento && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
-                case 3:  // Gerente Tienda
-                case 4:  // Gerente Area
+                case 3:  // Gerente Area
                     return allItems.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdSucursal == usuario.id_sucursal && i.IdDepartamento == usuario.id_departamento && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
+                case 4:  // Depachador
+                    return allItems.Where(i => i.IdSucursal == usuario.id_sucursal && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
                 case 5:  // Solicitante
                     return allItems.Where(i => i.CreadoPor == usuario.correo && i.IdDepartamento == usuario.id_departamento && i.IdSucursal == usuario.id_sucursal && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
-                case 6:  // Asistente Con. Inventario
-                case 7:  // Asistente Contabilidad
-                case 8:  // Depachador
-                    return allItems.Where(i => i.IdSucursal == usuario.id_sucursal && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
             }
         }
         return null;
     }
 
-    public Task<List<CabeceraSolicitud>> ObtenerSolicitudes()
+    public Task<List<CabeceraSolicitudCI>> ObtenerSolicitudes()
     {
-        var cache = _memoryCache.Get<List<CabeceraSolicitud>>("Solicitudes");
+        var cache = _memoryCache.Get<List<CabeceraSolicitudCI>>("SolicitudesCI");
         if (cache == null)
         {
             cache = _context
-                .CabeceraSolicitudes.Select(i => new CabeceraSolicitud
+                .CabeceraSolicitudesCI.Select(i => new CabeceraSolicitudCI
                 {
                     IdCabeceraSolicitud = i.id_cabecera_solicitud,
                     NoDocumento = i.no_documento,
@@ -86,8 +83,6 @@ public class ServicioSolicitud : IServicioSolicitud
                     CreadoPor = i.creado_por,
                     UsuarioResponsable = i.usuario_responsable ?? "",
                     UsuarioDespacho = i.usuario_despacho ?? "",
-                    UsuarioAsistenteInventario = i.usuario_asistente_inventario ?? "",
-                    UsuarioAsistenteContabilidad = i.usuario_asistente_contabilidad ?? "",
                     IdDepartamento = i.id_departamento,
                     IdEstadoSolicitud = i.id_estado_solicitud,
                     IdClasificacion = i.id_clasificacion,
@@ -95,15 +90,13 @@ public class ServicioSolicitud : IServicioSolicitud
                     Total = i.total,
                     IdUsuarioResponsable = i.id_usuario_responsable,
                     IdUsuarioDespacho = i.id_usuario_despacho,
-                    IdUsuarioAsistenteInventario = i.id_usuario_asistente_inventario,
-                    IdUsuarioAsistenteContabilidad = i.id_usuario_asistente_contabilidad,
-                    CantidadLineas = i.LineasSolicitudes.Count
+                    CantidadLineas = i.LineasSolicitudesCI.Count
                     // FechaModificado = i.fecha_modificado,
                     // ModificadoPor = i.modificado_por,
                 })
                 .ToList();
-            _memoryCache.Set<List<CabeceraSolicitud>>(
-                "Solicitudes",
+            _memoryCache.Set<List<CabeceraSolicitudCI>>(
+                "SolicitudesCI",
                 cache,
                 DateTimeOffset.Now.AddMinutes(30)
             );
@@ -111,15 +104,15 @@ public class ServicioSolicitud : IServicioSolicitud
         return Task.FromResult(cache.OrderBy(i => i.IdCabeceraSolicitud.Value).ToList());
     }
 
-    public async Task<CabeceraSolicitud> ObtenerSolicitudesPorId(int idSolicitud)
+    public async Task<CabeceraSolicitudCI> ObtenerSolicitudesPorId(int idSolicitud)
     {
         var allItems = await ObtenerSolicitudes();
         var item = allItems.Where(i => i.IdCabeceraSolicitud == idSolicitud).FirstOrDefault().Clone();
         if (item != null)
         {
             item.Lineas = _context
-            .LineasSolicitudes.Where(i => i.cabecera_solicitud_id == idSolicitud)
-            .Select(i => new LineasSolicitud
+            .LineasSolicitudesCI.Where(i => i.cabecera_solicitud_id == idSolicitud)
+            .Select(i => new LineasSolicitudCI
             {
                 IdLineaSolicitud = i.id_linea_solicitud,
                 CabeceraSolicitudId = i.cabecera_solicitud_id,
@@ -138,7 +131,7 @@ public class ServicioSolicitud : IServicioSolicitud
         return item ?? throw new Exception("Solicitud no encontrada.");
     }
 
-    public async Task<List<CabeceraSolicitud>> ObtenerSolicitudesPorEstadoSolicitud(int? estadoSolicitudId)
+    public async Task<List<CabeceraSolicitudCI>> ObtenerSolicitudesPorEstadoSolicitud(int? estadoSolicitudId)
     {
         var allItems = await ObtenerSolicitudes();
         return allItems.Where(i => i.IdEstadoSolicitud == estadoSolicitudId).ToList();
@@ -150,15 +143,15 @@ public class ServicioSolicitud : IServicioSolicitud
         return allItems.Where(i => i.IdEstadoSolicitud == estadoSolicitudId).ToList().Count;
     }
 
-    public async Task<CabeceraSolicitud> ObtenerSolicitud(int id)
+    public async Task<CabeceraSolicitudCI> ObtenerSolicitud(int id)
     {
         var allItems = await ObtenerSolicitudes();
         var item = allItems.Where(i => i.IdCabeceraSolicitud == id).FirstOrDefault().Clone();
         if (item != null)
         {
             item.Lineas = _context
-                .LineasSolicitudes.Where(i => i.cabecera_solicitud_id == id)
-                .Select(i => new LineasSolicitud
+                .LineasSolicitudesCI.Where(i => i.cabecera_solicitud_id == id)
+                .Select(i => new LineasSolicitudCI
                 {
                     IdLineaSolicitud = i.id_linea_solicitud,
                     CabeceraSolicitudId = i.cabecera_solicitud_id,
@@ -179,13 +172,13 @@ public class ServicioSolicitud : IServicioSolicitud
         return item;
     }
 
-    public async Task<CabeceraSolicitud> GuardarSolicitud(CabeceraSolicitud item)
+    public async Task<CabeceraSolicitudCI> GuardarSolicitud(CabeceraSolicitudCI item)
     {
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         if (item.IdCabeceraSolicitud.HasValue)
         {
             // Intentamos obtener el registro para actualizarlo
-            var oldItem = await _context.CabeceraSolicitudes
+            var oldItem = await _context.CabeceraSolicitudesCI
                 .Where(i => i.id_cabecera_solicitud == item.IdCabeceraSolicitud.Value)
                 .FirstOrDefaultAsync();
 
@@ -195,7 +188,7 @@ public class ServicioSolicitud : IServicioSolicitud
             }
 
             var cambioEstadoSolicitud = oldItem.id_estado_solicitud != item.IdEstadoSolicitud;
-            var datosUsuario = await _context.Usuarios.FirstOrDefaultAsync(i => i.correo == identity!.Name);
+            var datosUsuario = await _context.UsuariosCI.FirstOrDefaultAsync(i => i.correo == identity!.Name);
             var posicion_id = datosUsuario!.posicion_id;
             var usuario_id = datosUsuario!.id_usuario_ci;
 
@@ -218,45 +211,27 @@ public class ServicioSolicitud : IServicioSolicitud
                     case 1: //	Administrador
                         switch (item.IdEstadoSolicitud)
                         {
-                            case 1: //Nueva
-
-                                break;
-                            case 2: //Pendiente
-
-                                break;
                             case 3: //Aprobada
-
+                                oldItem.id_usuario_responsable = item.IdUsuarioResponsable;
+                                oldItem.usuario_responsable = item.UsuarioResponsable;
+                                oldItem.id_usuario_despacho = datosUsuario.id_usuario_ci;
+                                oldItem.usuario_despacho = datosUsuario.nombre_usuario;
                                 break;
                             case 4: //Rechazada
-
+                                oldItem.id_usuario_responsable = item.IdUsuarioResponsable;
+                                oldItem.usuario_responsable = item.UsuarioResponsable;
+                                oldItem.id_usuario_despacho = datosUsuario.id_usuario_ci;
+                                oldItem.usuario_despacho = datosUsuario.nombre_usuario;
                                 break;
                             case 5: //Entregada
-
-                                break;
-                            case 6: //Confirmada
-
-                                break;
-                            case 7: //Terminada
-
+                                oldItem.id_usuario_despacho = datosUsuario.id_usuario_ci;
+                                oldItem.usuario_despacho = datosUsuario.nombre_usuario;
                                 break;
                         }
-                        break;
-                    case 2: //	Director
-                    case 3: //	Gerente Area
-
                         break;
                     case 4: //	Depachador
                         oldItem.id_usuario_despacho = datosUsuario.id_usuario_ci;
                         oldItem.usuario_despacho = datosUsuario.nombre_usuario;
-
-                        break;
-                    case 5: //	Asistente Inventario
-                        oldItem.id_usuario_asistente_inventario = datosUsuario.id_usuario_ci;
-                        oldItem.usuario_asistente_inventario = datosUsuario.nombre_usuario;
-                        break;
-                    case 6: //	Asistente Contabilidad
-                        oldItem.id_usuario_asistente_contabilidad = datosUsuario.id_usuario_ci;
-                        oldItem.usuario_asistente_contabilidad = datosUsuario.nombre_usuario;
                         break;
                 }
                 oldItem.modificado_por = datosUsuario.nombre_usuario;
@@ -273,10 +248,10 @@ public class ServicioSolicitud : IServicioSolicitud
 
                     if (cambioEstadoSolicitud)
                     {
-                        var buscarNoSerieId = await _context.CabeceraSolicitudes.FirstOrDefaultAsync(el => el.id_cabecera_solicitud == item.IdCabeceraSolicitud);
+                        var buscarNoSerieId = await _context.CabeceraSolicitudesCI.FirstOrDefaultAsync(el => el.id_cabecera_solicitud == item.IdCabeceraSolicitud);
 
                         // Registramos el historial de la solicitud
-                        var nuevoItem = new HistorialMovimientosSolicitudes
+                        var nuevoItem = new HistorialMovimientosSolicitudesCI
                         {
                             id_cabecera_solicitud = oldItem.id_cabecera_solicitud,
                             no_serie_id = buscarNoSerieId.no_serie_id,
@@ -285,8 +260,6 @@ public class ServicioSolicitud : IServicioSolicitud
                             creado_por = item.CreadoPor,
                             usuario_responsable = item.UsuarioResponsable,
                             usuario_despacho = item.UsuarioDespacho,
-                            usuario_asistente_inventario = item.UsuarioAsistenteInventario,
-                            usuario_asistente_contabilidad = item.UsuarioAsistenteContabilidad,
                             id_departamento = item.IdDepartamento,
                             id_estado_solicitud = item.IdEstadoSolicitud,
                             id_clasificacion = item.IdClasificacion,
@@ -296,12 +269,10 @@ public class ServicioSolicitud : IServicioSolicitud
                             comentario = item.Comentario,
                             total = item.Total,
                             id_usuario_responsable = item.IdUsuarioResponsable,
-                            id_usuario_despacho = item.IdUsuarioDespacho,
-                            id_usuario_asistente_inventario = item.IdUsuarioAsistenteInventario,
-                            id_usuario_asistente_contabilidad = item.IdUsuarioAsistenteContabilidad
+                            id_usuario_despacho = item.IdUsuarioDespacho
                         };
 
-                        _context.HistorialMovimientosSolicitudes.Add(nuevoItem);
+                        _context.HistorialMovimientosSolicitudesCI.Add(nuevoItem);
 
                         // Guardamos los cambios en el historial
                         await _context.SaveChangesAsync();
@@ -332,7 +303,7 @@ public class ServicioSolicitud : IServicioSolicitud
             // Si el IdCabeceraSolicitud no está presente, es una nueva solicitud
             var numeroSerie = await _servicioNumeroSerie.ObtenerNumeroDocumento(_settings.DocumentoConsumoInternoNoSerieId);
 
-            var newItemData = new DataBase.CabeceraSolicitudes
+            var newItemData = new DataBase.CabeceraSolicitudesCI
             {
                 fecha_creado = DateTime.Now,
                 comentario = item.Comentario,
@@ -341,20 +312,16 @@ public class ServicioSolicitud : IServicioSolicitud
                 no_serie_id = _settings.DocumentoConsumoInternoNoSerieId,
                 usuario_responsable = item.UsuarioResponsable ?? "",
                 usuario_despacho = item.UsuarioDespacho ?? "",
-                usuario_asistente_contabilidad = item.UsuarioAsistenteContabilidad ?? "",
-                usuario_asistente_inventario = item.UsuarioAsistenteInventario ?? "",
                 id_departamento = item.IdDepartamento,
                 id_estado_solicitud = item.IdEstadoSolicitud,
                 id_clasificacion = item.IdClasificacion,
                 id_sucursal = item.IdSucursal,
                 id_usuario_responsable = item.IdUsuarioResponsable,
                 id_usuario_despacho = item.IdUsuarioDespacho,
-                id_usuario_asistente_inventario = item.IdUsuarioAsistenteInventario,
-                id_usuario_asistente_contabilidad = item.IdUsuarioAsistenteContabilidad,
                 total = item.Total
             };
 
-            var newItem = _context.CabeceraSolicitudes.Add(newItemData);
+            var newItem = _context.CabeceraSolicitudesCI.Add(newItemData);
 
             // Usamos una transacción para asegurar que todo se guarde correctamente
             using (var transaction = await _context.Database.BeginTransactionAsync())
@@ -365,7 +332,7 @@ public class ServicioSolicitud : IServicioSolicitud
                     await _context.SaveChangesAsync();
 
                     // Registramos el historial de la nueva solicitud
-                    var nuevoItem = new HistorialMovimientosSolicitudes
+                    var nuevoItem = new HistorialMovimientosSolicitudesCI
                     {
                         id_cabecera_solicitud = newItem.Entity.id_cabecera_solicitud,
                         no_serie_id = _settings.DocumentoConsumoInternoNoSerieId,
@@ -374,8 +341,6 @@ public class ServicioSolicitud : IServicioSolicitud
                         creado_por = item.CreadoPor,
                         usuario_responsable = item.UsuarioResponsable,
                         usuario_despacho = item.UsuarioDespacho,
-                        usuario_asistente_inventario = item.UsuarioAsistenteInventario,
-                        usuario_asistente_contabilidad = item.UsuarioAsistenteContabilidad,
                         id_departamento = item.IdDepartamento,
                         id_estado_solicitud = item.IdEstadoSolicitud,
                         id_clasificacion = item.IdClasificacion,
@@ -386,11 +351,9 @@ public class ServicioSolicitud : IServicioSolicitud
                         total = item.Total,
                         id_usuario_responsable = item.IdUsuarioResponsable,
                         id_usuario_despacho = item.IdUsuarioDespacho,
-                        id_usuario_asistente_inventario = item.IdUsuarioAsistenteInventario,
-                        id_usuario_asistente_contabilidad = item.IdUsuarioAsistenteContabilidad
                     };
 
-                    _context.HistorialMovimientosSolicitudes.Add(nuevoItem);
+                    _context.HistorialMovimientosSolicitudesCI.Add(nuevoItem);
 
                     // Guardamos los cambios en el historial
                     await _context.SaveChangesAsync();
@@ -417,12 +380,12 @@ public class ServicioSolicitud : IServicioSolicitud
         }
     }
 
-    public async Task<CabeceraSolicitud> GuardarLineasSolicitud(List<LineasSolicitud> items)
+    public async Task<CabeceraSolicitudCI> GuardarLineasSolicitud(List<LineasSolicitudCI> items)
     {
         if (items.Count > 0)
         {
             var parent = _context
-                .CabeceraSolicitudes.Where(i => i.id_cabecera_solicitud == items[0].CabeceraSolicitudId)
+                .CabeceraSolicitudesCI.Where(i => i.id_cabecera_solicitud == items[0].CabeceraSolicitudId)
                 .FirstOrDefault();
 
             if (parent != null)
@@ -433,7 +396,7 @@ public class ServicioSolicitud : IServicioSolicitud
                     if (item.IdLineaSolicitud.HasValue)
                     {
                         var oldItem = _context
-                            .LineasSolicitudes.Where(i =>
+                            .LineasSolicitudesCI.Where(i =>
                                 i.id_linea_solicitud == item.IdLineaSolicitud.Value
                                 && i.cabecera_solicitud_id == item.CabeceraSolicitudId
                             )
@@ -466,7 +429,7 @@ public class ServicioSolicitud : IServicioSolicitud
                     else
                     {
                         //SE INSERTA EL NUEVO ITEM
-                        var newItemData = new LineasSolicitudes
+                        var newItemData = new LineasSolicitudesCI
                         {
                             cabecera_solicitud_id = item.CabeceraSolicitudId,
                             id_producto = item.IdProducto,
@@ -480,7 +443,7 @@ public class ServicioSolicitud : IServicioSolicitud
                             almacen_codigo = item.AlmacenCodigo,
                             nota = item.Nota,
                         };
-                        var newItem = _context.LineasSolicitudes.Add(newItemData);
+                        var newItem = _context.LineasSolicitudesCI.Add(newItemData);
                         try
                         {
                             _context.SaveChanges();
@@ -519,32 +482,32 @@ public class ServicioSolicitud : IServicioSolicitud
     public void CalcularTotalCabecera(int id)
     {
         var item = _context
-            .CabeceraSolicitudes
+            .CabeceraSolicitudesCI
             .Where(i => i.id_cabecera_solicitud == id)
             .FirstOrDefault();
 
         if (item != null)
         {
             item.total = _context
-               .LineasSolicitudes
+               .LineasSolicitudesCI
                .Where(i => i.cabecera_solicitud_id == id)  // Filtramos por id_cabecera_solicitud
                .Sum(i => i.precio_unitario * i.cantidad); // Sumar el total de las líneas
             _context.SaveChanges();
         }
     }
 
-    public Task<List<CabeceraSolicitud>> RecuperarSolicitud(int id)
+    public Task<List<CabeceraSolicitudCI>> RecuperarSolicitud(int id)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<CabeceraSolicitud> EliminarSolicitud(int id)
+    public async Task<CabeceraSolicitudCI> EliminarSolicitud(int id)
     {
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
-        var oldItem = _context.CabeceraSolicitudes.Where(i => i.id_cabecera_solicitud == id).FirstOrDefault();
+        var oldItem = _context.CabeceraSolicitudesCI.Where(i => i.id_cabecera_solicitud == id).FirstOrDefault();
         if (oldItem != null)
         {
-            _context.CabeceraSolicitudes.Remove(oldItem);
+            _context.CabeceraSolicitudesCI.Remove(oldItem);
             try
             {
                 _context.SaveChanges();
@@ -559,12 +522,12 @@ public class ServicioSolicitud : IServicioSolicitud
         return null;
     }
 
-    public async Task<CabeceraSolicitud> EliminarLineaSolicitud(int id)
+    public async Task<CabeceraSolicitudCI> EliminarLineaSolicitud(int id)
     {
-        var oldItem = _context.LineasSolicitudes.Where(i => i.id_linea_solicitud == id).FirstOrDefault();
+        var oldItem = _context.LineasSolicitudesCI.Where(i => i.id_linea_solicitud == id).FirstOrDefault();
         if (oldItem != null)
         {
-            _context.LineasSolicitudes.Remove(oldItem);
+            _context.LineasSolicitudesCI.Remove(oldItem);
             try
             {
                 _context.SaveChanges();
@@ -582,10 +545,9 @@ public class ServicioSolicitud : IServicioSolicitud
 
     public async Task<bool> RefrescarCache()
     {
-        _memoryCache.Remove("Solicitudes");
+        _memoryCache.Remove("SolicitudesCI");
         await ObtenerSolicitudes();
         return true;
     }
 
 }
-
