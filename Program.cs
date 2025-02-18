@@ -141,6 +141,7 @@ builder.Services.AddScoped<IServicioProducto, ServicioProducto>();
 builder.Services.AddScoped<IServicioProveedor, ServicioProveedor>();
 builder.Services.AddScoped<IServicioUnidadMedida, ServicioUnidadMedida>();
 builder.Services.AddScoped<IServicioSolicitud, ServicioSolicitud>();
+builder.Services.AddScoped<IServicioHistorialMovimientosSolicitudes, ServicioHistoricoMovimientoSolicitud>();
 builder.Services.AddScoped<IServicioEstadoSolicitud, ServicioEstadoSolicitud>();
 builder.Services.AddScoped<IServicioNotas, ServicioNotas>();
 builder.Services.AddScoped<IServicioClasificacion, ServicioClasificacion>();
