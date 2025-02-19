@@ -196,6 +196,8 @@ public class ServicioSolicitud : IServicioSolicitud
             oldItem.fecha_creado = item.FechaCreado;
             oldItem.comentario = item.Comentario;
             oldItem.creado_por = item.CreadoPor;
+            oldItem.modificado_por = identity.Name;
+            oldItem.fecha_modificado = DateTime.Now;
             oldItem.id_usuario_responsable = item.IdUsuarioResponsable;
             oldItem.usuario_responsable = item.UsuarioResponsable;
             oldItem.id_departamento = item.IdDepartamento;
@@ -262,10 +264,10 @@ public class ServicioSolicitud : IServicioSolicitud
                             usuario_despacho = item.UsuarioDespacho,
                             id_departamento = item.IdDepartamento,
                             id_estado_solicitud = item.IdEstadoSolicitud,
+                            modificado_por = identity.Name,
+                            fecha_modificado = DateTime.Now,
                             id_clasificacion = item.IdClasificacion,
                             id_sucursal = item.IdSucursal,
-                            fecha_modificado = item.FechaModificado,
-                            modificado_por = item.ModificadoPor,
                             comentario = item.Comentario,
                             total = item.Total,
                             id_usuario_responsable = item.IdUsuarioResponsable,
@@ -345,8 +347,6 @@ public class ServicioSolicitud : IServicioSolicitud
                         id_estado_solicitud = item.IdEstadoSolicitud,
                         id_clasificacion = item.IdClasificacion,
                         id_sucursal = item.IdSucursal,
-                        fecha_modificado = item.FechaModificado,
-                        modificado_por = item.ModificadoPor,
                         comentario = item.Comentario,
                         total = item.Total,
                         id_usuario_responsable = item.IdUsuarioResponsable,
