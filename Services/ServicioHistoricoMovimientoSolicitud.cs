@@ -77,7 +77,7 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
             _memoryCache.Set<List<HistorialMovimientoSolicitudCI>>(
                 "HistorialMovimientosSolicitudesCI",
                 cache,
-                DateTimeOffset.Now.AddMinutes(30)
+                DateTimeOffset.Now.AddMinutes(5)
             );
         }
         return cache.OrderBy(i => i.FechaCreado).ToList();
@@ -119,7 +119,7 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
             _memoryCache.Set<List<HistorialMovimientoSolicitudCI>>(
                 "HistorialMovimientosSolicitudesAgrupadosCI",
                 cache,
-                DateTimeOffset.Now.AddMinutes(30)
+                DateTimeOffset.Now.AddMinutes(5)
             );
         }
         return cache.OrderBy(i => i.FechaCreado).ToList();
