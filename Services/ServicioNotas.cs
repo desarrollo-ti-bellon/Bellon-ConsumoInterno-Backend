@@ -60,7 +60,7 @@ public class ServicioNotas : IServicioNotas
                     FechaCreado = i.fecha_creado,
                     CreadoPor = i.creado_por,
                     FechaModificado = i.fecha_modificado,
-                    ModificadoPor = i.modificado_por,
+                    ModificadoPor = i.modificado_por ?? "",
                 })
                 .ToList();
             _memoryCache.Set<List<Notas>>(
