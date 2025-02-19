@@ -54,16 +54,16 @@ public partial class UsuariosCI
     public string? codigo_almacen { get; set; }
 
     [InverseProperty("id_usuario_despachoNavigation")]
+    public virtual ICollection<CabeceraConsumoInterno> CabeceraConsumoInternoid_usuario_despachoNavigation { get; set; } = new List<CabeceraConsumoInterno>();
+
+    [InverseProperty("id_usuario_responsableNavigation")]
+    public virtual ICollection<CabeceraConsumoInterno> CabeceraConsumoInternoid_usuario_responsableNavigation { get; set; } = new List<CabeceraConsumoInterno>();
+
+    [InverseProperty("id_usuario_despachoNavigation")]
     public virtual ICollection<CabeceraSolicitudesCI> CabeceraSolicitudesCIid_usuario_despachoNavigation { get; set; } = new List<CabeceraSolicitudesCI>();
 
     [InverseProperty("id_usuario_responsableNavigation")]
     public virtual ICollection<CabeceraSolicitudesCI> CabeceraSolicitudesCIid_usuario_responsableNavigation { get; set; } = new List<CabeceraSolicitudesCI>();
-
-    [InverseProperty("id_usuario_despachoNavigation")]
-    public virtual ICollection<ConsumoInterno> ConsumoInternoid_usuario_despachoNavigation { get; set; } = new List<ConsumoInterno>();
-
-    [InverseProperty("id_usuario_responsableNavigation")]
-    public virtual ICollection<ConsumoInterno> ConsumoInternoid_usuario_responsableNavigation { get; set; } = new List<ConsumoInterno>();
 
     [ForeignKey("posicion_id")]
     [InverseProperty("UsuariosCI")]

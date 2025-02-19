@@ -13,15 +13,13 @@ public partial class AppDataBase : DbContext
 
     public virtual DbSet<ClasificacionesCI> ClasificacionesCI { get; set; }
 
-    public virtual DbSet<ConsumoInterno> ConsumoInterno { get; set; }
+    public virtual DbSet<CabeceraConsumoInterno> CabeceraConsumoInterno { get; set; }
 
     public virtual DbSet<EstadosSolicitudesCI> EstadosSolicitudesCI { get; set; }
 
     public virtual DbSet<HistorialMovimientosSolicitudesCI> HistorialMovimientosSolicitudesCI { get; set; }
 
     public virtual DbSet<LineasConsumoInterno> LineasConsumoInterno { get; set; }
-
-    public virtual DbSet<LineasMovimientosSolicitudesCI> LineasMovimientosSolicitudesCI { get; set; }
 
     public virtual DbSet<LineasSolicitudesCI> LineasSolicitudesCI { get; set; }
 
@@ -36,7 +34,7 @@ public partial class AppDataBase : DbContext
     public virtual DbSet<UsuarioPerfil> UsuarioPerfil { get; set; }
 
     public virtual DbSet<UsuariosCI> UsuariosCI { get; set; }
-    
+
     private readonly Classes.AppSettings _settings;
 
     public AppDataBase(IOptions<Classes.AppSettings> settings)
@@ -80,27 +78,27 @@ public partial class AppDataBase : DbContext
             entity.HasKey(e => e.id_clasificacion).HasName("PK_ClasificacionesConsumoInterno");
         });
 
-        modelBuilder.Entity<ConsumoInterno>(entity =>
-        {
-            entity.HasKey(e => e.id_cabecera_consumo_interno).HasName("PK__Cabecera__79B996641EAD6DEE");
+        modelBuilder.Entity<CabeceraSolicitudesCI>(entity =>
+ {
+            entity.HasKey(e => e.id_cabecera_solicitud).HasName("PK_CabeceraSolicitudesActivas");
 
-            entity.HasOne(d => d.id_clasificacionNavigation).WithMany(p => p.ConsumoInterno)
+            entity.HasOne(d => d.id_clasificacionNavigation).WithMany(p => p.CabeceraSolicitudesCI)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__CabeceraS__id_cl__2EC5E7B8");
+                .HasConstraintName("FK_CabeceraSolicitudes_Clasificaciones");
 
-            entity.HasOne(d => d.id_estado_solicitudNavigation).WithMany(p => p.ConsumoInterno)
+            entity.HasOne(d => d.id_estado_solicitudNavigation).WithMany(p => p.CabeceraSolicitudesCI)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__CabeceraS__id_es__2DD1C37F");
+                .HasConstraintName("FK_CabeceraSolicitudes_EstadosSolicitudes");
 
-            entity.HasOne(d => d.id_usuario_despachoNavigation).WithMany(p => p.ConsumoInternoid_usuario_despachoNavigation).HasConstraintName("FK__CabeceraS__id_us__30AE302A");
+            entity.HasOne(d => d.id_usuario_despachoNavigation).WithMany(p => p.CabeceraSolicitudesCIid_usuario_despachoNavigation).HasConstraintName("FK__CabeceraS__id_us__6A1BB7B0");
 
-            entity.HasOne(d => d.id_usuario_responsableNavigation).WithMany(p => p.ConsumoInternoid_usuario_responsableNavigation)
+            entity.HasOne(d => d.id_usuario_responsableNavigation).WithMany(p => p.CabeceraSolicitudesCIid_usuario_responsableNavigation)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__CabeceraS__id_us__2FBA0BF1");
+                .HasConstraintName("FK__CabeceraS__id_us__69279377");
 
-            entity.HasOne(d => d.no_serie).WithMany(p => p.ConsumoInterno)
+            entity.HasOne(d => d.no_serie).WithMany(p => p.CabeceraSolicitudesCI)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__CabeceraS__no_se__2CDD9F46");
+                .HasConstraintName("FK_CabeceraSolicitudes_NoSeries");
         });
 
         modelBuilder.Entity<EstadosSolicitudesCI>(entity =>
@@ -122,15 +120,6 @@ public partial class AppDataBase : DbContext
             entity.HasOne(d => d.cabecera_consumo_interno).WithMany(p => p.LineasConsumoInterno)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__LineasCon__cabec__3EFC4F81");
-        });
-
-        modelBuilder.Entity<LineasMovimientosSolicitudesCI>(entity =>
-        {
-            entity.HasKey(e => e.id_linea_hist_mov_solicitud).HasName("PK__LineasSo__A0E9C7BC331C8C50");
-
-            entity.HasOne(d => d.cabecera_hist_mov_solicitud).WithMany(p => p.LineasMovimientosSolicitudesCI)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__LineasMov__cabec__2818EA29");
         });
 
         modelBuilder.Entity<LineasSolicitudesCI>(entity =>

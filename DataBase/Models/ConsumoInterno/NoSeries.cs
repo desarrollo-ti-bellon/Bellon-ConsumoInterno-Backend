@@ -48,8 +48,8 @@ public partial class NoSeries
     public string modificado_por { get; set; }
 
     [InverseProperty("no_serie")]
-    public virtual ICollection<CabeceraSolicitudesCI> CabeceraSolicitudesCI { get; set; } = new List<CabeceraSolicitudesCI>();
+    public virtual ICollection<CabeceraConsumoInterno> CabeceraConsumoInterno { get; set; } = new List<CabeceraConsumoInterno>();
 
     [InverseProperty("no_serie")]
-    public virtual ICollection<ConsumoInterno> ConsumoInterno { get; set; } = new List<ConsumoInterno>();
+    public virtual ICollection<CabeceraSolicitudesCI> CabeceraSolicitudesCI { get; set; } = new List<CabeceraSolicitudesCI>();
 }

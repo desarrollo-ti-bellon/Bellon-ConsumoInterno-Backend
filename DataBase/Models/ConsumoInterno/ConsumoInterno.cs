@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bellon.API.ConsumoInterno.DataBase;
 
-[Table("ConsumoInterno", Schema = "ConsumoInterno")]
-public partial class ConsumoInterno
+[Table("CabeceraConsumoInterno", Schema = "ConsumoInterno")]
+public partial class CabeceraConsumoInterno
 {
     [Key]
     public int id_cabecera_consumo_interno { get; set; }
 
-    public int no_serie_id { get; set; }
+    public int? no_serie_id { get; set; }
 
     [Required]
     [StringLength(20)]
@@ -69,22 +69,22 @@ public partial class ConsumoInterno
     public virtual ICollection<LineasConsumoInterno> LineasConsumoInterno { get; set; } = new List<LineasConsumoInterno>();
 
     [ForeignKey("id_clasificacion")]
-    [InverseProperty("ConsumoInterno")]
+    [InverseProperty("CabeceraConsumoInterno")]
     public virtual ClasificacionesCI id_clasificacionNavigation { get; set; }
 
     [ForeignKey("id_estado_solicitud")]
-    [InverseProperty("ConsumoInterno")]
+    [InverseProperty("CabeceraConsumoInterno")]
     public virtual EstadosSolicitudesCI id_estado_solicitudNavigation { get; set; }
 
     [ForeignKey("id_usuario_despacho")]
-    [InverseProperty("ConsumoInternoid_usuario_despachoNavigation")]
+    [InverseProperty("CabeceraConsumoInternoid_usuario_despachoNavigation")]
     public virtual UsuariosCI id_usuario_despachoNavigation { get; set; }
 
     [ForeignKey("id_usuario_responsable")]
-    [InverseProperty("ConsumoInternoid_usuario_responsableNavigation")]
+    [InverseProperty("CabeceraConsumoInternoid_usuario_responsableNavigation")]
     public virtual UsuariosCI id_usuario_responsableNavigation { get; set; }
 
     [ForeignKey("no_serie_id")]
-    [InverseProperty("ConsumoInterno")]
+    [InverseProperty("CabeceraConsumoInterno")]
     public virtual NoSeries no_serie { get; set; }
 }

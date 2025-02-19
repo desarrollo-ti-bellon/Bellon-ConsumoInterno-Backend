@@ -12,7 +12,7 @@ public partial class LineasConsumoInterno
     [Key]
     public int id_linea_consumo_interno { get; set; }
 
-    public int cabecera_consumo_interno_id { get; set; }
+    public int? cabecera_consumo_interno_id { get; set; }
 
     [Required]
     [StringLength(100)]
@@ -49,5 +49,5 @@ public partial class LineasConsumoInterno
 
     [ForeignKey("cabecera_consumo_interno_id")]
     [InverseProperty("LineasConsumoInterno")]
-    public virtual ConsumoInterno cabecera_consumo_interno { get; set; }
+    public virtual CabeceraConsumoInterno cabecera_consumo_interno { get; set; }
 }

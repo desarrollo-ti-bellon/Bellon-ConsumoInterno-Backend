@@ -67,6 +67,4 @@ public partial class HistorialMovimientosSolicitudesCI
 
     public int? id_usuario_despacho { get; set; }
 
-    [InverseProperty("cabecera_hist_mov_solicitud")]
-    public virtual ICollection<LineasMovimientosSolicitudesCI> LineasMovimientosSolicitudesCI { get; set; } = new List<LineasMovimientosSolicitudesCI>();
 }
