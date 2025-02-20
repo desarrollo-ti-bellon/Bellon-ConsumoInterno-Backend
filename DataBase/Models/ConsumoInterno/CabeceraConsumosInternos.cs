@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bellon.API.ConsumoInterno.DataBase;
 
-[Table("CabeceraConsumoInterno", Schema = "ConsumoInterno")]
-public partial class CabeceraConsumoInterno
+[Table("CabeceraConsumosInternos", Schema = "ConsumoInterno")]
+public partial class CabeceraConsumosInternos
 {
     [Key]
-    public int id_cabecera_consumo_interno { get; set; }
+    public int? id_cabecera_consumo_interno { get; set; }
 
     public int? no_serie_id { get; set; }
 
@@ -31,12 +31,6 @@ public partial class CabeceraConsumoInterno
 
     [StringLength(100)]
     public string usuario_despacho { get; set; }
-
-    [StringLength(100)]
-    public string usuario_asistente_inventario { get; set; }
-
-    [StringLength(100)]
-    public string usuario_asistente_contabilidad { get; set; }
 
     [Required]
     [StringLength(100)]
@@ -66,25 +60,26 @@ public partial class CabeceraConsumoInterno
     public int? id_usuario_despacho { get; set; }
 
     [InverseProperty("cabecera_consumo_interno")]
-    public virtual ICollection<LineasConsumoInterno> LineasConsumoInterno { get; set; } = new List<LineasConsumoInterno>();
+    public virtual ICollection<LineasConsumosInternos> LineasConsumosInternos { get; set; } = new List<LineasConsumosInternos>();
 
     [ForeignKey("id_clasificacion")]
-    [InverseProperty("CabeceraConsumoInterno")]
+    [InverseProperty("CabeceraConsumosInternos")]
     public virtual ClasificacionesCI id_clasificacionNavigation { get; set; }
 
     [ForeignKey("id_estado_solicitud")]
-    [InverseProperty("CabeceraConsumoInterno")]
+    [InverseProperty("CabeceraConsumosInternos")]
     public virtual EstadosSolicitudesCI id_estado_solicitudNavigation { get; set; }
 
     [ForeignKey("id_usuario_despacho")]
-    [InverseProperty("CabeceraConsumoInternoid_usuario_despachoNavigation")]
+    [InverseProperty("CabeceraConsumosInternosid_usuario_despachoNavigation")]
     public virtual UsuariosCI id_usuario_despachoNavigation { get; set; }
 
     [ForeignKey("id_usuario_responsable")]
-    [InverseProperty("CabeceraConsumoInternoid_usuario_responsableNavigation")]
+    [InverseProperty("CabeceraConsumosInternosid_usuario_responsableNavigation")]
     public virtual UsuariosCI id_usuario_responsableNavigation { get; set; }
 
     [ForeignKey("no_serie_id")]
-    [InverseProperty("CabeceraConsumoInterno")]
+    [InverseProperty("CabeceraConsumosInternos")]
     public virtual NoSeries no_serie { get; set; }
+
 }

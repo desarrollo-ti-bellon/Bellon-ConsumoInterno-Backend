@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bellon.API.ConsumoInterno.DataBase;
 
-[Table("LineasConsumoInterno", Schema = "ConsumoInterno")]
-public partial class LineasConsumoInterno
+[Table("LineasConsumosInternos", Schema = "ConsumoInterno")]
+public partial class LineasConsumosInternos
 {
     [Key]
-    public int id_linea_consumo_interno { get; set; }
+    public int? id_linea_consumo_interno { get; set; }
 
-    public int? cabecera_consumo_interno_id { get; set; }
+    public int cabecera_consumo_interno_id { get; set; }
 
     [Required]
     [StringLength(100)]
@@ -48,6 +48,7 @@ public partial class LineasConsumoInterno
     public string nota { get; set; }
 
     [ForeignKey("cabecera_consumo_interno_id")]
-    [InverseProperty("LineasConsumoInterno")]
-    public virtual CabeceraConsumoInterno cabecera_consumo_interno { get; set; }
+    [InverseProperty("LineasConsumosInternos")]
+    public virtual CabeceraConsumosInternos cabecera_consumo_interno { get; set; }
+
 }
