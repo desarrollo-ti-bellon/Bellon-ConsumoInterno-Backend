@@ -19,7 +19,7 @@ public partial class EstadosSolicitudesCI
     public bool estado { get; set; }
 
     [InverseProperty("id_estado_solicitudNavigation")]
-    public virtual ICollection<CabeceraConsumoInterno> CabeceraConsumoInterno { get; set; } = new List<CabeceraConsumoInterno>();
+    public virtual ICollection<CabeceraConsumosInternos> CabeceraConsumosInternos { get; set; } = new List<CabeceraConsumosInternos>();
 
     [InverseProperty("id_estado_solicitudNavigation")]
     public virtual ICollection<CabeceraSolicitudesCI> CabeceraSolicitudesCI { get; set; } = new List<CabeceraSolicitudesCI>();

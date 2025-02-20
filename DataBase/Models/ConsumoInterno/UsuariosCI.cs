@@ -54,10 +54,10 @@ public partial class UsuariosCI
     public string? codigo_almacen { get; set; }
 
     [InverseProperty("id_usuario_despachoNavigation")]
-    public virtual ICollection<CabeceraConsumoInterno> CabeceraConsumoInternoid_usuario_despachoNavigation { get; set; } = new List<CabeceraConsumoInterno>();
+    public virtual ICollection<CabeceraConsumosInternos> CabeceraConsumosInternosid_usuario_despachoNavigation { get; set; } = new List<CabeceraConsumosInternos>();
 
     [InverseProperty("id_usuario_responsableNavigation")]
-    public virtual ICollection<CabeceraConsumoInterno> CabeceraConsumoInternoid_usuario_responsableNavigation { get; set; } = new List<CabeceraConsumoInterno>();
+    public virtual ICollection<CabeceraConsumosInternos> CabeceraConsumosInternosid_usuario_responsableNavigation { get; set; } = new List<CabeceraConsumosInternos>();
 
     [InverseProperty("id_usuario_despachoNavigation")]
     public virtual ICollection<CabeceraSolicitudesCI> CabeceraSolicitudesCIid_usuario_despachoNavigation { get; set; } = new List<CabeceraSolicitudesCI>();
