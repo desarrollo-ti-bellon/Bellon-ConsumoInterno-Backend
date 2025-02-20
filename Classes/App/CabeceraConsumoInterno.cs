@@ -54,12 +54,15 @@ public class CabeceraConsumoInterno
     public decimal Total { get; set; }
 
     [JsonPropertyName("id_usuario_responsable")]
-    public string IdUsuarioResponsable { get; set; }
+    public int IdUsuarioResponsable { get; set; }
 
     [JsonPropertyName("id_usuario_despacho")]
-    public string IdUsuarioDespacho { get; set; }
+    public int? IdUsuarioDespacho { get; set; }
 
     [JsonPropertyName("LineasConsumoInterno")]
     public List<LineasConsumoInterno> Lineas { get; set; }
+
+    [JsonPropertyName("cantidad_lineas")]
+    public int? CantidadLineas { get; set; }
 
 }
