@@ -1,0 +1,74 @@
+using Azure;
+using Bellon.API.ConsumoInterno.Authorization;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Resource;
+
+namespace Bellon.API.ConsumoInterno.Controllers;
+
+[Authorize]
+[AutorizacionBellon]
+[RequiredScope("App.ConsumoInterno")]
+[ApiController]
+[Route("[controller]")]
+public class ConsumoInternoController : ControllerBase
+{
+    private readonly ILogger<ConsumoInternoController> _logger;
+    private readonly IHttpContextAccessor _contextAccessor;
+    private readonly Interfaces.IServicioConsumoInterno _servicioConsumoInterno;
+
+    public ConsumoInternoController(
+        ILogger<ConsumoInternoController> logger,
+        IHttpContextAccessor contextAccessor,
+        Interfaces.IServicioConsumoInterno servicioConsumoInterno
+    )
+    {
+        _logger = logger;
+        _contextAccessor = contextAccessor;
+        _servicioConsumoInterno = servicioConsumoInterno;
+    }
+
+    [HttpGet("EstadoConsumoInterno")]
+    public async Task<IActionResult> ObtenerConsumosInternosPorEstadoConsumoInterno([FromQuery] int? estadoConsumoInternoId)
+    {
+        if (estadoConsumoInternoId.HasValue)
+        {
+            var data = await _servicioConsumoInterno.ObtenerConsumoInternoPorEstadoSolicitud(estadoConsumoInternoId.Value);
+            return data != null ? Ok(data) : NoContent();
+        }
+        else
+        {
+            var data = await _servicioConsumoInterno.ObtenerConsumosInternosDelUsuarioSolicitantePorEstado(null);
+            return data != null && data.Count > 0 ? Ok(data) : NoContent();
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Obtener([FromQuery] int? id)
+    {
+        if (id.HasValue)
+        {
+            var data = await _servicioConsumoInterno.ObtenerConsumoInterno(id.Value);
+            return data != null ? Ok(data) : NoContent();
+        }
+        else
+        {
+            var data = await _servicioConsumoInterno.ObtenerConsumosInternos();
+            return data != null && data.Count > 0 ? Ok(data) : NoContent();
+        }
+    }
+
+    [HttpGet("Cantidad")]
+    public async Task<IActionResult> ObtenerEstadoConsumoInterno([FromQuery] int? estadoConsumoInternoId)
+    {
+        try
+        {
+            var result = await _servicioConsumoInterno.ObtenerCantidadConsumoInternosPorEstadoSolicitud(estadoConsumoInternoId ?? 0);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
+    }
+}
