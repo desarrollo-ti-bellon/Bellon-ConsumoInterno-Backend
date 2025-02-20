@@ -40,6 +40,9 @@ public class LineasSolicitudCI
     [JsonPropertyName("almacen_codigo")]
     public string? AlmacenCodigo { get; set; }
 
+    [JsonPropertyName("total")]
+    public decimal Total { get; set; }
+
     [JsonPropertyName("nota")]
     public string? Nota { get; set; }
 
