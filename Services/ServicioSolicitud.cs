@@ -42,6 +42,75 @@ public class ServicioSolicitud : IServicioSolicitud
         _servicioAutorizacion = servicioAutorizacion;
         _servicioNumeroSerie = servicioNumeroSerie;
     }
+    public int estadoSolicitudTerminada = 7;
+    public int estadoSolicitudNueva = 1;
+
+    public async Task<List<CabeceraSolicitudCI>> ObtenerSolicitudesPorPerfilUsuario()
+    {
+        // Obtener todas las solicitudes solo una vez
+        var allItems = await ObtenerSolicitudes();
+
+        // Obtener el usuario actual desde la identidad
+        var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+        if (identity == null)
+        {
+            return new List<CabeceraSolicitudCI>();  // Retornar una lista vacía si no hay identidad
+        }
+
+        // Obtener el usuario desde la base de datos
+        var usuario = await _context.UsuariosCI.FirstOrDefaultAsync(el => el.correo == identity.Name);
+        if (usuario == null)
+        {
+            return new List<CabeceraSolicitudCI>();  // Retornar una lista vacía si no se encuentra el usuario
+        }
+
+        // Definir el diccionario de roles y sus estados de solicitudes
+        var estadosPorPerfil = new Dictionary<int, List<int>>()
+    {
+        { 1, new List<int> { 1, 2, 3, 4, 5, 6, 7 } },  // Administrador
+        { 2, new List<int> { 2 } },                    // Director
+        { 3, new List<int> { 2 } },                    // Gerente Area
+        { 4, new List<int> { 3 } },                    // Despachador
+        { 5, new List<int> { 1, 3, 4, 5 } }            // Solicitante
+    };
+
+        // Verificar que el perfil del usuario exista en el diccionario
+        if (!estadosPorPerfil.ContainsKey(usuario.posicion_id))
+        {
+            return new List<CabeceraSolicitudCI>();  // Retornar una lista vacía si el perfil no está en el diccionario
+        }
+
+        // Filtrar las solicitudes dependiendo del perfil
+        var arrEstadosSolicitudes = estadosPorPerfil[usuario.posicion_id];
+
+        var query = allItems;
+
+        switch (usuario.posicion_id)
+        {
+            case 1: // Administrador
+                query.Where(i => i.IdSucursal == usuario.id_sucursal && arrEstadosSolicitudes.Contains(i.IdEstadoSolicitud));
+                break;
+
+            case 2: // Director
+                query.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdDepartamento == usuario.id_departamento && arrEstadosSolicitudes.Contains(i.IdEstadoSolicitud));
+                break;
+
+            case 3: // Gerente Area
+                query.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdSucursal == usuario.id_sucursal && i.IdDepartamento == usuario.id_departamento && arrEstadosSolicitudes.Contains(i.IdEstadoSolicitud));
+                break;
+
+            case 4: // Despachador
+                query.Where(i => i.IdSucursal == usuario.id_sucursal && arrEstadosSolicitudes.Contains(i.IdEstadoSolicitud));
+                break;
+
+            case 5: // Solicitante
+                query.Where(i => i.CreadoPor == usuario.correo && i.IdDepartamento == usuario.id_departamento && i.IdSucursal == usuario.id_sucursal && arrEstadosSolicitudes.Contains(i.IdEstadoSolicitud));
+                break;
+        }
+
+        // Obtener los resultados filtrados
+        return query.ToList();
+    }
 
     public async Task<List<CabeceraSolicitudCI>> ObtenerSolicitudesDelUsuarioSolicitantePorEstado(int? estadoSolicitudId)
     {
@@ -90,7 +159,8 @@ public class ServicioSolicitud : IServicioSolicitud
                     Total = i.total,
                     IdUsuarioResponsable = i.id_usuario_responsable,
                     IdUsuarioDespacho = i.id_usuario_despacho,
-                    CantidadLineas = i.LineasSolicitudesCI.Count
+                    CantidadLineas = i.LineasSolicitudesCI.Count,
+                    NombreCreadoPor = i.nombre_creado_por
                     // FechaModificado = i.fecha_modificado,
                     // ModificadoPor = i.modificado_por,
                 })
@@ -123,7 +193,7 @@ public class ServicioSolicitud : IServicioSolicitud
                 Cantidad = i.cantidad,
                 IdUnidadMedida = i.id_unidad_medida,
                 CodigoUnidadMedida = i.codigo_unidad_medida,
-                // FechaModificado = i.fecha_modificado,
+                Total = i.total
             })
             .OrderBy(i => i.IdLineaSolicitud)
             .ToList();
@@ -140,7 +210,7 @@ public class ServicioSolicitud : IServicioSolicitud
     public async Task<int> ObtenerCantidadSolicitudesPorEstadoSolicitud(int estadoSolicitudId)
     {
         var allItems = await ObtenerSolicitudes();
-        return allItems.Where(i => i.IdEstadoSolicitud == estadoSolicitudId).ToList().Count;
+        return allItems.Where(i => i.IdEstadoSolicitud == estadoSolicitudId).ToList().Count();
     }
 
     public async Task<CabeceraSolicitudCI> ObtenerSolicitud(int id)
@@ -196,7 +266,7 @@ public class ServicioSolicitud : IServicioSolicitud
             oldItem.fecha_creado = item.FechaCreado;
             oldItem.comentario = item.Comentario;
             oldItem.creado_por = item.CreadoPor;
-            oldItem.modificado_por = identity.Name;
+            oldItem.modificado_por = identity!.Name;
             oldItem.fecha_modificado = DateTime.Now;
             oldItem.id_usuario_responsable = item.IdUsuarioResponsable;
             oldItem.usuario_responsable = item.UsuarioResponsable;
@@ -205,6 +275,7 @@ public class ServicioSolicitud : IServicioSolicitud
             oldItem.id_clasificacion = item.IdClasificacion;
             oldItem.id_sucursal = item.IdSucursal;
             oldItem.total = item.Total;
+            oldItem.nombre_creado_por = item.NombreCreadoPor;
 
             if (cambioEstadoSolicitud)
             {
@@ -252,32 +323,25 @@ public class ServicioSolicitud : IServicioSolicitud
                     {
                         var buscarNoSerieId = await _context.CabeceraSolicitudesCI.FirstOrDefaultAsync(el => el.id_cabecera_solicitud == item.IdCabeceraSolicitud);
 
-                        // Registramos el historial de la solicitud
-                        var nuevoItem = new HistorialMovimientosSolicitudesCI
+                        // GUARDAMOS EL HISTORICO DEL ESTADO DE LA SOLICITUD
+                        await GuardarHistoricoSolicitudes(item);
+
+                        // AQUI SE AGREGAN LAS SOLICITUDES AL CONSUMO INTERNO CUANDO TERMINA EL PROCESO CORRECTAMENTE EN EL LS CENTRAL
+                        if (item.IdEstadoSolicitud == 6) // SOLICITUD CONFIRMADA 
                         {
-                            id_cabecera_solicitud = oldItem.id_cabecera_solicitud,
-                            no_serie_id = buscarNoSerieId.no_serie_id,
-                            no_documento = item.NoDocumento,
-                            fecha_creado = DateTime.Now,
-                            creado_por = item.CreadoPor,
-                            usuario_responsable = item.UsuarioResponsable,
-                            usuario_despacho = item.UsuarioDespacho,
-                            id_departamento = item.IdDepartamento,
-                            id_estado_solicitud = item.IdEstadoSolicitud,
-                            modificado_por = identity.Name,
-                            fecha_modificado = DateTime.Now,
-                            id_clasificacion = item.IdClasificacion,
-                            id_sucursal = item.IdSucursal,
-                            comentario = item.Comentario,
-                            total = item.Total,
-                            id_usuario_responsable = item.IdUsuarioResponsable,
-                            id_usuario_despacho = item.IdUsuarioDespacho
-                        };
+                            var verificarArchivado = await Archivar(oldItem.id_cabecera_solicitud);
+                            if (!verificarArchivado.Exito)
+                            {
+                                await transaction.RollbackAsync();
+                                throw new Exception("Error al guardar el consumo interno: " + verificarArchivado.Mensaje);
+                            }
+                        }
 
-                        _context.HistorialMovimientosSolicitudesCI.Add(nuevoItem);
-
-                        // Guardamos los cambios en el historial
-                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        // GUARDAMOS EL HISTORICO DEL ESTADO DE LA SOLICITUD
+                        await GuardarHistoricoSolicitudes(item);
                     }
 
                     // Completamos la transacción si todo ha sido exitoso
@@ -293,6 +357,7 @@ public class ServicioSolicitud : IServicioSolicitud
 
             // Calculamos el total de la cabecera actualizada
             CalcularTotalCabecera(oldItem.id_cabecera_solicitud);
+            CalcularTotalHistorial(oldItem.id_cabecera_solicitud);
 
             // Limpiamos la caché y la volvemos a poblar
             await RefrescarCache();
@@ -320,7 +385,8 @@ public class ServicioSolicitud : IServicioSolicitud
                 id_sucursal = item.IdSucursal,
                 id_usuario_responsable = item.IdUsuarioResponsable,
                 id_usuario_despacho = item.IdUsuarioDespacho,
-                total = item.Total
+                total = 0,
+                nombre_creado_por = item.NombreCreadoPor
             };
 
             var newItem = _context.CabeceraSolicitudesCI.Add(newItemData);
@@ -333,30 +399,11 @@ public class ServicioSolicitud : IServicioSolicitud
                     // Guardamos los cambios en la nueva CabeceraSolicitud
                     await _context.SaveChangesAsync();
 
-                    // Registramos el historial de la nueva solicitud
-                    var nuevoItem = new HistorialMovimientosSolicitudesCI
-                    {
-                        id_cabecera_solicitud = newItem.Entity.id_cabecera_solicitud,
-                        no_serie_id = _settings.DocumentoConsumoInternoNoSerieId,
-                        no_documento = numeroSerie,
-                        fecha_creado = DateTime.Now,
-                        creado_por = item.CreadoPor,
-                        usuario_responsable = item.UsuarioResponsable,
-                        usuario_despacho = item.UsuarioDespacho,
-                        id_departamento = item.IdDepartamento,
-                        id_estado_solicitud = item.IdEstadoSolicitud,
-                        id_clasificacion = item.IdClasificacion,
-                        id_sucursal = item.IdSucursal,
-                        comentario = item.Comentario,
-                        total = item.Total,
-                        id_usuario_responsable = item.IdUsuarioResponsable,
-                        id_usuario_despacho = item.IdUsuarioDespacho,
-                    };
-
-                    _context.HistorialMovimientosSolicitudesCI.Add(nuevoItem);
-
-                    // Guardamos los cambios en el historial
-                    await _context.SaveChangesAsync();
+                    // GUARDAMOS EL HISTORICO DEL ESTADO DE LA SOLICITUD
+                    item.NoDocumento = numeroSerie;
+                    item.IdCabeceraSolicitud = newItem.Entity.id_cabecera_solicitud;
+                    item.Total = 0;
+                    await GuardarHistoricoSolicitudes(item);
 
                     // Completamos la transacción si todo ha sido exitoso
                     await transaction.CommitAsync();
@@ -371,6 +418,7 @@ public class ServicioSolicitud : IServicioSolicitud
 
             // Calculamos el total de la nueva cabecera
             CalcularTotalCabecera(newItem.Entity.id_cabecera_solicitud);
+            CalcularTotalHistorial(newItem.Entity.id_cabecera_solicitud);
 
             // Limpiamos la caché y la volvemos a poblar
             await RefrescarCache();
@@ -464,6 +512,7 @@ public class ServicioSolicitud : IServicioSolicitud
 
             //SE ACTUALIZA EL TOTAL DE LA CABECERA
             CalcularTotalCabecera(items[0].CabeceraSolicitudId);
+            CalcularTotalHistorial(items[0].CabeceraSolicitudId);
 
             //SE LIMPIA LA CACHE Y SE VUELVE A POBLAR
             await RefrescarCache();
@@ -537,10 +586,238 @@ public class ServicioSolicitud : IServicioSolicitud
                 throw new Exception("Error al eliminar el registro: <" + ex.Message + ">");
             }
             CalcularTotalCabecera(oldItem.cabecera_solicitud_id);
+            CalcularTotalHistorial(oldItem.cabecera_solicitud_id);
             await RefrescarCache();
             return await ObtenerSolicitudesPorId(oldItem.cabecera_solicitud_id);
         }
         return null;
+    }
+
+    public async Task<Resultado> Archivar(int id)
+    {
+        var item = await ObtenerSolicitud(id);
+        if (item == null)
+        {
+            return new Resultado
+            {
+                Exito = false,
+                Mensaje = $"No se encontró la Solicitud {id} para archivar"
+            };
+        }
+
+        // Usamos una transacción para asegurar que todo se haga de manera atómica
+        try
+        {
+            // CREANDO ENCABEZADO DE CONSUMO INTERNO
+            var buscarNoSerieId = await _context.CabeceraSolicitudesCI.FirstOrDefaultAsync(el => el.id_cabecera_solicitud == item.IdCabeceraSolicitud);
+            var consumoInterno = new CabeceraConsumosInternos
+            {
+                id_cabecera_consumo_interno = item.IdCabeceraSolicitud.Value,
+                no_serie_id = buscarNoSerieId.no_serie_id,
+                no_documento = item.NoDocumento ?? "",
+                fecha_creado = item.FechaCreado,
+                creado_por = item.CreadoPor,
+                usuario_responsable = item.UsuarioResponsable,
+                usuario_despacho = item.UsuarioDespacho ?? "",
+                id_departamento = item.IdDepartamento,
+                id_estado_solicitud = estadoSolicitudTerminada,
+                id_clasificacion = item.IdClasificacion,
+                id_sucursal = item.IdSucursal,
+                fecha_modificado = item.FechaModificado,
+                modificado_por = item.ModificadoPor ?? "",
+                comentario = item.Comentario ?? "",
+                total = item.Total,
+                id_usuario_responsable = item.IdUsuarioResponsable,
+                id_usuario_despacho = item.IdUsuarioDespacho,
+                nombre_creado_por = item.NombreCreadoPor
+            };
+
+            // Habilitar el insert explícito para poder insertar el ID
+            _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [ConsumoInterno].[CabeceraConsumosInternos] ON");
+            _context.CabeceraConsumosInternos.Add(consumoInterno);
+            await _context.SaveChangesAsync();
+            _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [ConsumoInterno].[CabeceraConsumosInternos] OFF");
+
+            // COPIANDO LAS LINEAS DE SOLICITUD A LA TABLA DE CONSUMOS INTERNOS
+            var lineasSolicitudesCI = item.Lineas.Where(i => i.CabeceraSolicitudId == id).ToList();
+            if (lineasSolicitudesCI.Any())
+            {
+                // Verificar si el id_cabecera_consumo_interno ya existe
+                bool existeCabeceraConsumo = await _context.CabeceraConsumosInternos
+                    .AnyAsync(c => c.id_cabecera_consumo_interno == consumoInterno.id_cabecera_consumo_interno);
+
+                if (!existeCabeceraConsumo)
+                {
+                    return new Resultado
+                    {
+                        Exito = false,
+                        Mensaje = $"No existe un consumo interno con el ID {consumoInterno.id_cabecera_consumo_interno}"
+                    };
+                }
+
+                // Agregar las líneas de consumo en bloque
+                var lineasConsumosInternos = lineasSolicitudesCI.Select(linea => new LineasConsumosInternos
+                {
+                    cabecera_consumo_interno_id = consumoInterno.id_cabecera_consumo_interno,
+                    id_producto = linea.IdProducto,
+                    id_unidad_medida = linea.IdUnidadMedida,
+                    cantidad = linea.Cantidad,
+                    precio_unitario = linea.PrecioUnitario,
+                    no_producto = linea.NoProducto,
+                    descripcion = linea.Descripcion,
+                    codigo_unidad_medida = linea.CodigoUnidadMedida,
+                    almacen_id = linea.AlmacenId ?? "",
+                    almacen_codigo = linea.AlmacenCodigo ?? "",
+                    nota = linea.Nota ?? ""
+                }).ToList();
+
+                _context.LineasConsumosInternos.AddRange(lineasConsumosInternos);
+                await _context.SaveChangesAsync();
+            }
+
+            item.IdEstadoSolicitud = estadoSolicitudTerminada;
+            await GuardarHistoricoSolicitudes(item);
+
+            // SE ELIMINAN LOS DETALLES DE LA TABLA DE PRODUCCIÓN
+            var itemDB = await _context.CabeceraSolicitudesCI
+                .FirstOrDefaultAsync(i => i.id_cabecera_solicitud == id);
+            if (itemDB != null)
+            {
+                _context.CabeceraSolicitudesCI.Remove(itemDB);
+            }
+
+            var detailsDB = _context.LineasSolicitudesCI.Where(i => i.cabecera_solicitud_id == id);
+            _context.LineasSolicitudesCI.RemoveRange(detailsDB);
+
+            // GUARDAR CAMBIOS Y COMMIT DE LA TRANSACCIÓN
+            await _context.SaveChangesAsync();
+
+            // SE LIMPIA LA CACHE Y SE VUELVE A POBLAR
+            await RefrescarCache();
+            _memoryCache.Remove("SolicitudesCI");
+
+            return new Resultado { Exito = true };
+        }
+        catch (Exception ex)
+        {
+            // Loguear el error si es necesario
+            return new Resultado
+            {
+                Exito = false,
+                Mensaje = "Ocurrió un error al archivar la solicitud: " + ex.Message
+            };
+        }
+    }
+
+    public async Task<bool> GuardarHistoricoSolicitudes(CabeceraSolicitudCI item)
+    {
+        // Registramos el historial de la solicitud
+        var oldItem = await _context.HistorialMovimientosSolicitudesCI
+                        .Where(i => i.id_cabecera_solicitud == item.IdCabeceraSolicitud)
+                        .FirstOrDefaultAsync();
+
+        var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+        if (
+            oldItem != null
+            && item.IdEstadoSolicitud == estadoSolicitudNueva // SOLO SI ES NUEVO 
+        )
+        {
+            try
+            {
+                // Registramos el historial de la nueva solicitud
+                oldItem.id_cabecera_solicitud = item.IdCabeceraSolicitud;
+                oldItem.no_serie_id = _settings.DocumentoConsumoInternoNoSerieId;
+                oldItem.no_documento = item.NoDocumento;
+                oldItem.fecha_creado = item.FechaCreado;
+                oldItem.creado_por = item.CreadoPor;
+                oldItem.usuario_responsable = item.UsuarioResponsable;
+                oldItem.usuario_despacho = item.UsuarioDespacho;
+                oldItem.id_departamento = item.IdDepartamento;
+                oldItem.id_estado_solicitud = item.IdEstadoSolicitud;
+                oldItem.id_clasificacion = item.IdClasificacion;
+                oldItem.id_sucursal = item.IdSucursal;
+                oldItem.comentario = item.Comentario;
+                oldItem.total = item.Total;
+                oldItem.id_usuario_responsable = item.IdUsuarioResponsable;
+                oldItem.id_usuario_despacho = item.IdUsuarioDespacho;
+                oldItem.nombre_creado_por = item.NombreCreadoPor;
+                oldItem.fecha_modificado = DateTime.Now;
+                oldItem.modificado_por = identity!.Name;
+                oldItem.indice = 1;
+
+                _memoryCache.Remove("HistorialMovimientosSolicitudesAgrupadosCI");
+                _memoryCache.Remove("HistorialMovimientosSolicitudesCI");
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al intentar guardar el historico del registro: <" + ex.Message + ">");
+            }
+        }
+        else
+        {
+            try
+            {
+                var ultimoHistorial = _context.HistorialMovimientosSolicitudesCI
+                                   .OrderByDescending(i => i.fecha_creado) // Aseguramos que estamos obteniendo el más reciente.
+                                   .Where(i => i.id_cabecera_solicitud == item.IdCabeceraSolicitud)
+                                   .FirstOrDefault().Clone();
+
+                int nuevoIndice = ultimoHistorial?.indice + 1 ?? 1;
+
+                // Registramos el historial de la nueva solicitud
+                var nuevoItem = new HistorialMovimientosSolicitudesCI
+                {
+                    id_cabecera_solicitud = item.IdCabeceraSolicitud,
+                    no_serie_id = _settings.DocumentoConsumoInternoNoSerieId,
+                    no_documento = item.NoDocumento,
+                    fecha_creado = item.FechaCreado,
+                    creado_por = item.CreadoPor,
+                    usuario_responsable = item.UsuarioResponsable,
+                    usuario_despacho = item.UsuarioDespacho,
+                    id_departamento = item.IdDepartamento,
+                    id_estado_solicitud = item.IdEstadoSolicitud,
+                    id_clasificacion = item.IdClasificacion,
+                    id_sucursal = item.IdSucursal,
+                    comentario = item.Comentario,
+                    total = item.Total,
+                    id_usuario_responsable = item.IdUsuarioResponsable,
+                    id_usuario_despacho = item.IdUsuarioDespacho,
+                    nombre_creado_por = item.NombreCreadoPor,
+                    fecha_modificado = DateTime.Now,
+                    modificado_por = identity!.Name,
+                    indice = nuevoIndice
+                };
+
+                _context.HistorialMovimientosSolicitudesCI.Add(nuevoItem);
+                _memoryCache.Remove("HistorialMovimientosSolicitudesAgrupadosCI");
+                _memoryCache.Remove("HistorialMovimientosSolicitudesCI");
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al intentar guardar el historico del registro: <" + ex.Message + ">");
+            }
+        }
+    }
+
+    public void CalcularTotalHistorial(int id)
+    {
+        var item = _context
+            .HistorialMovimientosSolicitudesCI
+            .Where(i => i.id_cabecera_solicitud == id && i.id_estado_solicitud == estadoSolicitudNueva)
+            .FirstOrDefault();
+
+        if (item != null)
+        {
+            item.total = _context
+               .LineasSolicitudesCI
+               .Where(i => i.cabecera_solicitud_id == id) // Filtramos por id_cabecera_solicitud
+               .Sum(i => i.precio_unitario * i.cantidad); // Sumar el total de las líneas
+            _context.SaveChanges();
+        }
     }
 
     public async Task<bool> RefrescarCache()
