@@ -90,9 +90,8 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
                     Total = i.total,
                     IdUsuarioResponsable = i.id_usuario_responsable,
                     IdUsuarioDespacho = i.id_usuario_despacho,
-                    CantidadLineas = i.LineasConsumosInternos.Count
-                    // FechaModificado = i.fecha_modificado,
-                    // ModificadoPor = i.modificado_por,
+                    CantidadLineas = i.LineasConsumosInternos.Count,
+                    NombreCreadoPor = i.nombre_creado_por
                 })
                 .ToList();
             _memoryCache.Set<List<CabeceraConsumoInterno>>(
@@ -110,8 +109,7 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
         var item = allItems.Where(i => i.IdCabeceraConsumoInterno == idSolicitud).FirstOrDefault().Clone();
         if (item != null)
         {
-            item.Lineas = _context
-            .LineasConsumosInternos.Where(i => i.cabecera_consumo_interno_id == idSolicitud)
+            item.Lineas = _context.LineasConsumosInternos.Where(i => i.cabecera_consumo_interno_id == idSolicitud)
             .Select(i => new LineasConsumoInterno
             {
                 IdLineaConsumoInterno = i.id_linea_consumo_interno,
@@ -123,12 +121,12 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
                 Cantidad = i.cantidad,
                 IdUnidadMedida = i.id_unidad_medida,
                 CodigoUnidadMedida = i.codigo_unidad_medida,
-                // FechaModificado = i.fecha_modificado,
+                Total = i.total
             })
             .OrderBy(i => i.IdLineaConsumoInterno)
             .ToList();
         }
-        return item ?? throw new Exception("Solicitud no encontrada.");
+        return item ?? throw new Exception("Consumo interno no encontrado.");
     }
 
     public async Task<List<CabeceraConsumoInterno>> ObtenerConsumoInternoPorEstadoSolicitud(int? estadoSolicitudId)
@@ -137,10 +135,11 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
         return allItems.Where(i => i.IdEstadoSolicitud == estadoSolicitudId).ToList();
     }
 
-    public async Task<int> ObtenerCantidadConsumoInternosPorEstadoSolicitud(int estadoSolicitudId)
+    public async Task<int> ObtenerCantidadConsumoInternos()
     {
+        var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         var allItems = await ObtenerConsumosInternos();
-        return allItems.Where(i => i.IdEstadoSolicitud == estadoSolicitudId).ToList().Count;
+        return allItems.Where(i => i.CreadoPor == identity!.Name).ToList().Count;
     }
 
     public async Task<CabeceraConsumoInterno> ObtenerConsumoInterno(int id)
@@ -150,11 +149,11 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
         if (item != null)
         {
             item.Lineas = _context
-                .LineasSolicitudesCI.Where(i => i.cabecera_solicitud_id == id)
+                .LineasConsumosInternos.Where(i => i.cabecera_consumo_interno_id == id)
                 .Select(i => new LineasConsumoInterno
                 {
-                    IdLineaConsumoInterno = i.id_linea_solicitud,
-                    CabeceraConsumoInternoId = i.cabecera_solicitud_id,
+                    IdLineaConsumoInterno = i.id_linea_consumo_interno,
+                    CabeceraConsumoInternoId = i.cabecera_consumo_interno_id,
                     IdProducto = i.id_producto,
                     NoProducto = i.no_producto,
                     Descripcion = i.descripcion,
