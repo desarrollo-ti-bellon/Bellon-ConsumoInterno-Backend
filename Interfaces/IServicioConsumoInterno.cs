@@ -10,7 +10,7 @@ public interface IServicioConsumoInterno
 
     Task<List<Classes.CabeceraConsumoInterno>> ObtenerConsumoInternoPorEstadoSolicitud(int? estadoConsumoInternoId);
 
-    Task<int> ObtenerCantidadConsumoInternosPorEstadoSolicitud(int estadoConsumoInternoId);
+    Task<int> ObtenerCantidadConsumoInternos();
 
     Task<Classes.CabeceraConsumoInterno> ObtenerConsumoInterno(int id);
 

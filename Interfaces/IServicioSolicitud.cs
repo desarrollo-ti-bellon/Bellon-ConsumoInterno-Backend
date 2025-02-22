@@ -2,6 +2,8 @@ namespace Bellon.API.ConsumoInterno.Interfaces;
 
 public interface IServicioSolicitud
 {
+    Task<List<Classes.CabeceraSolicitudCI>> ObtenerSolicitudesPorPerfilUsuario();
+
     Task<List<Classes.CabeceraSolicitudCI>> ObtenerSolicitudesDelUsuarioSolicitantePorEstado(int? estadoSolicitudId);
 
     Task<List<Classes.CabeceraSolicitudCI>> ObtenerSolicitudes();
@@ -23,6 +25,8 @@ public interface IServicioSolicitud
     Task<Classes.CabeceraSolicitudCI> EliminarSolicitud(int id);
 
     Task<Classes.CabeceraSolicitudCI> EliminarLineaSolicitud(int id);
+   
+    Task<Classes.Resultado> Archivar(int id);
 
     Task<bool> RefrescarCache();
 }
