@@ -70,7 +70,9 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
                 Comentario = i.comentario ?? "",
                 Total = i.total,
                 IdUsuarioResponsable = i.id_usuario_responsable,
-                IdUsuarioDespacho = i.id_usuario_despacho
+                IdUsuarioDespacho = i.id_usuario_despacho,
+                Indice = i.indice,
+                NombreCreadoPor = i.nombre_creado_por ?? "",
             })
             .Where(i => i.CreadoPor == identity.Name)
             .ToList();
