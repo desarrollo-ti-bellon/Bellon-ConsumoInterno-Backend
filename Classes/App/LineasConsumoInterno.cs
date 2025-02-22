@@ -11,7 +11,7 @@ public class LineasConsumoInterno
     public int? IdLineaConsumoInterno { get; set; }
 
     [JsonPropertyName("cabecera_consumo_interno_id")]
-    public int CabeceraConsumoInternoId { get; set; }
+    public int? CabeceraConsumoInternoId { get; set; }
 
     [JsonPropertyName("id_producto")]
     public string IdProducto { get; set; }
