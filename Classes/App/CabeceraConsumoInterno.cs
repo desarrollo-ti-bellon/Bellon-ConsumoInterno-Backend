@@ -59,10 +59,13 @@ public class CabeceraConsumoInterno
     [JsonPropertyName("id_usuario_despacho")]
     public int? IdUsuarioDespacho { get; set; }
 
-    [JsonPropertyName("LineasConsumoInterno")]
-    public List<LineasConsumoInterno> Lineas { get; set; }
+    [JsonPropertyName("lineas")]
+    public List<LineasConsumoInterno>? Lineas { get; set; } = new List<LineasConsumoInterno>();
 
     [JsonPropertyName("cantidad_lineas")]
     public int? CantidadLineas { get; set; }
+
+    [JsonPropertyName("nombre_creado_por")]
+    public string? NombreCreadoPor { get; set; }
 
 }

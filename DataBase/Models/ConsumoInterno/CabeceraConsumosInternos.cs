@@ -10,7 +10,7 @@ namespace Bellon.API.ConsumoInterno.DataBase;
 public partial class CabeceraConsumosInternos
 {
     [Key]
-    public int? id_cabecera_consumo_interno { get; set; }
+    public int id_cabecera_consumo_interno { get; set; }
 
     public int? no_serie_id { get; set; }
 
@@ -58,6 +58,8 @@ public partial class CabeceraConsumosInternos
     public int id_usuario_responsable { get; set; }
 
     public int? id_usuario_despacho { get; set; }
+
+    public string? nombre_creado_por { get; set; }
 
     [InverseProperty("cabecera_consumo_interno")]
     public virtual ICollection<LineasConsumosInternos> LineasConsumosInternos { get; set; } = new List<LineasConsumosInternos>();
