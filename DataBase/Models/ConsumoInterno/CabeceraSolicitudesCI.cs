@@ -61,6 +61,8 @@ public partial class CabeceraSolicitudesCI
 
     public int? id_usuario_despacho { get; set; }
 
+    public string? nombre_creado_por { get; set; }
+
     [InverseProperty("cabecera_solicitud")]
     public virtual ICollection<LineasSolicitudesCI> LineasSolicitudesCI { get; set; } = new List<LineasSolicitudesCI>();
 

@@ -63,4 +63,8 @@ public class CabeceraSolicitudCI
 
     [JsonPropertyName("cantidad_lineas")]
     public int? CantidadLineas { get; set; }
+
+    [JsonPropertyName("nombre_creado_por")]
+    public string NombreCreadoPor { get; set; }
+
 }
