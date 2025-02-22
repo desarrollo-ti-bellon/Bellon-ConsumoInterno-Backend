@@ -32,13 +32,7 @@ public partial class HistorialMovimientosSolicitudesCI
     public string usuario_responsable { get; set; }
 
     [StringLength(100)]
-    public string usuario_despacho { get; set; }
-
-    [StringLength(100)]
-    public string usuario_asistente_inventario { get; set; }
-
-    [StringLength(100)]
-    public string usuario_asistente_contabilidad { get; set; }
+    public string? usuario_despacho { get; set; }
 
     [Required]
     [StringLength(100)]
@@ -56,7 +50,7 @@ public partial class HistorialMovimientosSolicitudesCI
     public DateTime? fecha_modificado { get; set; }
 
     [StringLength(50)]
-    public string modificado_por { get; set; }
+    public string? modificado_por { get; set; }
 
     public string comentario { get; set; }
 
@@ -66,5 +60,9 @@ public partial class HistorialMovimientosSolicitudesCI
     public int id_usuario_responsable { get; set; }
 
     public int? id_usuario_despacho { get; set; }
+
+    public string? nombre_creado_por { get; set; }
+
+    public int? indice { get; set; }
 
 }
