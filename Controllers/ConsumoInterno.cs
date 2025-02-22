@@ -59,16 +59,9 @@ public class ConsumoInternoController : ControllerBase
     }
 
     [HttpGet("Cantidad")]
-    public async Task<IActionResult> ObtenerEstadoConsumoInterno([FromQuery] int? estadoConsumoInternoId)
+    public async Task<IActionResult> ObtenerEstadoConsumoInterno()
     {
-        try
-        {
-            var result = await _servicioConsumoInterno.ObtenerCantidadConsumoInternosPorEstadoSolicitud(estadoConsumoInternoId ?? 0);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
-        }
+        var result = await _servicioConsumoInterno.ObtenerCantidadConsumoInternos();
+        return result != null ? Ok(result) : Ok(0);
     }
 }
