@@ -10,7 +10,7 @@ namespace Bellon.API.ConsumoInterno.DataBase;
 public partial class LineasConsumosInternos
 {
     [Key]
-    public int? id_linea_consumo_interno { get; set; }
+    public int id_linea_consumo_interno { get; set; }
 
     public int cabecera_consumo_interno_id { get; set; }
 
@@ -46,6 +46,7 @@ public partial class LineasConsumosInternos
     public string almacen_codigo { get; set; }
 
     public string nota { get; set; }
+    public decimal total { get; set; }
 
     [ForeignKey("cabecera_consumo_interno_id")]
     [InverseProperty("LineasConsumosInternos")]

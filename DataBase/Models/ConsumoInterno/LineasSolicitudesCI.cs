@@ -46,6 +46,7 @@ public partial class LineasSolicitudesCI
     public string? almacen_codigo { get; set; }
 
     public string? nota { get; set; }
+    public decimal total { get; set; }
 
     [ForeignKey("cabecera_solicitud_id")]
     [InverseProperty("LineasSolicitudesCI")]
