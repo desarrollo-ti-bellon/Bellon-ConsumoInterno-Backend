@@ -198,7 +198,7 @@ public class ServicioSolicitud : IServicioSolicitud
             .OrderBy(i => i.IdLineaSolicitud)
             .ToList();
         }
-        return item ?? throw new Exception("Solicitud no encontrada.");
+        return item;
     }
 
     public async Task<List<CabeceraSolicitudCI>> ObtenerSolicitudesPorEstadoSolicitud(int? estadoSolicitudId)
@@ -515,6 +515,8 @@ public class ServicioSolicitud : IServicioSolicitud
             //SE ACTUALIZA EL TOTAL DE LA CABECERA
             CalcularTotalCabecera(items[0].CabeceraSolicitudId);
             CalcularTotalHistorial(items[0].CabeceraSolicitudId);
+            _memoryCache.Remove("HistorialMovimientosSolicitudesCI");
+            _memoryCache.Remove("HistorialMovimientosSolicitudesAgrupadosCI");
 
             //SE LIMPIA LA CACHE Y SE VUELVE A POBLAR
             await RefrescarCache();
@@ -697,6 +699,8 @@ public class ServicioSolicitud : IServicioSolicitud
             // SE LIMPIA LA CACHE Y SE VUELVE A POBLAR
             await RefrescarCache();
             _memoryCache.Remove("SolicitudesCI");
+            _memoryCache.Remove("HistorialMovimientosSolicitudesCI");
+            _memoryCache.Remove("HistorialMovimientosSolicitudesAgrupadosCI");
 
             return new Resultado { Exito = true };
         }
