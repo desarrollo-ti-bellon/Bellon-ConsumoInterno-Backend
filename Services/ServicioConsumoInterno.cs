@@ -97,7 +97,7 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
             _memoryCache.Set<List<CabeceraConsumoInterno>>(
                 "ConsumosInternos",
                 cache,
-                DateTimeOffset.Now.AddMinutes(30)
+                DateTimeOffset.Now.AddMinutes(5)
             );
         }
         return Task.FromResult(cache.OrderBy(i => i.IdCabeceraConsumoInterno.Value).ToList());
