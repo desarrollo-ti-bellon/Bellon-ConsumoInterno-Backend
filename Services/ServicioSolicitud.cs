@@ -703,6 +703,7 @@ public class ServicioSolicitud : IServicioSolicitud
             _memoryCache.Remove("SolicitudesCI");
             _memoryCache.Remove("HistorialMovimientosSolicitudesCI");
             _memoryCache.Remove("HistorialMovimientosSolicitudesAgrupadosCI");
+            _memoryCache.Remove("ConsumosInternos");
 
             return new Resultado { Exito = true };
         }
