@@ -462,6 +462,7 @@ public class ServicioSolicitud : IServicioSolicitud
                             oldItem.almacen_id = item.AlmacenId;
                             oldItem.almacen_codigo = item.AlmacenCodigo;
                             oldItem.nota = item.Nota ?? "";
+                            oldItem.total = item.Cantidad * item.PrecioUnitario;
                             try
                             {
                                 _context.SaveChanges();
@@ -490,6 +491,7 @@ public class ServicioSolicitud : IServicioSolicitud
                             almacen_id = item.AlmacenId,
                             almacen_codigo = item.AlmacenCodigo,
                             nota = item.Nota,
+                            total = item.Cantidad * item.PrecioUnitario
                         };
                         var newItem = _context.LineasSolicitudesCI.Add(newItemData);
                         try
@@ -818,6 +820,92 @@ public class ServicioSolicitud : IServicioSolicitud
                .Sum(i => i.precio_unitario * i.cantidad); // Sumar el total de las líneas
             _context.SaveChanges();
         }
+    }
+
+    public async Task<CabeceraSolicitudCI> VerSolicitudesGenerales(int id)
+    {
+        var solicitud = await _context.CabeceraSolicitudesCI
+            .Where(s => s.id_cabecera_solicitud == id)
+            .Select(s => new CabeceraSolicitudCI
+            {
+                IdCabeceraSolicitud = s.id_cabecera_solicitud,
+                NoDocumento = s.no_documento,
+                FechaCreado = s.fecha_creado,
+                Comentario = s.comentario,
+                CreadoPor = s.creado_por,
+                UsuarioResponsable = s.usuario_responsable ?? "",
+                UsuarioDespacho = s.usuario_despacho ?? "",
+                IdDepartamento = s.id_departamento,
+                IdEstadoSolicitud = s.id_estado_solicitud,
+                IdClasificacion = s.id_clasificacion,
+                IdSucursal = s.id_sucursal,
+                Total = s.total,
+                IdUsuarioResponsable = s.id_usuario_responsable,
+                IdUsuarioDespacho = s.id_usuario_despacho,
+                CantidadLineas = s.LineasSolicitudesCI.Count,
+                NombreCreadoPor = s.nombre_creado_por ?? "",
+                Lineas = s.LineasSolicitudesCI.Select(d => new LineasSolicitudCI
+                {
+                    IdLineaSolicitud = d.id_linea_solicitud,
+                    CabeceraSolicitudId = d.cabecera_solicitud_id,
+                    IdProducto = d.id_producto,
+                    NoProducto = d.no_producto,
+                    Descripcion = d.descripcion,
+                    PrecioUnitario = d.precio_unitario,
+                    Cantidad = d.cantidad,
+                    IdUnidadMedida = d.id_unidad_medida,
+                    CodigoUnidadMedida = d.codigo_unidad_medida,
+                    AlmacenId = d.almacen_id,
+                    AlmacenCodigo = d.almacen_codigo,
+                    Total = d.total,
+                    Nota = d.nota
+                }).ToList()
+            })
+            .FirstOrDefaultAsync();
+
+        if (solicitud == null)
+        {
+            solicitud = await _context.CabeceraConsumosInternos
+          .Where(s => s.id_cabecera_consumo_interno == id)
+          .Select(s => new CabeceraSolicitudCI
+          {
+              IdCabeceraSolicitud = s.id_cabecera_consumo_interno,
+              NoDocumento = s.no_documento,
+              FechaCreado = s.fecha_creado,
+              Comentario = s.comentario,
+              CreadoPor = s.creado_por,
+              UsuarioResponsable = s.usuario_responsable ?? "",
+              UsuarioDespacho = s.usuario_despacho ?? "",
+              IdDepartamento = s.id_departamento,
+              IdEstadoSolicitud = s.id_estado_solicitud,
+              IdClasificacion = s.id_clasificacion,
+              IdSucursal = s.id_sucursal,
+              Total = s.total,
+              IdUsuarioResponsable = s.id_usuario_responsable,
+              IdUsuarioDespacho = s.id_usuario_despacho,
+              CantidadLineas = s.LineasConsumosInternos.Count,
+              NombreCreadoPor = s.nombre_creado_por ?? "",
+              Lineas = s.LineasConsumosInternos.Select(d => new LineasSolicitudCI
+              {
+                  IdLineaSolicitud = d.id_linea_consumo_interno,
+                  CabeceraSolicitudId = d.cabecera_consumo_interno_id,
+                  IdProducto = d.id_producto,
+                  NoProducto = d.no_producto,
+                  Descripcion = d.descripcion,
+                  PrecioUnitario = d.precio_unitario,
+                  Cantidad = d.cantidad,
+                  IdUnidadMedida = d.id_unidad_medida,
+                  CodigoUnidadMedida = d.codigo_unidad_medida,
+                  AlmacenId = d.almacen_id,
+                  AlmacenCodigo = d.almacen_codigo,
+                  Total = d.total,
+                  Nota = d.nota
+              }).ToList()
+          })
+          .FirstOrDefaultAsync();
+        }
+
+        return solicitud;
     }
 
     public async Task<bool> RefrescarCache()

@@ -28,5 +28,7 @@ public interface IServicioSolicitud
    
     Task<Classes.Resultado> Archivar(int id);
 
+    Task<Classes.CabeceraSolicitudCI> VerSolicitudesGenerales(int id);
+
     Task<bool> RefrescarCache();
 }

@@ -72,6 +72,27 @@ public class SolicitudController : ControllerBase
         }
     }
 
+    [HttpGet("SolicitudGeneral")]
+    public async Task<IActionResult> ObtenerSolicitudGeneral([FromQuery] int? id)
+    {
+        if (id.HasValue)
+        {
+            try
+            {
+                var data = await _servicioSolicitud.VerSolicitudesGenerales(id.Value);
+                return data != null ? Ok(data) : NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            }
+        }
+        else
+        {
+            return StatusCode(400, new Classes.Resultado { Exito = false, Mensaje = "Falta el id de solicitud." });
+        }
+    }
+
     [HttpPost("Cabecera")]
     public async Task<IActionResult> GuardarCabecera([FromBody] Classes.CabeceraSolicitudCI item)
     {
