@@ -672,7 +672,8 @@ public class ServicioSolicitud : IServicioSolicitud
                     codigo_unidad_medida = linea.CodigoUnidadMedida,
                     almacen_id = linea.AlmacenId ?? "",
                     almacen_codigo = linea.AlmacenCodigo ?? "",
-                    nota = linea.Nota ?? ""
+                    nota = linea.Nota ?? "",
+                    total = linea.Total
                 }).ToList();
 
                 _context.LineasConsumosInternos.AddRange(lineasConsumosInternos);
