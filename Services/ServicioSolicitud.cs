@@ -234,7 +234,8 @@ public class ServicioSolicitud : IServicioSolicitud
                     CodigoUnidadMedida = i.codigo_unidad_medida,
                     AlmacenId = i.almacen_id,
                     AlmacenCodigo = i.almacen_codigo,
-                    Nota = i.nota ?? ""
+                    Nota = i.nota ?? "",
+                    Total = i.total
                 })
                 .OrderBy(i => i.IdLineaSolicitud)
                 .ToList();
