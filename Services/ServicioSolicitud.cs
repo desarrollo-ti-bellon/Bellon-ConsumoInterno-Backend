@@ -42,8 +42,15 @@ public class ServicioSolicitud : IServicioSolicitud
         _servicioAutorizacion = servicioAutorizacion;
         _servicioNumeroSerie = servicioNumeroSerie;
     }
-    public int estadoSolicitudTerminada = 7;
+
+    //ESTADOS DE SOLICITUDES 
     public int estadoSolicitudNueva = 1;
+    public int estadoSolicitudPendiente = 2;
+    public int estadoSolicitudAprobada = 3;
+    public int estadoSolicitudRechazada = 4;
+    public int estadoSolicitudEntregada = 5;
+    public int estadoSolicitudConfirmada = 6;
+    public int estadoSolicitudTerminada = 7;
 
     public async Task<List<CabeceraSolicitudCI>> ObtenerSolicitudesPorPerfilUsuario()
     {
@@ -66,13 +73,13 @@ public class ServicioSolicitud : IServicioSolicitud
 
         // Definir el diccionario de roles y sus estados de solicitudes
         var estadosPorPerfil = new Dictionary<int, List<int>>()
-    {
-        { 1, new List<int> { 1, 2, 3, 4, 5, 6, 7 } },  // Administrador
-        { 2, new List<int> { 2 } },                    // Director
-        { 3, new List<int> { 2 } },                    // Gerente Area
-        { 4, new List<int> { 3 } },                    // Despachador
-        { 5, new List<int> { 1, 3, 4, 5 } }            // Solicitante
-    };
+        {
+            { 1, new List<int> { estadoSolicitudNueva, estadoSolicitudPendiente, estadoSolicitudAprobada, estadoSolicitudRechazada, estadoSolicitudEntregada, estadoSolicitudConfirmada, estadoSolicitudTerminada } },  // Administrador
+            { 2, new List<int> { estadoSolicitudPendiente } },                                                                                                                                                          // Director
+            { 3, new List<int> { estadoSolicitudPendiente } },                                                                                                                                                          // Gerente Area
+            { 4, new List<int> { estadoSolicitudAprobada } },                                                                                                                                                           // Despachador
+            { 5, new List<int> { estadoSolicitudNueva, estadoSolicitudAprobada, estadoSolicitudRechazada, estadoSolicitudEntregada } }                                                                                  // Solicitante
+        };
 
         // Verificar que el perfil del usuario exista en el diccionario
         if (!estadosPorPerfil.ContainsKey(usuario.posicion_id))
@@ -84,32 +91,32 @@ public class ServicioSolicitud : IServicioSolicitud
         var arrEstadosSolicitudes = estadosPorPerfil[usuario.posicion_id];
 
         var query = allItems;
-
+        var resultado = new List<CabeceraSolicitudCI>();
         switch (usuario.posicion_id)
         {
             case 1: // Administrador
-                query.Where(i => i.IdSucursal == usuario.id_sucursal && arrEstadosSolicitudes.Contains(i.IdEstadoSolicitud));
+                resultado = query.Where(i => i.IdSucursal == usuario.id_sucursal && arrEstadosSolicitudes.Contains(i.IdEstadoSolicitud)).ToList();
                 break;
 
             case 2: // Director
-                query.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdDepartamento == usuario.id_departamento && arrEstadosSolicitudes.Contains(i.IdEstadoSolicitud));
+                resultado = query.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdDepartamento == usuario.id_departamento && arrEstadosSolicitudes.Contains(i.IdEstadoSolicitud)).ToList();
                 break;
 
             case 3: // Gerente Area
-                query.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdSucursal == usuario.id_sucursal && i.IdDepartamento == usuario.id_departamento && arrEstadosSolicitudes.Contains(i.IdEstadoSolicitud));
+                resultado = query.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdSucursal == usuario.id_sucursal && i.IdDepartamento == usuario.id_departamento && arrEstadosSolicitudes.Contains(i.IdEstadoSolicitud)).ToList();
                 break;
 
             case 4: // Despachador
-                query.Where(i => i.IdSucursal == usuario.id_sucursal && arrEstadosSolicitudes.Contains(i.IdEstadoSolicitud));
+                resultado = query.Where(i => i.IdSucursal == usuario.id_sucursal && arrEstadosSolicitudes.Contains(i.IdEstadoSolicitud)).ToList();
                 break;
 
             case 5: // Solicitante
-                query.Where(i => i.CreadoPor == usuario.correo && i.IdDepartamento == usuario.id_departamento && i.IdSucursal == usuario.id_sucursal && arrEstadosSolicitudes.Contains(i.IdEstadoSolicitud));
+                resultado = query.Where(i => i.CreadoPor == usuario.correo && i.IdDepartamento == usuario.id_departamento && i.IdSucursal == usuario.id_sucursal && arrEstadosSolicitudes.Contains(i.IdEstadoSolicitud)).ToList();
                 break;
         }
 
         // Obtener los resultados filtrados
-        return query.ToList();
+        return resultado;
     }
 
     public async Task<List<CabeceraSolicitudCI>> ObtenerSolicitudesDelUsuarioSolicitantePorEstado(int? estadoSolicitudId)
@@ -210,7 +217,34 @@ public class ServicioSolicitud : IServicioSolicitud
     public async Task<int> ObtenerCantidadSolicitudesPorEstadoSolicitud(int estadoSolicitudId)
     {
         var allItems = await ObtenerSolicitudes();
-        return allItems.Where(i => i.IdEstadoSolicitud == estadoSolicitudId).ToList().Count();
+        var identity = _httpContextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
+        var usuario = await _context.UsuariosCI.FirstOrDefaultAsync(el => el.correo == identity!.Name);
+        var resultado = new List<CabeceraSolicitudCI>();
+
+        switch (usuario.posicion_id)
+        {
+            case 1: // Administrador
+                resultado = allItems.Where(i => i.IdSucursal == usuario.id_sucursal).ToList();
+                break;
+
+            case 2: // Director
+                resultado = allItems.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdDepartamento == usuario.id_departamento).ToList();
+                break;
+
+            case 3: // Gerente Area
+                resultado = allItems.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdSucursal == usuario.id_sucursal && i.IdDepartamento == usuario.id_departamento).ToList();
+                break;
+
+            case 4: // Despachador
+                resultado = allItems.Where(i => i.IdSucursal == usuario.id_sucursal).ToList();
+                break;
+
+            case 5: // Solicitante
+                resultado = allItems.Where(i => i.CreadoPor == usuario.correo && i.IdDepartamento == usuario.id_departamento && i.IdSucursal == usuario.id_sucursal).ToList();
+                break;
+        }
+
+        return resultado.Where(i => i.IdEstadoSolicitud == estadoSolicitudId).ToList().Count();
     }
 
     public async Task<CabeceraSolicitudCI> ObtenerSolicitud(int id)
