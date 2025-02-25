@@ -137,9 +137,36 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
 
     public async Task<int> ObtenerCantidadConsumoInternos()
     {
-        var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+
         var allItems = await ObtenerConsumosInternos();
-        return allItems.Where(i => i.CreadoPor == identity!.Name).ToList().Count;
+        var identity = _httpContextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
+        var usuario = await _context.UsuariosCI.FirstOrDefaultAsync(el => el.correo == identity!.Name);
+        var resultado = new List<CabeceraConsumoInterno>();
+
+        switch (usuario.posicion_id)
+        {
+            case 1: // Administrador
+                resultado = allItems.Where(i => i.IdSucursal == usuario.id_sucursal).ToList();
+                break;
+
+            case 2: // Director
+                resultado = allItems.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdDepartamento == usuario.id_departamento).ToList();
+                break;
+
+            case 3: // Gerente Area
+                resultado = allItems.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdSucursal == usuario.id_sucursal && i.IdDepartamento == usuario.id_departamento).ToList();
+                break;
+
+            case 4: // Despachador
+                resultado = allItems.Where(i => i.IdSucursal == usuario.id_sucursal).ToList();
+                break;
+
+            case 5: // Solicitante
+                resultado = allItems.Where(i => i.CreadoPor == usuario.correo && i.IdDepartamento == usuario.id_departamento && i.IdSucursal == usuario.id_sucursal).ToList();
+                break;
+        }
+
+        return resultado.ToList().Count();
     }
 
     public async Task<CabeceraConsumoInterno> ObtenerConsumoInterno(int id)
