@@ -34,6 +34,8 @@ public partial class AppDataBase : DbContext
 
     public virtual DbSet<UsuariosCI> UsuariosCI { get; set; }
 
+    public virtual DbSet<ImpresionConsumosInternos> ImpresionConsumosInternos { get; set; }
+
     private readonly Classes.AppSettings _settings;
 
     public AppDataBase(IOptions<Classes.AppSettings> settings)
@@ -146,6 +148,11 @@ public partial class AppDataBase : DbContext
             entity.HasOne(d => d.posicion).WithMany(p => p.UsuariosCI)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Usuarios_Posiciones");
+        });
+
+        modelBuilder.Entity<ImpresionConsumosInternos>(entity =>
+        {
+            entity.ToView("ImpresionConsumosInternos", "ConsumoInterno");
         });
 
         OnModelCreatingPartial(modelBuilder);
