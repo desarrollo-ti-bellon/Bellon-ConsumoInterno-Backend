@@ -15,7 +15,7 @@ public partial class Notas
     public int id_documento { get; set; }
 
     [Required]
-    [StringLength(3)]
+    [StringLength(5)]
     public string tipo_documento { get; set; }
 
     [Required]
