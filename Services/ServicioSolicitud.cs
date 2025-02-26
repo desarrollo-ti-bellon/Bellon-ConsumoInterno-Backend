@@ -200,7 +200,8 @@ public class ServicioSolicitud : IServicioSolicitud
                 Cantidad = i.cantidad,
                 IdUnidadMedida = i.id_unidad_medida,
                 CodigoUnidadMedida = i.codigo_unidad_medida,
-                Total = i.total
+                Total = i.total,
+                CostoUnitario = i.costo_unitario,
             })
             .OrderBy(i => i.IdLineaSolicitud)
             .ToList();
@@ -269,7 +270,8 @@ public class ServicioSolicitud : IServicioSolicitud
                     AlmacenId = i.almacen_id,
                     AlmacenCodigo = i.almacen_codigo,
                     Nota = i.nota ?? "",
-                    Total = i.total
+                    Total = i.total,
+                    CostoUnitario = i.costo_unitario,
                 })
                 .OrderBy(i => i.IdLineaSolicitud)
                 .ToList();
@@ -498,6 +500,7 @@ public class ServicioSolicitud : IServicioSolicitud
                             oldItem.almacen_codigo = item.AlmacenCodigo;
                             oldItem.nota = item.Nota ?? "";
                             oldItem.total = item.Cantidad * item.PrecioUnitario;
+                            oldItem.costo_unitario = item.CostoUnitario;
                             try
                             {
                                 _context.SaveChanges();
@@ -526,7 +529,8 @@ public class ServicioSolicitud : IServicioSolicitud
                             almacen_id = item.AlmacenId,
                             almacen_codigo = item.AlmacenCodigo,
                             nota = item.Nota,
-                            total = item.Cantidad * item.PrecioUnitario
+                            total = item.Cantidad * item.PrecioUnitario,
+                            costo_unitario = item.CostoUnitario,
                         };
                         var newItem = _context.LineasSolicitudesCI.Add(newItemData);
                         try

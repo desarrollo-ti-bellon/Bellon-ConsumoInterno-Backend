@@ -46,4 +46,7 @@ public class LineasSolicitudCI
     [JsonPropertyName("nota")]
     public string? Nota { get; set; }
 
+     [JsonPropertyName("costo_unitario")]
+    public decimal CostoUnitario { get; set; }
+
 }

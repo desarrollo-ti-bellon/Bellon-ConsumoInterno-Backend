@@ -121,7 +121,8 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
                 Cantidad = i.cantidad,
                 IdUnidadMedida = i.id_unidad_medida,
                 CodigoUnidadMedida = i.codigo_unidad_medida,
-                Total = i.total
+                Total = i.total,
+                CostoUnitario = i.costo_unitario
             })
             .OrderBy(i => i.IdLineaConsumoInterno)
             .ToList();
@@ -190,7 +191,8 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
                     CodigoUnidadMedida = i.codigo_unidad_medida,
                     AlmacenId = i.almacen_id,
                     AlmacenCodigo = i.almacen_codigo,
-                    Nota = i.nota ?? ""
+                    Nota = i.nota ?? "",
+                    CostoUnitario = i.costo_unitario,
                 })
                 .OrderBy(i => i.IdLineaConsumoInterno)
                 .ToList();

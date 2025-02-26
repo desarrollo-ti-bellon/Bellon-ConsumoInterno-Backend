@@ -46,7 +46,10 @@ public partial class LineasConsumosInternos
     public string almacen_codigo { get; set; }
 
     public string nota { get; set; }
+
     public decimal total { get; set; }
+
+    public decimal costo_unitario { get; set; }
 
     [ForeignKey("cabecera_consumo_interno_id")]
     [InverseProperty("LineasConsumosInternos")]
