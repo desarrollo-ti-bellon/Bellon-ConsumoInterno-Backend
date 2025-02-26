@@ -2,6 +2,9 @@ namespace Bellon.API.ConsumoInterno.Interfaces;
 
 public interface IServicioProducto
 {
+
+    Task<List<Classes.LSCentralExistenciaProducto>> DisponibilidadProducto(string codigoAlmacen);
+
     Task<List<Classes.LSCentralProducto>> ObtenerProductos();
 
     Task<Classes.LSCentralProducto> ObtenerProducto(string id);
@@ -11,4 +14,5 @@ public interface IServicioProducto
     Task<List<Classes.LSCentralTraducciones>> ObtenerTraduccionesProductosPorIds(List<Guid> ids);
 
     Task<bool> RefrescarCache();
+
 }

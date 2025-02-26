@@ -50,6 +50,27 @@ public class ProductosController : ControllerBase
         }
     }
 
+    [HttpGet("DisponibilidadProducto")]
+    public async Task<IActionResult> ObtenerExistenciaProductosAlmacenes([FromQuery] string codigoAlmacen)
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(codigoAlmacen))
+            {
+                var data = await _servicioProducto.DisponibilidadProducto(codigoAlmacen);
+                return data != null ? Ok(data) : NoContent();
+            }
+            else
+            {
+                throw new Exception($"debes indicar un codigo almacen");
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
+    }
+
     [HttpPost("ObtenerTraducciones")]
     public async Task<IActionResult> ObtenerProductosPorIds([FromBody] List<Guid> ids)
     {
@@ -70,5 +91,5 @@ public class ProductosController : ControllerBase
             return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
-    
+
 }

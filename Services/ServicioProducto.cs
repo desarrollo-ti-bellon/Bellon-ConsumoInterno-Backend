@@ -38,60 +38,30 @@ public class ServicioProducto : IServicioProducto
         _servicioAutorizacion = servicioAutorizacion;
     }
 
-    // public async Task<List<LSCentralDisponibilidadProducto>> DisponibilidadProducto(string no)
-    // {
-    //     var token = await _servicioAutorizacion.ObtenerTokenBC();
-    //     var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
-    //     httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
-    //     var httpResponseMessage = await httpClient.GetAsync($"QDisponibilidadesProducto?$filter=no_producto eq '{no}'");
+    public async Task<List<LSCentralExistenciaProducto>> DisponibilidadProducto(string codigoAlmacen)
+    {
+        var token = await _servicioAutorizacion.ObtenerTokenBC();
+        var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
+        var httpResponseMessage = await httpClient.GetAsync($"QDisponibilidadesProducto?$filter=codigo_almacen eq '{codigoAlmacen}'");
 
-    //     if (httpResponseMessage.IsSuccessStatusCode)
-    //     {
-    //         using var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
-    //         var data = await JsonSerializer.DeserializeAsync<Classes.LSCentralDisponibilidadProductoArray>(contentStream);
-    //         var almacenes = await _servicioAlmacen.ObtenerAlmacenes();
-    //         if (data.value != null && data.value.Length > 0)
-    //         {
-    //             var disponibilidadProductos = data.value.ToList();
-    //             foreach (var almacen in almacenes)
-    //             {
-    //                 if (!disponibilidadProductos.Any(dp => dp.CodigoAlmacen == almacen.Codigo))
-    //                 {
-    //                     disponibilidadProductos.Add(new LSCentralDisponibilidadProducto
-    //                     {
-    //                         CodigoAlmacen = almacen.Codigo,
-    //                         NombreAlmacen = almacen.Nombre,
-    //                         NoProducto = no,
-    //                         Cantidad = 0
-    //                     });
-    //                 }
-    //             }
-    //             return disponibilidadProductos.OrderBy(i => i.CodigoAlmacen).ToList();
-    //         }
-    //         else
-    //         {
-    //             var disponibilidadProductos = new List<LSCentralDisponibilidadProducto>();
+        if (httpResponseMessage.IsSuccessStatusCode)
+        {
+            using var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
+            var data = await JsonSerializer.DeserializeAsync<Classes.LSCentralExistenciaProductoArray>(contentStream);
+            if (data != null)
+            {
+                return data.value.OrderBy(i => i.NoProducto).ToList();
+            }
+        }
+        else
+        {
+            var errorMessage = await httpResponseMessage.Content.ReadAsStringAsync();
+            throw new Exception($"Error en el servicio de Producto de LS Central: {errorMessage}");
+        }
 
-    //             foreach (var almacen in almacenes)
-    //             {
-    //                 disponibilidadProductos.Add(new LSCentralDisponibilidadProducto
-    //                 {
-    //                     CodigoAlmacen = almacen.Codigo,
-    //                     NombreAlmacen = almacen.Nombre,
-    //                     NoProducto = no,
-    //                     Cantidad = 0
-    //                 });
-    //             }
-
-    //             return disponibilidadProductos.OrderBy(i => i.CodigoAlmacen).ToList();
-    //         }
-    //     }
-    //     else
-    //     {
-    //         var errorMessage = await httpResponseMessage.Content.ReadAsStringAsync();
-    //         throw new Exception($"Error en el servicio de Producto de LS Central: {errorMessage}");
-    //     }
-    // }
+        return null;
+    }
 
     public async Task<List<LSCentralProducto>> ObtenerProductos()
     {
