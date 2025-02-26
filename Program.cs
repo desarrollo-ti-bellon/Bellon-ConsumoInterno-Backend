@@ -151,6 +151,10 @@ builder.Services.AddScoped<IServicioSucursal, ServicioSucursal>();
 builder.Services.AddScoped<IServicioUsuarioCI, ServicioUsuarioCI>();
 builder.Services.AddScoped<IServicioUsuario, ServicioUsuario>();
 builder.Services.AddScoped<IServicioPosicion, ServicioPosicion>();
+
+// INYECTANDO LAS VISTAS
+builder.Services.AddScoped<IServicioImpresionConsumoInterno, ServicioImpresionConsumoInternos>();
+
 builder.Services.AddMemoryCache();
 var app = builder.Build();
 
