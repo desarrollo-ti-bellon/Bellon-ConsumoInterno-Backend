@@ -2,13 +2,11 @@ namespace Bellon.API.ConsumoInterno.Interfaces;
 
 public interface IServicioConsumoInterno
 {
-    Task<List<Classes.CabeceraConsumoInterno>> ObtenerConsumosInternosDelUsuarioSolicitantePorEstado(int? estadoConsumoInternoId);
+    Task<List<Classes.CabeceraConsumoInterno>> ObtenerConsumosInternosSegunPosicionUsuario();
 
     Task<List<Classes.CabeceraConsumoInterno>> ObtenerConsumosInternos();
 
     Task<Classes.CabeceraConsumoInterno> ObtenerConsumoInternoPorId(int id);
-
-    Task<List<Classes.CabeceraConsumoInterno>> ObtenerConsumoInternoPorEstadoSolicitud(int? estadoConsumoInternoId);
 
     Task<int> ObtenerCantidadConsumoInternos();
 
