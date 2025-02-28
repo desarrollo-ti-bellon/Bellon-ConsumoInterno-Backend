@@ -68,12 +68,12 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
         return null;
     }
 
-    public Task<List<CabeceraConsumoInterno>> ObtenerConsumosInternos()
+    public async Task<List<CabeceraConsumoInterno>> ObtenerConsumosInternos()
     {
         var cache = _memoryCache.Get<List<CabeceraConsumoInterno>>("ConsumosInternos");
         if (cache == null)
         {
-            cache = _context
+            cache = await _context
                 .CabeceraConsumosInternos.Select(i => new CabeceraConsumoInterno
                 {
                     IdCabeceraConsumoInterno = i.id_cabecera_consumo_interno,
@@ -93,14 +93,14 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
                     CantidadLineas = i.LineasConsumosInternos.Count,
                     NombreCreadoPor = i.nombre_creado_por
                 })
-                .ToList();
+                .ToListAsync();
             _memoryCache.Set<List<CabeceraConsumoInterno>>(
                 "ConsumosInternos",
                 cache,
                 DateTimeOffset.Now.AddMinutes(5)
             );
         }
-        return Task.FromResult(cache.OrderBy(i => i.IdCabeceraConsumoInterno.Value).ToList());
+        return await Task.FromResult(cache.OrderBy(i => i.IdCabeceraConsumoInterno.Value).ToList());
     }
 
     public async Task<CabeceraConsumoInterno> ObtenerConsumoInternoPorId(int idSolicitud)
