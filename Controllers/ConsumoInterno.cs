@@ -43,6 +43,14 @@ public class ConsumoInternoController : ControllerBase
         }
     }
 
+    
+    [HttpPost]
+    public async Task<IActionResult> ObtenerConsumosInternosFiltrados([FromBody] FiltroGeneral filtro)
+    {
+        var data = await _servicioConsumoInterno.ObtenerConsumosInternosSegunPosicionUsuarioYFiltrosGenerales(filtro);
+        return data != null && data.Count > 0 ? Ok(data) : NoContent();
+    }
+
     [HttpGet("Cantidad")]
     public async Task<IActionResult> ObtenerEstadoConsumoInterno()
     {

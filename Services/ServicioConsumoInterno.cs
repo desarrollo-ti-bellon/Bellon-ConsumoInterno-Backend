@@ -43,6 +43,96 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
         _servicioNumeroSerie = servicioNumeroSerie;
     }
 
+    public async Task<List<CabeceraConsumoInterno>> ObtenerConsumosInternosSegunPosicionUsuarioYFiltrosGenerales(FiltroGeneral filtro)
+    {
+        // Iniciamos la consulta con el conjunto de datos de 'HistorialMovimientosSolicitudesCI'
+        var consulta = _context.HistorialMovimientosSolicitudesCI.AsQueryable();
+        var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+        var usuario = await _context.UsuariosCI.FirstOrDefaultAsync(el => el.correo == identity!.Name);
+
+        // Aplicar los filtros según los parámetros
+        if (!string.IsNullOrEmpty(filtro.NoDocumento))
+        {
+            consulta = consulta.Where(i => i.no_documento == filtro.NoDocumento);
+        }
+
+        if (!string.IsNullOrEmpty(filtro.CreadoPor))
+        {
+            consulta = consulta.Where(i => i.creado_por == filtro.CreadoPor);
+        }
+
+        if (filtro.FechaDesde.HasValue)
+        {
+            consulta = consulta.Where(i => i.fecha_creado >= filtro.FechaDesde.Value);
+        }
+
+        if (filtro.FechaHasta.HasValue)
+        {
+            consulta = consulta.Where(i => i.fecha_creado <= filtro.FechaHasta.Value);
+        }
+
+        if (!string.IsNullOrEmpty(filtro.UsuarioResponsable))
+        {
+            consulta = consulta.Where(i => i.usuario_responsable == filtro.UsuarioResponsable);
+        }
+
+        if (filtro.EstadoSolicitudId.HasValue)
+        {
+            consulta = consulta.Where(i => i.id_estado_solicitud == filtro.EstadoSolicitudId);
+        }
+
+        if (!string.IsNullOrEmpty(filtro.IdSucursal))
+        {
+            consulta = consulta.Where(i => i.id_sucursal == filtro.IdSucursal);
+        }
+
+        if (!string.IsNullOrEmpty(filtro.IdDepartamento))
+        {
+            consulta = consulta.Where(i => i.id_departamento == filtro.IdDepartamento);
+        }
+
+        var resultado = await consulta
+            .Select(i => new CabeceraConsumoInterno
+            {
+                IdCabeceraConsumoInterno = i.id_cabecera_solicitud,
+                NoDocumento = i.no_documento,
+                FechaCreado = i.fecha_creado,
+                Comentario = i.comentario,
+                CreadoPor = i.creado_por,
+                UsuarioResponsable = i.usuario_responsable ?? "",
+                UsuarioDespacho = i.usuario_despacho ?? "",
+                IdDepartamento = i.id_departamento,
+                IdEstadoSolicitud = i.id_estado_solicitud,
+                IdClasificacion = i.id_clasificacion,
+                IdSucursal = i.id_sucursal,
+                Total = i.total,
+                IdUsuarioResponsable = i.id_usuario_responsable,
+                IdUsuarioDespacho = i.id_usuario_despacho,
+                NombreCreadoPor = i.nombre_creado_por
+            })
+            .ToListAsync();
+
+        if (usuario != null)
+        {
+            switch (usuario.posicion_id)
+            {
+                case 1:  // Administrador
+                    return resultado.ToList();
+                case 2:  // Director
+                    return resultado.Where(i => i.IdDepartamento == usuario.id_departamento).ToList();
+                case 3:  // Gerente Area
+                    return resultado.Where(i => i.IdSucursal == usuario.id_sucursal && i.IdDepartamento == usuario.id_departamento).ToList();
+                case 4:  // Depachador
+                    return resultado.Where(i => i.IdSucursal == usuario.id_sucursal).ToList();
+                case 5:  // Solicitante
+                    return resultado.Where(i => i.CreadoPor == usuario.correo && i.IdDepartamento == usuario.id_departamento && i.IdSucursal == usuario.id_sucursal).ToList();
+            }
+        }
+
+        return resultado;
+    }
+
+
     public async Task<List<CabeceraConsumoInterno>> ObtenerConsumosInternosSegunPosicionUsuario()
     {
         var allItems = await ObtenerConsumosInternos();
