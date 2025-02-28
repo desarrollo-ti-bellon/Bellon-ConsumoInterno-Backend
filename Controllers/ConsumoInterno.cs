@@ -42,7 +42,6 @@ public class ConsumoInternoController : ControllerBase
             return data != null && data.Count > 0 ? Ok(data) : NoContent();
         }
     }
-
     
     [HttpPost]
     public async Task<IActionResult> ObtenerConsumosInternosFiltrados([FromBody] FiltroGeneral filtro)
