@@ -89,41 +89,45 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
     {
         var cache = _memoryCache.Get<List<HistorialMovimientoSolicitudCI>>("HistorialMovimientosSolicitudesAgrupadosCI");
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+
         if (cache == null)
         {
             cache = await _context
             .HistorialMovimientosSolicitudesCI
-            .Select(i => new HistorialMovimientoSolicitudCI
+            .Where(i => i.creado_por == identity!.Name)
+            .GroupBy(i => i.no_documento)
+            .Select(g => new HistorialMovimientoSolicitudCI
             {
-                IdHistMovSolicitud = i.id_hist_mov_solicitud,
-                IdCabeceraSolicitud = i.id_cabecera_solicitud,
-                NoSerieId = i.no_serie_id,
-                NoDocumento = i.no_documento,
-                FechaCreado = i.fecha_creado,
-                CreadoPor = i.creado_por ?? "",
-                UsuarioResponsable = i.usuario_responsable ?? "",
-                UsuarioDespacho = i.usuario_despacho ?? "",
-                IdDepartamento = i.id_departamento,
-                IdEstadoSolicitud = i.id_estado_solicitud,
-                IdClasificacion = i.id_clasificacion,
-                IdSucursal = i.id_sucursal,
-                FechaModificado = i.fecha_modificado,
-                ModificadoPor = i.modificado_por ?? "",
-                Comentario = i.comentario ?? "",
-                Total = i.total,
-                IdUsuarioResponsable = i.id_usuario_responsable,
-                IdUsuarioDespacho = i.id_usuario_despacho
+                NoDocumento = g.Key,
+                IdHistMovSolicitud = g.Max(i => i.id_hist_mov_solicitud),
+                IdCabeceraSolicitud = g.Max(i => i.id_cabecera_solicitud),
+                NoSerieId = g.Max(i => i.no_serie_id),
+                FechaCreado = g.Max(i => i.fecha_creado),
+                CreadoPor = g.Max(i => i.creado_por) ?? "",
+                UsuarioResponsable = g.Max(i => i.usuario_responsable) ?? "",
+                UsuarioDespacho = g.Max(i => i.usuario_despacho) ?? "",
+                IdDepartamento = g.Max(i => i.id_departamento) ?? "",
+                IdEstadoSolicitud = g.Max(i => i.id_estado_solicitud),
+                IdClasificacion = g.Max(i => i.id_clasificacion),
+                IdSucursal = g.Max(i => i.id_sucursal) ?? "",
+                FechaModificado = g.Max(i => i.fecha_modificado),
+                ModificadoPor = g.Max(i => i.modificado_por) ?? "",
+                Comentario = g.Max(i => i.comentario) ?? "",
+                Total = g.Max(i => i.total),
+                IdUsuarioResponsable = g.Max(i => i.id_usuario_responsable),
+                IdUsuarioDespacho = g.Max(i => i.id_usuario_despacho),
+                Indice = g.Max(i => i.indice),
+                NombreCreadoPor = g.Max(i => i.nombre_creado_por)
             })
-            .Where(i => i.CreadoPor == identity.Name)
-            .GroupBy(i => i.NoDocumento)
-            .Select(g => g.OrderByDescending(i => i.FechaCreado).First())
             .ToListAsync();
+
             _memoryCache.Set<List<HistorialMovimientoSolicitudCI>>(
                 "HistorialMovimientosSolicitudesAgrupadosCI",
                 cache,
                 DateTimeOffset.Now.AddMinutes(5)
             );
         }
+
         return cache.OrderBy(i => i.Indice).ToList();
     }
 
