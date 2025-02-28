@@ -130,7 +130,7 @@ public class ServicioSolicitud : IServicioSolicitud
             switch (usuario.posicion_id)
             {
                 case 1:  // Administrador
-                    return allItems.Where(i => i.IdSucursal == usuario.id_sucursal && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
+                    return allItems.Where(i => i.IdEstadoSolicitud == estadoSolicitudId).ToList();
                 case 2:  // Director
                     return allItems.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdDepartamento == usuario.id_departamento && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
                 case 3:  // Gerente Area
@@ -225,7 +225,7 @@ public class ServicioSolicitud : IServicioSolicitud
         switch (usuario.posicion_id)
         {
             case 1: // Administrador
-                resultado = allItems.Where(i => i.IdSucursal == usuario.id_sucursal).ToList();
+                resultado = allItems.ToList();
                 break;
 
             case 2: // Director
@@ -586,11 +586,6 @@ public class ServicioSolicitud : IServicioSolicitud
                .Sum(i => i.precio_unitario * i.cantidad); // Sumar el total de las líneas
             _context.SaveChanges();
         }
-    }
-
-    public Task<List<CabeceraSolicitudCI>> RecuperarSolicitud(int id)
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<CabeceraSolicitudCI> EliminarSolicitud(int id)
