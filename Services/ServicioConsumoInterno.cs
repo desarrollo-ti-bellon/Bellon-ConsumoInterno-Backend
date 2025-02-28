@@ -43,7 +43,7 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
         _servicioNumeroSerie = servicioNumeroSerie;
     }
 
-    public async Task<List<CabeceraConsumoInterno>> ObtenerConsumosInternosDelUsuarioSolicitantePorEstado(int? estadoSolicitudId)
+    public async Task<List<CabeceraConsumoInterno>> ObtenerConsumosInternosSegunPosicionUsuario()
     {
         var allItems = await ObtenerConsumosInternos();
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
@@ -54,15 +54,15 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
             switch (usuario.posicion_id)
             {
                 case 1:  // Administrador
-                    return allItems.Where(i => i.IdSucursal == usuario.id_sucursal && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
+                    return allItems.ToList();
                 case 2:  // Director
-                    return allItems.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdDepartamento == usuario.id_departamento && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
+                    return allItems.Where(i => i.IdDepartamento == usuario.id_departamento).ToList();
                 case 3:  // Gerente Area
-                    return allItems.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdSucursal == usuario.id_sucursal && i.IdDepartamento == usuario.id_departamento && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
+                    return allItems.Where(i => i.IdSucursal == usuario.id_sucursal && i.IdDepartamento == usuario.id_departamento).ToList();
                 case 4:  // Depachador
-                    return allItems.Where(i => i.IdSucursal == usuario.id_sucursal && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
+                    return allItems.Where(i => i.IdSucursal == usuario.id_sucursal).ToList();
                 case 5:  // Solicitante
-                    return allItems.Where(i => i.CreadoPor == usuario.correo && i.IdDepartamento == usuario.id_departamento && i.IdSucursal == usuario.id_sucursal && i.IdEstadoSolicitud == estadoSolicitudId).ToList();
+                    return allItems.Where(i => i.CreadoPor == usuario.correo && i.IdDepartamento == usuario.id_departamento && i.IdSucursal == usuario.id_sucursal).ToList();
             }
         }
         return null;
@@ -130,12 +130,6 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
         return item ?? throw new Exception("Consumo interno no encontrado.");
     }
 
-    public async Task<List<CabeceraConsumoInterno>> ObtenerConsumoInternoPorEstadoSolicitud(int? estadoSolicitudId)
-    {
-        var allItems = await ObtenerConsumosInternos();
-        return allItems.Where(i => i.IdEstadoSolicitud == estadoSolicitudId).ToList();
-    }
-
     public async Task<int> ObtenerCantidadConsumoInternos()
     {
 
@@ -147,15 +141,15 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
         switch (usuario.posicion_id)
         {
             case 1: // Administrador
-                resultado = allItems.Where(i => i.IdSucursal == usuario.id_sucursal).ToList();
+                resultado = allItems.ToList();
                 break;
 
             case 2: // Director
-                resultado = allItems.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdDepartamento == usuario.id_departamento).ToList();
+                resultado = allItems.Where(i => i.IdSucursal == usuario.id_sucursal && i.IdDepartamento == usuario.id_departamento).ToList();
                 break;
 
             case 3: // Gerente Area
-                resultado = allItems.Where(i => i.IdUsuarioResponsable == usuario.id_usuario_ci && i.IdSucursal == usuario.id_sucursal && i.IdDepartamento == usuario.id_departamento).ToList();
+                resultado = allItems.Where(i => i.IdSucursal == usuario.id_sucursal && i.IdDepartamento == usuario.id_departamento).ToList();
                 break;
 
             case 4: // Despachador
