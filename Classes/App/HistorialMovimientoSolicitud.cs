@@ -60,7 +60,6 @@ public class HistorialMovimientoSolicitudCI
 
     [JsonPropertyName("id_usuario_despacho")]
     public int? IdUsuarioDespacho { get; set; }
-
     
     [JsonPropertyName("nombre_creado_por")]
     public string? NombreCreadoPor { get; set; }
