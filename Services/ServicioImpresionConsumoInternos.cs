@@ -56,7 +56,7 @@ public class ServicioImpresionConsumoInternos : IServicioImpresionConsumoInterno
         if (cache == null)
         {
 
-            cache = _context
+            cache = await _context
                 .ImpresionConsumosInternos.Select(i => new ImpresionConsumoInterno
                 {
                     IdProducto = i.id_producto,
@@ -72,7 +72,7 @@ public class ServicioImpresionConsumoInternos : IServicioImpresionConsumoInterno
                     PrecioUnitarioTotal = i.precio_unitario_total,
                     Total = i.total,
                 })
-                .ToList();
+                .ToListAsync();
 
             _memoryCache.Set<List<ImpresionConsumoInterno>>(
                 "ImpresionConsumosInternos",

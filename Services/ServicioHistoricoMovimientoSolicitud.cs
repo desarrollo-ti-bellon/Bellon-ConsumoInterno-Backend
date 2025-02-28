@@ -49,7 +49,7 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         if (cache == null)
         {
-            cache = _context
+            cache = await _context
             .HistorialMovimientosSolicitudesCI
             .Select(i => new HistorialMovimientoSolicitudCI
             {
@@ -75,7 +75,7 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
                 NombreCreadoPor = i.nombre_creado_por ?? "",
             })
             .Where(i => i.CreadoPor == identity.Name)
-            .ToList();
+            .ToListAsync();
             _memoryCache.Set<List<HistorialMovimientoSolicitudCI>>(
                 "HistorialMovimientosSolicitudesCI",
                 cache,
@@ -91,7 +91,7 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         if (cache == null)
         {
-            cache = _context
+            cache = await _context
             .HistorialMovimientosSolicitudesCI
             .Select(i => new HistorialMovimientoSolicitudCI
             {
@@ -117,7 +117,7 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
             .Where(i => i.CreadoPor == identity.Name)
             .GroupBy(i => i.NoDocumento)
             .Select(g => g.OrderByDescending(i => i.FechaCreado).First())
-            .ToList();
+            .ToListAsync();
             _memoryCache.Set<List<HistorialMovimientoSolicitudCI>>(
                 "HistorialMovimientosSolicitudesAgrupadosCI",
                 cache,
