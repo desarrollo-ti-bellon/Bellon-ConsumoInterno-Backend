@@ -28,21 +28,6 @@ public class ConsumoInternoController : ControllerBase
         _servicioConsumoInterno = servicioConsumoInterno;
     }
 
-    [HttpGet("EstadoConsumoInterno")]
-    public async Task<IActionResult> ObtenerConsumosInternosPorEstadoConsumoInterno([FromQuery] int? estadoConsumoInternoId)
-    {
-        if (estadoConsumoInternoId.HasValue)
-        {
-            var data = await _servicioConsumoInterno.ObtenerConsumoInternoPorEstadoSolicitud(estadoConsumoInternoId.Value);
-            return data != null ? Ok(data) : NoContent();
-        }
-        else
-        {
-            var data = await _servicioConsumoInterno.ObtenerConsumosInternosDelUsuarioSolicitantePorEstado(null);
-            return data != null && data.Count > 0 ? Ok(data) : NoContent();
-        }
-    }
-
     [HttpGet]
     public async Task<IActionResult> Obtener([FromQuery] int? id)
     {
@@ -53,7 +38,7 @@ public class ConsumoInternoController : ControllerBase
         }
         else
         {
-            var data = await _servicioConsumoInterno.ObtenerConsumosInternos();
+            var data = await _servicioConsumoInterno.ObtenerConsumosInternosSegunPosicionUsuario();
             return data != null && data.Count > 0 ? Ok(data) : NoContent();
         }
     }
@@ -64,4 +49,5 @@ public class ConsumoInternoController : ControllerBase
         var result = await _servicioConsumoInterno.ObtenerCantidadConsumoInternos();
         return result != null ? Ok(result) : Ok(0);
     }
+
 }
