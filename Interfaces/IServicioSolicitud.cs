@@ -20,8 +20,6 @@ public interface IServicioSolicitud
 
     Task<Classes.CabeceraSolicitudCI> GuardarLineasSolicitud(List<Classes.LineasSolicitudCI> productos);
 
-    Task<List<Classes.CabeceraSolicitudCI>> RecuperarSolicitud(int id);
-
     Task<Classes.CabeceraSolicitudCI> EliminarSolicitud(int id);
 
     Task<Classes.CabeceraSolicitudCI> EliminarLineaSolicitud(int id);
