@@ -35,4 +35,11 @@ public class ImpresionConsumoInternoController : ControllerBase
         return data != null ? Ok(data) : NoContent();
     }
 
+    [HttpPost]
+    public async Task<IActionResult> ObtenerConFiltros([FromBody] FiltroGeneral filtros)
+    {
+        var data = await _servicioImpresionConsumoInterno.ObtenerImpresionConsumosInternosConFiltros(filtros);
+        return data != null ? Ok(data) : NoContent();
+    }
+    
 }

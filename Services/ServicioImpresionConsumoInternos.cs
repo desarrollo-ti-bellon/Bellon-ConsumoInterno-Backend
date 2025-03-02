@@ -84,4 +84,48 @@ public class ServicioImpresionConsumoInternos : IServicioImpresionConsumoInterno
         return cache;
     }
 
+    public async Task<List<ImpresionConsumoInterno>> ObtenerImpresionConsumosInternosConFiltros(FiltroGeneral filtro)
+    {
+        // Iniciamos la consulta con el conjunto de datos de 'HistorialMovimientosSolicitudesCI'
+        var consulta = _context.ImpresionConsumosInternos.AsQueryable();
+        var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+        var usuario = await _context.UsuariosCI.FirstOrDefaultAsync(el => el.correo == identity!.Name);
+
+        // Aplicar los filtros según los parámetros
+        if (!string.IsNullOrEmpty(filtro.NoDocumento))
+        {
+            consulta = consulta.Where(i => i.no_documento == filtro.NoDocumento);
+        }
+
+        if (filtro.FechaDesde.HasValue)
+        {
+            var fechaDesde = filtro.FechaDesde.Value.Date;  // Solo la parte de la fecha
+            consulta = consulta.Where(i => i.fecha_creado >= fechaDesde);
+        }
+
+        if (filtro.FechaHasta.HasValue)
+        {
+            var fechaHasta = filtro.FechaHasta.Value.Date;  // Último milisegundo del día
+            consulta = consulta.Where(i => i.fecha_creado <= fechaHasta);
+        }
+
+        var resultado = await consulta.Select(i => new ImpresionConsumoInterno
+        {
+            IdProducto = i.id_producto,
+            NoProducto = i.no_producto,
+            NoDocumento = i.no_documento,
+            Descripcion = i.descripcion,
+            FechaCreado = i.fecha_creado,
+            AlmacenCodigo = i.almacen_codigo,
+            AlmacenId = i.almacen_id,
+            IdClasificacion = i.id_clasificacion,
+            ClasificacionDescripcion = i.clasificacion_descripcion,
+            CantidadTotal = i.cantidad_total,
+            PrecioUnitarioTotal = i.precio_unitario_total,
+            Total = i.total,
+        }).ToListAsync();
+
+        return resultado;
+    }
+
 }
