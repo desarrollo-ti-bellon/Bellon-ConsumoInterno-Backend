@@ -63,12 +63,14 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
 
         if (filtro.FechaDesde.HasValue)
         {
-            consulta = consulta.Where(i => i.fecha_creado >= filtro.FechaDesde.Value);
+            var fechaDesde = filtro.FechaDesde.Value.Date;  // Solo la parte de la fecha
+            consulta = consulta.Where(i => i.fecha_creado >= fechaDesde);
         }
 
         if (filtro.FechaHasta.HasValue)
         {
-            consulta = consulta.Where(i => i.fecha_creado <= filtro.FechaHasta.Value);
+            var fechaHasta = filtro.FechaHasta.Value.Date.AddDays(1).AddMilliseconds(-1);  // Último milisegundo del día
+            consulta = consulta.Where(i => i.fecha_creado <= fechaHasta);
         }
 
         if (!string.IsNullOrEmpty(filtro.UsuarioResponsable))
@@ -110,6 +112,7 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
                 IdUsuarioDespacho = i.id_usuario_despacho,
                 NombreCreadoPor = i.nombre_creado_por
             })
+            .Distinct()
             .ToListAsync();
 
         if (usuario != null)
@@ -131,7 +134,6 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
 
         return resultado;
     }
-
 
     public async Task<List<CabeceraConsumoInterno>> ObtenerConsumosInternosSegunPosicionUsuario()
     {
