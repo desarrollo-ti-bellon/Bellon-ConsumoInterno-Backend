@@ -370,17 +370,18 @@ public class ServicioSolicitud : IServicioSolicitud
                         if (item.IdEstadoSolicitud == 6) // SOLICITUD CONFIRMADA 
                         {
 
-                            var seHizoAjusteInventario = await _servicioAjusteInventario.CrearAjusteInventario(oldItem.id_cabecera_solicitud);
-                            if (!seHizoAjusteInventario)
-                            {
-                                throw new Exception("No, se pudo realizar los ajustes de invertario en el LS Central");
-                            }
-
                             var verificarArchivado = await Archivar(oldItem.id_cabecera_solicitud);
                             if (!verificarArchivado.Exito)
                             {
                                 await transaction.RollbackAsync();
-                                throw new Exception("Error al guardar el consumo interno: " + verificarArchivado.Mensaje);
+                                throw new Exception("Error al archivar la solicitud, transacción revertida.");
+                            }
+
+                            var seHizoAjusteInventario = await _servicioAjusteInventario.CrearAjusteInventario(oldItem.id_cabecera_solicitud);
+                            if (!seHizoAjusteInventario)
+                            {
+                                await transaction.RollbackAsync();
+                                throw new Exception("No, se pudo realizar los ajustes de invertario en el LS Central");
                             }
                         }
 
@@ -398,7 +399,7 @@ public class ServicioSolicitud : IServicioSolicitud
                 {
                     // Si ocurre un error, deshacemos la transacción
                     await transaction.RollbackAsync();
-                    throw new Exception("Error al actualizar el registro: " + ex.Message);
+                    throw new Exception("Error al actualizar el registro: " + ex.Message, ex);
                 }
             }
 
