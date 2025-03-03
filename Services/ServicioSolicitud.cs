@@ -23,6 +23,7 @@ public class ServicioSolicitud : IServicioSolicitud
     IHttpContextAccessor _httpContextAccessor;
     private readonly IServicioAutorizacion _servicioAutorizacion;
     private readonly IServicioNumeroSerie _servicioNumeroSerie;
+    private readonly IServicioAjusteInventario _servicioAjusteInventario;
 
     public ServicioSolicitud(
         IHttpContextAccessor httpContextAccessor,
@@ -31,7 +32,8 @@ public class ServicioSolicitud : IServicioSolicitud
         IHttpClientFactory httpClientFactory,
         IMemoryCache memoryCache,
         IServicioAutorizacion servicioAutorizacion,
-        IServicioNumeroSerie servicioNumeroSerie
+        IServicioNumeroSerie servicioNumeroSerie,
+        IServicioAjusteInventario servicioAjusteInventario
     )
     {
         _context = context;
@@ -41,6 +43,7 @@ public class ServicioSolicitud : IServicioSolicitud
         _memoryCache = memoryCache;
         _servicioAutorizacion = servicioAutorizacion;
         _servicioNumeroSerie = servicioNumeroSerie;
+        _servicioAjusteInventario = servicioAjusteInventario;
     }
 
     //ESTADOS DE SOLICITUDES 
@@ -366,6 +369,13 @@ public class ServicioSolicitud : IServicioSolicitud
                         // AQUI SE AGREGAN LAS SOLICITUDES AL CONSUMO INTERNO CUANDO TERMINA EL PROCESO CORRECTAMENTE EN EL LS CENTRAL
                         if (item.IdEstadoSolicitud == 6) // SOLICITUD CONFIRMADA 
                         {
+
+                            // var seHizoAjusteInventario = await _servicioAjusteInventario.CrearAjusteInventario(oldItem.id_cabecera_solicitud);
+                            // if (!seHizoAjusteInventario)
+                            // {
+                            //     throw new Exception("No, se pudo realizar los ajustes de invertario en el LS Central");
+                            // }
+
                             var verificarArchivado = await Archivar(oldItem.id_cabecera_solicitud);
                             if (!verificarArchivado.Exito)
                             {
