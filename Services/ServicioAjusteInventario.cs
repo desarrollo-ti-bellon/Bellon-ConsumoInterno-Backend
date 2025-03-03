@@ -94,15 +94,15 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
                     // ----------------------------------------------------------------
                     var ajusteInventario = new LSCentralAjusteInventario
                     {
-                        FechaRegistro = DateTime.Now,
-                        FechaDocumento = solicitud.fecha_creado,
+                        FechaRegistro = DateOnly.FromDateTime(DateTime.Now),
+                        FechaDocumento = DateOnly.Parse(solicitud.fecha_creado.ToString("yyyy-MM-dd")),
                         NoOrden = solicitud.no_documento,
                         NombreDiario = "ITEM",
                         NombreSeccionDiario = "AJ.COIN",
                         CodigoAuditoria = "USO INT.",
                         NoLinea = indice * 10000,
                         CodigoAlmacen = item.almacen_codigo,
-                        TipoMovimiento = "Negative Adjmt",
+                        TipoMovimiento = "Negative Adjmt.",
                         NoProducto = item.no_producto,
                         Cantidad = item.cantidad,
                     };
@@ -131,7 +131,7 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
 
                     if (httpResponseMessage.IsSuccessStatusCode)
                     {
-                        using var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
+                        var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
                         var response = await JsonSerializer.DeserializeAsync<Classes.LSCentralAjusteInventario>(contentStream);
                     }
                     else
