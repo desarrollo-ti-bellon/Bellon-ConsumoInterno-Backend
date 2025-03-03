@@ -74,8 +74,7 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
     public async Task<LSCentralAjusteInventario> ObtenerAjusteDeInventario(string no_documento)
     {
         var allItems = await ObtenerAjustesDeInventarios();
-        var resultado = allItems.FirstOrDefault(i => i.NoOrden == no_documento);
-        return resultado;
+        return allItems.Where(i => i.NoOrden == no_documento).FirstOrDefault();
     }
 
     public async Task<bool> CrearAjusteInventario(int? idSolicitud)
@@ -84,8 +83,10 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
         var resultado = false;
         if (idSolicitud.HasValue)
         {
-            var solicitud = await _context.CabeceraSolicitudesCI.Where(i => i.id_cabecera_solicitud == idSolicitud).FirstOrDefaultAsync();
-            var listadoProductos = await _context.LineasSolicitudesCI.Where(i => i.cabecera_solicitud_id == idSolicitud).ToListAsync();
+
+            var solicitud = await _context.CabeceraConsumosInternos.Where(i => i.id_cabecera_consumo_interno == idSolicitud).FirstOrDefaultAsync();
+            var listadoProductos = await _context.LineasConsumosInternos.Where(i => i.cabecera_consumo_interno_id == idSolicitud).ToListAsync();
+
             if (listadoProductos.Count > 0)
             {
                 var indice = 1;
@@ -148,7 +149,7 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
         }
         else
         {
-            throw new ArgumentException("debe de especificar el codigo de cabecera de la solicitud.");
+            throw new Exception("debe de especificar el codigo de cabecera de la solicitud.");
         }
 
         return resultado;
@@ -160,4 +161,5 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
         await ObtenerAjustesDeInventarios();
         return true;
     }
+
 }

@@ -163,4 +163,5 @@ public class SolicitudController : ControllerBase
             return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
+
 }

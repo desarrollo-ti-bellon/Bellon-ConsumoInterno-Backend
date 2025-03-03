@@ -383,6 +383,7 @@ public class ServicioSolicitud : IServicioSolicitud
                                 await transaction.RollbackAsync();
                                 throw new Exception("No, se pudo realizar los ajustes de invertario en el LS Central");
                             }
+
                         }
 
                     }
