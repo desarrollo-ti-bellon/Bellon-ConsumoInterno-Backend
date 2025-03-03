@@ -25,8 +25,8 @@ if (builder.Environment.IsDevelopment())
         LSCentralTokenUrl =
             "https://login.microsoftonline.com/a5aba6fb-8964-45ce-835a-20614cc908d3/oauth2/v2.0/token",
         LSCentralAPIsComunes =
-            "https://api.businesscentral.dynamics.com/v2.0/Sandbox3/api/bellon/general/v1.0/companies(9780658e-9f4a-ef11-bfe2-6045bd39950a)/",
-            // "https://api.businesscentral.dynamics.com/v2.0/Production/api/bellon/general/v1.0/companies(9780658e-9f4a-ef11-bfe2-6045bd39950a)/",
+            "https://api.businesscentral.dynamics.com/v2.0/Sandbox3/api/bellon/general/v1.0/companies(c76b3d61-0b81-ef11-ac23-6045bd3820c8)/",
+            // "https://api.businesscentral.dynamics.com/v2.0/Production/api/bellon/general/v1.0/companies(c76b3d61-0b81-ef11-ac23-6045bd3820c8)/",
         DataBaseConnection =
             "Server=tcp:bellonapps.database.windows.net,1433;Initial Catalog=bellonapps;Persist Security Info=False;User ID=bellonadmin;Password=B3ll0nD4t4B4s3;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
     };
