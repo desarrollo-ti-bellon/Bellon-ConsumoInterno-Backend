@@ -105,7 +105,7 @@ public class ServicioImpresionConsumoInternos : IServicioImpresionConsumoInterno
 
         if (filtro.FechaHasta.HasValue)
         {
-            var fechaHasta = filtro.FechaHasta.Value.Date;  // Último milisegundo del día
+            var fechaHasta = filtro.FechaHasta.Value.Date.AddDays(1).AddMilliseconds(-1);  // Último milisegundo del día
             consulta = consulta.Where(i => i.fecha_creado <= fechaHasta);
         }
 

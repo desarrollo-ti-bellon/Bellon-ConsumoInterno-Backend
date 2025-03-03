@@ -46,7 +46,7 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
     public async Task<List<CabeceraConsumoInterno>> ObtenerConsumosInternosSegunPosicionUsuarioYFiltrosGenerales(FiltroGeneral filtro)
     {
         // Iniciamos la consulta con el conjunto de datos de 'HistorialMovimientosSolicitudesCI'
-        var consulta = _context.HistorialMovimientosSolicitudesCI.AsQueryable();
+        var consulta = _context.CabeceraConsumosInternos.AsQueryable();
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         var usuario = await _context.UsuariosCI.FirstOrDefaultAsync(el => el.correo == identity!.Name);
 
@@ -96,7 +96,7 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
         var resultado = await consulta
             .Select(i => new CabeceraConsumoInterno
             {
-                IdCabeceraConsumoInterno = i.id_cabecera_solicitud,
+                IdCabeceraConsumoInterno = i.id_cabecera_consumo_interno,
                 NoDocumento = i.no_documento,
                 FechaCreado = i.fecha_creado,
                 Comentario = i.comentario,
