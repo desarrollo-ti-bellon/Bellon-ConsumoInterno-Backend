@@ -6,10 +6,10 @@ namespace Bellon.API.ConsumoInterno.Classes;
 public class LSCentralAjusteInventario
 {
     [JsonPropertyName("fecha_registro")]
-    public DateTime FechaRegistro { get; set; }
+    public DateOnly FechaRegistro { get; set; }
 
     [JsonPropertyName("fecha_documento")]
-    public DateTime FechaDocumento { get; set; }
+    public DateOnly FechaDocumento { get; set; }
 
     [JsonPropertyName("no_orden")]
     public string NoOrden { get; set; }
