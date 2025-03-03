@@ -370,11 +370,11 @@ public class ServicioSolicitud : IServicioSolicitud
                         if (item.IdEstadoSolicitud == 6) // SOLICITUD CONFIRMADA 
                         {
 
-                            // var seHizoAjusteInventario = await _servicioAjusteInventario.CrearAjusteInventario(oldItem.id_cabecera_solicitud);
-                            // if (!seHizoAjusteInventario)
-                            // {
-                            //     throw new Exception("No, se pudo realizar los ajustes de invertario en el LS Central");
-                            // }
+                            var seHizoAjusteInventario = await _servicioAjusteInventario.CrearAjusteInventario(oldItem.id_cabecera_solicitud);
+                            if (!seHizoAjusteInventario)
+                            {
+                                throw new Exception("No, se pudo realizar los ajustes de invertario en el LS Central");
+                            }
 
                             var verificarArchivado = await Archivar(oldItem.id_cabecera_solicitud);
                             if (!verificarArchivado.Exito)
