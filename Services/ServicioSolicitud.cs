@@ -363,6 +363,14 @@ public class ServicioSolicitud : IServicioSolicitud
                     {
                         var buscarNoSerieId = await _context.CabeceraSolicitudesCI.FirstOrDefaultAsync(el => el.id_cabecera_solicitud == item.IdCabeceraSolicitud);
 
+                        // GUARDAMOS EL HISTORICO DEL ESTADO DE LA SOLICITUD
+                        var resultadoGuardarHistorialCambio = await GuardarHistoricoSolicitudes(item);
+                        if (!resultadoGuardarHistorialCambio.Exito)
+                        {
+                            await transaction.RollbackAsync();
+                            throw new Exception(resultadoGuardarHistorialCambio.Mensaje);
+                        }
+
                         // AQUI SE AGREGAN LAS SOLICITUDES AL CONSUMO INTERNO CUANDO TERMINA EL PROCESO CORRECTAMENTE EN EL LS CENTRAL
                         if (item.IdEstadoSolicitud == 6) // SOLICITUD CONFIRMADA 
                         {
@@ -386,13 +394,15 @@ public class ServicioSolicitud : IServicioSolicitud
                         }
 
                     }
-
-                    // GUARDAMOS EL HISTORICO DEL ESTADO DE LA SOLICITUD
-                    var resultadoGuardarHistorial = await GuardarHistoricoSolicitudes(item);
-                    if (!resultadoGuardarHistorial.Exito)
+                    else
                     {
-                        await transaction.RollbackAsync();
-                        throw new Exception(resultadoGuardarHistorial.Mensaje);
+                        // GUARDAMOS EL HISTORICO DEL ESTADO DE LA SOLICITUD
+                        var resultadoGuardarHistorial = await GuardarHistoricoSolicitudes(item);
+                        if (!resultadoGuardarHistorial.Exito)
+                        {
+                            await transaction.RollbackAsync();
+                            throw new Exception(resultadoGuardarHistorial.Mensaje);
+                        }
                     }
 
                     // Completamos la transacción si todo ha sido exitoso
