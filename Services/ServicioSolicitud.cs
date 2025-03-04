@@ -363,13 +363,11 @@ public class ServicioSolicitud : IServicioSolicitud
                     {
                         var buscarNoSerieId = await _context.CabeceraSolicitudesCI.FirstOrDefaultAsync(el => el.id_cabecera_solicitud == item.IdCabeceraSolicitud);
 
-                        // GUARDAMOS EL HISTORICO DEL ESTADO DE LA SOLICITUD
-                        await GuardarHistoricoSolicitudes(item);
-
                         // AQUI SE AGREGAN LAS SOLICITUDES AL CONSUMO INTERNO CUANDO TERMINA EL PROCESO CORRECTAMENTE EN EL LS CENTRAL
                         if (item.IdEstadoSolicitud == 6) // SOLICITUD CONFIRMADA 
                         {
 
+                            //AQUI SE ARCHIVAN LAS SOLICITUDES EN EL CONSUMO INTERNO CUANDO TERMINA EL PROCESO CORRECTAMENTE
                             var verificarArchivado = await Archivar(oldItem.id_cabecera_solicitud);
                             if (!verificarArchivado.Exito)
                             {
@@ -377,6 +375,7 @@ public class ServicioSolicitud : IServicioSolicitud
                                 throw new Exception("Error al archivar la solicitud, transacción revertida.");
                             }
 
+                            // AQUI SE CREAN LOS AJUSTES DE LA TABLA DE CONSUMOS INTERNOS EN EL LS CENTRAL DESDE EL BACKEND 
                             var seHizoAjusteInventario = await _servicioAjusteInventario.CrearAjusteInventario(oldItem.id_cabecera_solicitud);
                             if (!seHizoAjusteInventario.Exito)
                             {
@@ -387,10 +386,13 @@ public class ServicioSolicitud : IServicioSolicitud
                         }
 
                     }
-                    else
+
+                    // GUARDAMOS EL HISTORICO DEL ESTADO DE LA SOLICITUD
+                    var resultadoGuardarHistorial = await GuardarHistoricoSolicitudes(item);
+                    if (!resultadoGuardarHistorial.Exito)
                     {
-                        // GUARDAMOS EL HISTORICO DEL ESTADO DE LA SOLICITUD
-                        await GuardarHistoricoSolicitudes(item);
+                        await transaction.RollbackAsync();
+                        throw new Exception(resultadoGuardarHistorial.Mensaje);
                     }
 
                     // Completamos la transacción si todo ha sido exitoso
@@ -452,7 +454,14 @@ public class ServicioSolicitud : IServicioSolicitud
                     item.NoDocumento = numeroSerie;
                     item.IdCabeceraSolicitud = newItem.Entity.id_cabecera_solicitud;
                     item.Total = 0;
-                    await GuardarHistoricoSolicitudes(item);
+
+                    // GUARDAMOS EL HISTORICO DEL ESTADO DE LA SOLICITUD
+                    var resultadoGuardarHistorial = await GuardarHistoricoSolicitudes(item);
+                    if (!resultadoGuardarHistorial.Exito)
+                    {
+                        await transaction.RollbackAsync();
+                        throw new Exception(resultadoGuardarHistorial.Mensaje);
+                    }
 
                     // Completamos la transacción si todo ha sido exitoso
                     await transaction.CommitAsync();
@@ -763,22 +772,23 @@ public class ServicioSolicitud : IServicioSolicitud
         }
     }
 
-    public async Task<bool> GuardarHistoricoSolicitudes(CabeceraSolicitudCI item)
+    public async Task<Resultado> GuardarHistoricoSolicitudes(CabeceraSolicitudCI item)
     {
+        var resultado = false;
+        var mensaje = "";
+
         // Registramos el historial de la solicitud
         var oldItem = await _context.HistorialMovimientosSolicitudesCI
-                        .Where(i => i.id_cabecera_solicitud == item.IdCabeceraSolicitud)
-                        .FirstOrDefaultAsync();
+                            .Where(i => i.id_cabecera_solicitud == item.IdCabeceraSolicitud)
+                            .FirstOrDefaultAsync();
 
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
-        if (
-            oldItem != null
-            && item.IdEstadoSolicitud == estadoSolicitudNueva // SOLO SI ES NUEVO 
-        )
+
+        try
         {
-            try
+            if (oldItem != null && item.IdEstadoSolicitud == estadoSolicitudNueva) // SOLO SI ES NUEVO 
             {
-                // Registramos el historial de la nueva solicitud
+                // Registramos el historial de la nueva solicitud (actualizando el histórico)
                 oldItem.id_cabecera_solicitud = item.IdCabeceraSolicitud;
                 oldItem.no_serie_id = _settings.DocumentoConsumoInternoNoSerieId;
                 oldItem.no_documento = item.NoDocumento;
@@ -799,28 +809,20 @@ public class ServicioSolicitud : IServicioSolicitud
                 oldItem.modificado_por = identity!.Name;
                 oldItem.indice = 1;
 
+                // Invalidate cache to ensure fresh data
                 _memoryCache.Remove("HistorialMovimientosSolicitudesAgrupadosCI");
                 _memoryCache.Remove("HistorialMovimientosSolicitudesCI");
                 await _context.SaveChangesAsync();
-                return true;
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al intentar guardar el historico del registro: <" + ex.Message + ">");
-            }
-        }
-        else
-        {
-            try
+            else
             {
                 var ultimoHistorial = _context.HistorialMovimientosSolicitudesCI
-                                   .OrderByDescending(i => i.fecha_creado) // Aseguramos que estamos obteniendo el más reciente.
-                                   .Where(i => i.id_cabecera_solicitud == item.IdCabeceraSolicitud)
-                                   .FirstOrDefault().Clone();
+                                               .Where(i => i.id_cabecera_solicitud == item.IdCabeceraSolicitud)
+                                               .Count();
 
-                int nuevoIndice = ultimoHistorial?.indice + 1 ?? 1;
+                int nuevoIndice = ultimoHistorial + 1;
 
-                // Registramos el historial de la nueva solicitud
+                // Registramos el historial de la nueva solicitud (creando un nuevo registro)
                 var nuevoItem = new HistorialMovimientosSolicitudesCI
                 {
                     id_cabecera_solicitud = item.IdCabeceraSolicitud,
@@ -845,16 +847,26 @@ public class ServicioSolicitud : IServicioSolicitud
                 };
 
                 _context.HistorialMovimientosSolicitudesCI.Add(nuevoItem);
+
+                // Invalidate cache to ensure fresh data
                 _memoryCache.Remove("HistorialMovimientosSolicitudesAgrupadosCI");
                 _memoryCache.Remove("HistorialMovimientosSolicitudesCI");
                 await _context.SaveChangesAsync();
-                return true;
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al intentar guardar el historico del registro: <" + ex.Message + ">");
-            }
+
+            resultado = true;
         }
+        catch (Exception ex)
+        {
+            // Log the error (optional, consider using a logging framework like Serilog, NLog, etc.)
+            mensaje = $"Error al agregar el registro al historial de movimientos de las solicitadores del consumo interno: {ex.Message}";
+        }
+
+        return new Resultado
+        {
+            Exito = resultado,
+            Mensaje = mensaje
+        };
     }
 
     public void CalcularTotalHistorial(int id)
