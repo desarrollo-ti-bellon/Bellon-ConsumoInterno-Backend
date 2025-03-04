@@ -8,6 +8,6 @@ public interface IServicioAjusteInventario
 
     Task<LSCentralAjusteInventario> ObtenerAjusteDeInventario(string no_documento);
 
-    Task<bool> CrearAjusteInventario(int? idSolicitud);
+    Task<Resultado> CrearAjusteInventario(int? idSolicitud);
 
 }

@@ -378,10 +378,10 @@ public class ServicioSolicitud : IServicioSolicitud
                             }
 
                             var seHizoAjusteInventario = await _servicioAjusteInventario.CrearAjusteInventario(oldItem.id_cabecera_solicitud);
-                            if (!seHizoAjusteInventario)
+                            if (!seHizoAjusteInventario.Exito)
                             {
                                 await transaction.RollbackAsync();
-                                throw new Exception("No, se pudo realizar los ajustes de invertario en el LS Central");
+                                throw new Exception(seHizoAjusteInventario.Mensaje);
                             }
 
                         }

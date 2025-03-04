@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
+using System.Net;
+using System.Text;
 
 namespace Bellon.API.ConsumoInterno.Services;
 
@@ -68,19 +70,18 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
                 throw new Exception("Error en el servicio de AjusteInventarios de LS Central");
             }
         }
-        return cache.value.OrderBy(i => i.NoOrden).ToList();
+        return cache.value.OrderBy(i => i.NoDocumento).ToList();
     }
 
     public async Task<LSCentralAjusteInventario> ObtenerAjusteDeInventario(string no_documento)
     {
         var allItems = await ObtenerAjustesDeInventarios();
-        return allItems.Where(i => i.NoOrden == no_documento).FirstOrDefault();
+        return allItems.Where(i => i.NoDocumento == no_documento).FirstOrDefault();
     }
 
-    public async Task<bool> CrearAjusteInventario(int? idSolicitud)
+    public async Task<Resultado> CrearAjusteInventario(int? idSolicitud)
     {
 
-        var resultado = false;
         if (idSolicitud.HasValue)
         {
 
@@ -90,69 +91,90 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
             if (listadoProductos.Count > 0)
             {
                 var indice = 1;
+                var listadoProductosLS = new List<LSCentralAjusteInventario>();
                 foreach (var item in listadoProductos)
                 {
-                    // ----------------------------------------------------------------
                     var ajusteInventario = new LSCentralAjusteInventario
                     {
-                        FechaRegistro = DateOnly.FromDateTime(DateTime.Now),
-                        FechaDocumento = DateOnly.Parse(solicitud.fecha_creado.ToString("yyyy-MM-dd")),
-                        NoOrden = solicitud.no_documento,
+                        NoDocumento = solicitud.no_documento,
                         NombreDiario = "ITEM",
                         NombreSeccionDiario = "AJ.COIN",
-                        CodigoAuditoria = "USO INT.",
-                        NoLinea = indice * 10000,
-                        CodigoAlmacen = item.almacen_codigo,
+                        NoLinea = indice * 1000,
                         TipoMovimiento = "Negative Adjmt.",
                         NoProducto = item.no_producto,
                         Cantidad = item.cantidad,
+                        CodigoAlmacen = item.almacen_codigo,
                     };
-                    // ----------------------------------------------------------------
-                    indice++;
-                    // ----------------------------------------------------------------
 
-                    //SE LLAMAN LAS APIs
-                    var token = await _servicioAutorizacion.ObtenerTokenBC();
-                    var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
-                    httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
-                    var stringContent = JsonSerializer.Serialize<LSCentralAjusteInventario>(
-                        ajusteInventario
-                    );
+                    listadoProductosLS.Add(ajusteInventario);
 
-                    var buffer = System.Text.Encoding.UTF8.GetBytes(stringContent);
-                    var byteContent = new ByteArrayContent(buffer);
-                    byteContent.Headers.ContentType = new MediaTypeHeaderValue(
-                        "application/json"
-                    );
-
-                    var httpResponseMessage = await httpClient.PostAsync(
-                        "LineasDiarioProducto",
-                        byteContent
-                    );
-
-                    if (httpResponseMessage.IsSuccessStatusCode)
-                    {
-                        var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
-                        var response = await JsonSerializer.DeserializeAsync<Classes.LSCentralAjusteInventario>(contentStream);
-                    }
-                    else
-                    {
-                        throw new Exception("Error en el servicio de ajuste de inventario consumos internos de LS Central");
-                    }
+                    indice++; // GENERANDO EL NUMERO DE LINEA
                 }
-                resultado = true;
+
+                var httpClient = new HttpClient();
+                var token = await _servicioAutorizacion.ObtenerTokenBC();
+                var request = new HttpRequestMessage(
+                    HttpMethod.Post,
+                    _settings.LSCentralQueryComunes + "ItemJournalIntegrationHandler_InsertLine"
+                );
+
+                request.Headers.Add("company", _settings.CompanyId);
+                request.Headers.Add("Authorization", "Bearer " + token.AccessToken);
+
+                var json = new
+                {
+                    lineas = listadoProductosLS
+                };
+
+                var stringContentArray = JsonSerializer.Serialize(json);
+                var requestJson = new LSCentralRequest { RequestJson = stringContentArray };
+                var stringContent = JsonSerializer.Serialize<LSCentralRequest>(requestJson);
+                var content = new StringContent(stringContent, Encoding.UTF8, "application/json");
+                request.Content = content;
+                var response = await httpClient.SendAsync(request);
+
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    var mensaje = await response.Content.ReadAsStringAsync();
+                    return new Resultado
+                    {
+                        Exito = false,
+                        Mensaje = string.IsNullOrEmpty(mensaje)
+                             ? "<EjecutarPeticion>: Error: La petición no fue procesada por LS-Central. HttpStatusCode: "
+                                 + response.StatusCode.ToString()
+                             : "<EjecutarPeticion>: Error: La petición no fue procesada por LS-Central. HttpStatusCode: "
+                                 + response.StatusCode.ToString()
+                                 + " : "
+                                 + mensaje,
+                    };
+                }
+                else
+                {
+                    return new Resultado
+                    {
+                        Exito = true,
+                        Mensaje = "Se realizo todos los ajustes de inventarios correctamente."
+                    };
+                }
             }
             else
             {
-                throw new Exception("Este documento no tiene productos agregados en la solicitud de consumos internos");
+                return new Resultado
+                {
+                    Exito = false,
+                    Mensaje = "Este documento no tiene productos agregados en la solicitud de consumos internos"
+                };
             }
         }
         else
         {
-            throw new Exception("debe de especificar el codigo de cabecera de la solicitud.");
+            return new Resultado
+            {
+                Exito = false,
+                Mensaje = "debe de especificar el codigo de cabecera de la solicitud."
+            };
         }
 
-        return resultado;
     }
 
     public async Task<bool> RefrescarCache()
