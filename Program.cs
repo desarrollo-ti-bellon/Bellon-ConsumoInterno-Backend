@@ -14,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 AppSettings appSettings = new AppSettings();
 if (builder.Environment.IsDevelopment())
 {
+
     //********************************************  LOCALHOST  ****************************************************************
     //SI ES AMBIENTE DE DESARROLLO (LOCALHOST) LOS VALORES SE LEEN DE AQUI
     appSettings = new AppSettings
@@ -26,7 +27,8 @@ if (builder.Environment.IsDevelopment())
             "https://login.microsoftonline.com/a5aba6fb-8964-45ce-835a-20614cc908d3/oauth2/v2.0/token",
         LSCentralAPIsComunes =
             "https://api.businesscentral.dynamics.com/v2.0/Sandbox3/api/bellon/general/v1.0/companies(c76b3d61-0b81-ef11-ac23-6045bd3820c8)/",
-            // "https://api.businesscentral.dynamics.com/v2.0/Production/api/bellon/general/v1.0/companies(c76b3d61-0b81-ef11-ac23-6045bd3820c8)/",
+        LSCentralQueryComunes = "https://api.businesscentral.dynamics.com/v2.0/a5aba6fb-8964-45ce-835a-20614cc908d3/Sandbox3/ODataV4/",
+        CompanyId = "9780658e-9f4a-ef11-bfe2-6045bd39950a",
         DataBaseConnection =
             "Server=tcp:bellonapps.database.windows.net,1433;Initial Catalog=bellonapps;Persist Security Info=False;User ID=bellonadmin;Password=B3ll0nD4t4B4s3;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
     };
@@ -74,6 +76,8 @@ else
             LSCentralAPIsComunes = (
                 (KeyVaultSecret)client.GetSecret("Comun-LSCentralAPIUrl")
             ).Value,
+            LSCentralQueryComunes = ((KeyVaultSecret)client.GetSecret("LSCentralQueryComunes")).Value,
+            CompanyId = ((KeyVaultSecret)client.GetSecret("CompanyId")).Value,
             DataBaseConnection = (
                 (KeyVaultSecret)client.GetSecret("Comun-DataBaseConnection")
             ).Value,
@@ -93,7 +97,9 @@ builder.Services.Configure<AppSettings>(options =>
     options.LSCentralTokenUrl = appSettings.LSCentralTokenUrl;
     options.LSCentralTokenClientSecret = appSettings.LSCentralTokenClientSecret;
     options.LSCentralAPIsComunes = appSettings.LSCentralAPIsComunes;
+    options.LSCentralQueryComunes = appSettings.LSCentralQueryComunes;
     options.DataBaseConnection = appSettings.DataBaseConnection;
+    options.CompanyId = appSettings.CompanyId;
 });
 
 // Add services to the container.
