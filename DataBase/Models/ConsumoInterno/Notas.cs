@@ -40,5 +40,5 @@ public partial class Notas
     public DateTime? fecha_modificado { get; set; }
 
     [StringLength(100)]
-    public string modificado_por { get; set; }
+    public string? modificado_por { get; set; }
 }

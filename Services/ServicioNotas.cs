@@ -127,41 +127,49 @@ public class ServicioNotas : IServicioNotas
     public async Task<List<Notas>> GuardarNotas(Notas item)
     {
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
-        if (item.IdNota != null)
+        try
         {
-            var oldItem = _context.Notas.Where(i => i.id_nota == item.IdNota).FirstOrDefault();
-            if (oldItem != null)
+            if (item.IdNota != null)
             {
-                oldItem.id_documento = item.IdDocumento;
-                oldItem.tipo_documento = item.TipoDocumento;
-                oldItem.no_documento = item.NoDocumento;
-                oldItem.usuario_destino = item.UsuarioDestino;
-                oldItem.descripcion = item.Descripcion;
-                oldItem.fecha_modificado = DateTime.Now;
-                oldItem.modificado_por = identity.Name;
-                _context.SaveChanges();
+                var oldItem = _context.Notas.Where(i => i.id_nota == item.IdNota).FirstOrDefault();
+                if (oldItem != null)
+                {
+                    oldItem.id_documento = item.IdDocumento;
+                    oldItem.tipo_documento = item.TipoDocumento;
+                    oldItem.no_documento = item.NoDocumento;
+                    oldItem.usuario_destino = item.UsuarioDestino;
+                    oldItem.descripcion = item.Descripcion;
+                    oldItem.fecha_modificado = DateTime.Now;
+                    oldItem.modificado_por = identity.Name;
+                    await _context.SaveChangesAsync();
+                    await RefrescarCache();
+                    return await ObtenerNotasPorParametros(identity.Name, item.TipoDocumento);
+                }
+            }
+            else
+            {
+                var newItem = _context.Notas.Add(
+                    new DataBase.Notas
+                    {
+                        id_documento = item.IdDocumento,
+                        tipo_documento = item.TipoDocumento,
+                        no_documento = item.NoDocumento,
+                        usuario_destino = item.UsuarioDestino,
+                        descripcion = item.Descripcion,
+                        fecha_creado = DateTime.Now,
+                        creado_por = identity.Name,
+                    }
+                );
+                await _context.SaveChangesAsync();
                 await RefrescarCache();
-                return await ObtenerNotasPorParametros(identity.Name, item.TipoDocumento);
+                return await ObtenerNotasPorParametros(identity.Name, newItem.Entity.tipo_documento);
             }
         }
-        else
+        catch (Exception ex)
         {
-            var newItem = _context.Notas.Add(
-                new DataBase.Notas
-                {
-                    id_documento = item.IdDocumento,
-                    tipo_documento = item.TipoDocumento,
-                    no_documento = item.NoDocumento,
-                    usuario_destino = item.UsuarioDestino,
-                    descripcion = item.Descripcion,
-                    fecha_creado = DateTime.Now,
-                    creado_por = identity.Name,
-                }
-            );
-            _context.SaveChanges();
-            await RefrescarCache();
-            return await ObtenerNotasPorParametros(identity.Name, newItem.Entity.tipo_documento);
+            throw new Exception($"Error al intentar guardar o modificar una nota {ex.Message}");
         }
+
         return null;
     }
 
