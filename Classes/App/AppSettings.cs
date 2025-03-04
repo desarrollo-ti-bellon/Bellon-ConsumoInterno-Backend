@@ -8,5 +8,8 @@ public class AppSettings
     public string LSCentralTokenUrl { get; set; }
     public string LSCentralTokenClientSecret { get; set; }
     public string LSCentralAPIsComunes { get; set; }
+    public string LSCentralQueryComunes { get; set; }
     public string DataBaseConnection { get; set; }
+    public string CompanyId { get; set; }
+
 }
