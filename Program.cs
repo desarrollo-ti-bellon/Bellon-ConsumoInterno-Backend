@@ -76,8 +76,8 @@ else
             LSCentralAPIsComunes = (
                 (KeyVaultSecret)client.GetSecret("Comun-LSCentralAPIUrl")
             ).Value,
-            LSCentralQueryComunes = ((KeyVaultSecret)client.GetSecret("LSCentralQueryComunes")).Value,
-            CompanyId = ((KeyVaultSecret)client.GetSecret("CompanyId")).Value,
+            LSCentralQueryComunes = ((KeyVaultSecret)client.GetSecret("Comun-LSCentralQueryAPIs")).Value,
+            CompanyId = ((KeyVaultSecret)client.GetSecret("ConsumoInterno-CompanyId")).Value,
             DataBaseConnection = (
                 (KeyVaultSecret)client.GetSecret("Comun-DataBaseConnection")
             ).Value,
