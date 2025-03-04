@@ -746,11 +746,16 @@ public class ServicioSolicitud : IServicioSolicitud
             }
 
             item.IdEstadoSolicitud = estadoSolicitudTerminada;
-            await GuardarHistoricoSolicitudes(item);
+
+            // GUARDAMOS EL HISTORICO DEL ESTADO DE LA SOLICITUD
+            var resultadoGuardarHistorial = await GuardarHistoricoSolicitudes(item);
+            if (!resultadoGuardarHistorial.Exito)
+            {
+                throw new Exception($"Error al agregar el registro al historial de movimientos de las solicitadores del consumo interno");
+            }
 
             // SE ELIMINAN LOS DETALLES DE LA TABLA DE PRODUCCIÓN
-            var itemDB = await _context.CabeceraSolicitudesCI
-                .FirstOrDefaultAsync(i => i.id_cabecera_solicitud == id);
+            var itemDB = await _context.CabeceraSolicitudesCI.FirstOrDefaultAsync(i => i.id_cabecera_solicitud == id);
             if (itemDB != null)
             {
                 _context.CabeceraSolicitudesCI.Remove(itemDB);
