@@ -72,6 +72,20 @@ public class ClasificacionController : ControllerBase
         }
     }
 
+    [HttpGet("Activas")]
+    public async Task<IActionResult> ObtenerActivas()
+    {
+        try
+        {
+            var data = await _servicioClasificacion.ObtenerClasificacionesActivas();
+            return data != null ? Ok(data) : NoContent();
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
+    }
+
     [HttpPost]
     public async Task<IActionResult> Guardar([FromBody] Classes.ClasificacionCI? item)
     {

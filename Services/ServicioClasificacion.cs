@@ -122,6 +122,31 @@ public class ServicioClasificacion : IServicioClasificacion
         return cache;
     }
 
+    public async Task<List<Classes.ClasificacionCI>> ObtenerClasificacionesActivas()
+    {
+        var cache = _memoryCache.Get<List<ClasificacionCI>>("ClasificacionesCIActivas");
+        if (cache == null)
+        {
+            cache = _context
+                .ClasificacionesCI.Select(i => new ClasificacionCI
+                {
+                    IdClasificacion = i.id_clasificacion,
+                    IdGrupoContProductoGeneral = i.id_grupo_cont_producto_general,
+                    CodigoClasificacion = i.codigo_clasificacion,
+                    Descripcion = i.descripcion,
+                    Estado = i.estado,
+                })
+                .Where(i => i.Estado == true)
+                .ToList();
+            _memoryCache.Set<List<ClasificacionCI>>(
+                "ClasificacionesCIActivas",
+                cache,
+                DateTimeOffset.Now.AddMinutes(5)
+            );
+        }
+        return cache;
+    }
+
     public async Task<Classes.ClasificacionCI> ObtenerClasificacion(int? id)
     {
         var allItems = await ObtenerClasificaciones();
@@ -210,8 +235,10 @@ public class ServicioClasificacion : IServicioClasificacion
     public async Task<bool> RefrescarCache()
     {
         _memoryCache.Remove("ClasificacionesCI");
+        _memoryCache.Remove("ClasificacionesCIActivas");
         await ObtenerClasificacionesERP();
         await ObtenerClasificaciones();
+        await ObtenerClasificacionesActivas();
         return true;
     }
 }

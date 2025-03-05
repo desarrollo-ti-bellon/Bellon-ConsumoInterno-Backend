@@ -5,6 +5,7 @@ public interface IServicioClasificacion
     Task<List<Classes.LSCentralClasificacion>> ObtenerClasificacionesERP();
     Task<Classes.LSCentralClasificacion> ObtenerClasificacionERP(string id);
     Task<List<Classes.ClasificacionCI>> ObtenerClasificaciones();
+    Task<List<Classes.ClasificacionCI>> ObtenerClasificacionesActivas();
     Task<Classes.ClasificacionCI> ObtenerClasificacion(int? id);
     Task<Classes.ClasificacionCI> GuardarClasificacion(Classes.ClasificacionCI item);
     Task<Classes.ClasificacionCI> EliminarClasificacion(int id);
