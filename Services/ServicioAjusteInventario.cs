@@ -135,7 +135,14 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
+
                     var mensaje = await response.Content.ReadAsStringAsync();
+                    // var respuesta = JsonSerializer.Deserialize<LSCentralAjusteInventarioRespuesta>(mensaje);
+                    // var respuestaLS = new LSCentralAjusteInventarioRespuesta
+                    // {
+                    //     odataContext = respuesta.odataContext,
+                    //     value = respuesta.value
+                    // };
                     return new Resultado
                     {
                         Exito = false,
@@ -148,6 +155,7 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
                                  + mensaje,
                     };
                 }
+
                 else
                 {
                     return new Resultado
