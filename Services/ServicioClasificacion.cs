@@ -235,6 +235,7 @@ public class ServicioClasificacion : IServicioClasificacion
     public async Task<bool> RefrescarCache()
     {
         _memoryCache.Remove("ClasificacionesCI");
+        _memoryCache.Remove("ClasificacionesERP");
         _memoryCache.Remove("ClasificacionesCIActivas");
         await ObtenerClasificacionesERP();
         await ObtenerClasificaciones();
