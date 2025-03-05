@@ -28,7 +28,7 @@ if (builder.Environment.IsDevelopment())
         LSCentralAPIsComunes =
             "https://api.businesscentral.dynamics.com/v2.0/Sandbox3/api/bellon/general/v1.0/companies(c76b3d61-0b81-ef11-ac23-6045bd3820c8)/",
         LSCentralQueryComunes = "https://api.businesscentral.dynamics.com/v2.0/a5aba6fb-8964-45ce-835a-20614cc908d3/Sandbox3/ODataV4/",
-        CompanyId = "9780658e-9f4a-ef11-bfe2-6045bd39950a",
+        CompanyId = "c76b3d61-0b81-ef11-ac23-6045bd3820c8",
         DataBaseConnection =
             "Server=tcp:bellonapps.database.windows.net,1433;Initial Catalog=bellonapps;Persist Security Info=False;User ID=bellonadmin;Password=B3ll0nD4t4B4s3;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
     };
