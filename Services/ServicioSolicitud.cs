@@ -361,13 +361,11 @@ public class ServicioSolicitud : IServicioSolicitud
 
                     if (cambioEstadoSolicitud)
                     {
-                        var buscarNoSerieId = await _context.CabeceraSolicitudesCI.FirstOrDefaultAsync(el => el.id_cabecera_solicitud == item.IdCabeceraSolicitud);
 
                         // GUARDAMOS EL HISTORICO DEL ESTADO DE LA SOLICITUD
                         var resultadoGuardarHistorialCambio = await GuardarHistoricoSolicitudes(item);
                         if (!resultadoGuardarHistorialCambio.Exito)
                         {
-                            await transaction.RollbackAsync();
                             throw new Exception(resultadoGuardarHistorialCambio.Mensaje);
                         }
 
@@ -379,7 +377,6 @@ public class ServicioSolicitud : IServicioSolicitud
                             var verificarArchivado = await Archivar(oldItem.id_cabecera_solicitud);
                             if (!verificarArchivado.Exito)
                             {
-                                await transaction.RollbackAsync();
                                 throw new Exception("Error al archivar la solicitud, transacción revertida.");
                             }
 
@@ -387,7 +384,6 @@ public class ServicioSolicitud : IServicioSolicitud
                             var seHizoAjusteInventario = await _servicioAjusteInventario.CrearAjusteInventario(oldItem.id_cabecera_solicitud);
                             if (!seHizoAjusteInventario.Exito)
                             {
-                                await transaction.RollbackAsync();
                                 throw new Exception(seHizoAjusteInventario.Mensaje);
                             }
 
@@ -400,7 +396,6 @@ public class ServicioSolicitud : IServicioSolicitud
                         var resultadoGuardarHistorial = await GuardarHistoricoSolicitudes(item);
                         if (!resultadoGuardarHistorial.Exito)
                         {
-                            await transaction.RollbackAsync();
                             throw new Exception(resultadoGuardarHistorial.Mensaje);
                         }
                     }
@@ -469,7 +464,6 @@ public class ServicioSolicitud : IServicioSolicitud
                     var resultadoGuardarHistorial = await GuardarHistoricoSolicitudes(item);
                     if (!resultadoGuardarHistorial.Exito)
                     {
-                        await transaction.RollbackAsync();
                         throw new Exception(resultadoGuardarHistorial.Mensaje);
                     }
 
