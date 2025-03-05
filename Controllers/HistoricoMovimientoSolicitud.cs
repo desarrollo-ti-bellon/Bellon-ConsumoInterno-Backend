@@ -50,6 +50,13 @@ public class HistorialMovimientoSolicitudesCIController : ControllerBase
         return data != null && data.Count > 0 ? Ok(data) : NoContent();
     }
 
+    [HttpPost("Agrupado")]
+    public async Task<IActionResult> ObtenerAgrupadosCOnFiltrosGenerales([FromBody] FiltroGeneral filtros)
+    {
+        var data = await _servicioSHistorialMovimientosSolicitudes.ObtenerHistorialMovimientosSolicitudesAgrupadosConFiltrosGenerales(filtros);
+        return data != null && data.Count > 0 ? Ok(data) : NoContent();
+    }
+
     [HttpGet("Historial")]
     public async Task<IActionResult> ObtenerHistorico([FromQuery] string? id)
     {

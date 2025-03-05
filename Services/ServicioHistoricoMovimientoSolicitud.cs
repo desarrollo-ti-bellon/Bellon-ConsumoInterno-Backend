@@ -159,5 +159,56 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
         return true;
     }
 
+    public async Task<List<HistorialMovimientoSolicitudCI>> ObtenerHistorialMovimientosSolicitudesAgrupadosConFiltrosGenerales(FiltroGeneral filtro)
+    {
+        // Iniciamos la consulta con el conjunto de datos de 'HistorialMovimientosSolicitudesCI'
+        var consulta = _context.HistorialMovimientosSolicitudesCI.AsQueryable();
+        var identity = _httpContextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
+        var usuario = await _context.UsuariosCI.FirstOrDefaultAsync(el => el.correo == identity!.Name);
+
+        // Aplicar los filtros según los parámetros
+        if (filtro.FechaDesde.HasValue)
+        {
+            var fechaDesde = filtro.FechaDesde.Value.Date;  // Solo la parte de la fecha
+            consulta = consulta.Where(i => i.fecha_creado >= fechaDesde);
+        }
+
+        if (filtro.FechaHasta.HasValue)
+        {
+            var fechaHasta = filtro.FechaHasta.Value.Date.AddDays(1).AddMilliseconds(-1);  // Último milisegundo del día
+            consulta = consulta.Where(i => i.fecha_creado <= fechaHasta);
+        }
+
+        var resultado = await consulta
+            .Where(i => i.creado_por == identity!.Name)
+            .GroupBy(i => i.no_documento)
+            .Select(g => new HistorialMovimientoSolicitudCI
+            {
+                NoDocumento = g.Key,
+                IdHistMovSolicitud = g.Max(i => i.id_hist_mov_solicitud),
+                IdCabeceraSolicitud = g.Max(i => i.id_cabecera_solicitud),
+                NoSerieId = g.Max(i => i.no_serie_id),
+                FechaCreado = g.Max(i => i.fecha_creado),
+                CreadoPor = g.Max(i => i.creado_por) ?? "",
+                UsuarioResponsable = g.Max(i => i.usuario_responsable) ?? "",
+                UsuarioDespacho = g.Max(i => i.usuario_despacho) ?? "",
+                IdDepartamento = g.Max(i => i.id_departamento) ?? "",
+                IdEstadoSolicitud = g.Max(i => i.id_estado_solicitud),
+                IdClasificacion = g.Max(i => i.id_clasificacion),
+                IdSucursal = g.Max(i => i.id_sucursal) ?? "",
+                FechaModificado = g.Max(i => i.fecha_modificado),
+                ModificadoPor = g.Max(i => i.modificado_por) ?? "",
+                Comentario = g.Max(i => i.comentario) ?? "",
+                Total = g.Max(i => i.total),
+                IdUsuarioResponsable = g.Max(i => i.id_usuario_responsable),
+                IdUsuarioDespacho = g.Max(i => i.id_usuario_despacho),
+                Indice = g.Max(i => i.indice),
+                NombreCreadoPor = g.Max(i => i.nombre_creado_por)
+            })
+            .Distinct()
+            .ToListAsync();
+
+        return resultado;
+    }
 }
 
