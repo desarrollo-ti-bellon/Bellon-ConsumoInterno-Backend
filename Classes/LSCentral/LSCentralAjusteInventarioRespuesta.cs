@@ -9,5 +9,5 @@ public class LSCentralAjusteInventarioRespuesta
     public Uri odataContext { get; set; }
 
     [JsonPropertyName("value")]
-    public string value { get; set; }
+    public string Value { get; set; }
 }
