@@ -51,6 +51,13 @@ public class UsuariosCIController : ControllerBase
 
     }
 
+    [HttpGet("Activos")]
+    public async Task<IActionResult> ObtenerActivos()
+    {
+        var data = await _servicioUsuarioCI.ObtenerUsuariosActivos();
+        return data != null && data.Count > 0 ? Ok(data) : NoContent();
+    }
+
     [HttpGet("Correo")]
     public async Task<IActionResult> ObtenerUsuarioCorreo([FromQuery] string? correo)
     {
@@ -75,7 +82,7 @@ public class UsuariosCIController : ControllerBase
     }
 
     [HttpGet("Departamento")]
-    public async Task<IActionResult> ObtenerUsuarioResponsablesPorDepartamentos([FromQuery] string? departamentoId )
+    public async Task<IActionResult> ObtenerUsuarioResponsablesPorDepartamentos([FromQuery] string? departamentoId)
     {
         try
         {

@@ -44,31 +44,6 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
         var cache = _memoryCache.Get<List<UsuarioCI>>("UsuariosCI");
         if (cache == null)
         {
-
-            /* COMENTÉ ESTE CODIGO POR QUE NECESITO QUE ESTE OBJETO ME TRAIGA TAMBIEN EL PERFIL DEL USUARIO
-                cache = await _context
-                    .Usuarios.Select(i => new Usuario
-                    {
-                        IdUsuarioCI = i.id_usuario_ci,
-                        IdUsuario = i.id_usuario,
-                        NombreUsuario = i.nombre_usuario,
-                        Correo = i.correo,
-                        CodigoSucursal = i.codigo_sucursal,
-                        IdSucursal = i.id_sucursal,
-                        CodigoDepartamento = i.codigo_departamento,
-                        IdDepartamento = i.id_departamento,
-                        Limite = i.limite,
-                        PosicionId = i.posicion_id,
-                        Estado = i.estado
-                    })
-                    .ToListAsync();
-                _memoryCache.Set<List<Usuario>>(
-                    "UsuariosCI",
-                    cache,
-                    DateTimeOffset.Now.AddMinutes(5)
-                );
-            */
-
             var usuarios = await _context.UsuariosCI
                 .Select(i => new
                 {
@@ -127,6 +102,12 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
         return cache;
     }
 
+    public async Task<List<UsuarioCI>> ObtenerUsuariosActivos()
+    {
+        var allItems = await ObtenerUsuarios();
+        return allItems.Where(i => i.Estado == true).ToList();
+    }
+
     public async Task<UsuarioCI> ObtenerUsuario(int? id)
     {
         var allItems = await ObtenerUsuarios();
@@ -135,8 +116,8 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
 
     public async Task<UsuarioCI> ObtenerUsuarioPorCorreo(string? correo)
     {
-        var allItems = await ObtenerUsuarios();
-        return allItems.Where(i => i.Correo == correo).FirstOrDefault().Clone();
+        var allItems = await ObtenerUsuariosActivos();
+        return allItems.Where(i => i.Correo == correo && i.Estado == true).FirstOrDefault().Clone();
     }
 
     public async Task<List<UsuarioCI>> ObtenerUsuarioResponsablesPorDepartamentos(string? departamentoId)
@@ -145,7 +126,7 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
             2, // Director
             3, // Gerente Area
         };
-        var allItems = await ObtenerUsuarios();
+        var allItems = await ObtenerUsuariosActivos();
         return allItems
             .Where(i => posiciones.Contains(i.PosicionId) && i.IdDepartamento == departamentoId)
             .OrderByDescending(i => i.PosicionId).ToList();

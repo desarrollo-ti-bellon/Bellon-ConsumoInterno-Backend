@@ -5,6 +5,7 @@ namespace Bellon.API.ConsumoInterno.Interfaces;
 public interface IServicioUsuarioCI
 {
     Task<List<UsuarioCI>> ObtenerUsuarios();
+    Task<List<UsuarioCI>> ObtenerUsuariosActivos();
     Task<UsuarioCI> ObtenerUsuario(int? id);
     Task<UsuarioCI> ObtenerUsuarioPorCorreo(string? correo);
     Task<List<UsuarioCI>> ObtenerUsuarioResponsablesPorDepartamentos(string? departamentoId);
