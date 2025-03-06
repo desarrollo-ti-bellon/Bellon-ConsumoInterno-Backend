@@ -10,6 +10,5 @@ public class AppSettings
     public string LSCentralAPIsComunes { get; set; }
     public string LSCentralQueryComunes { get; set; }
     public string DataBaseConnection { get; set; }
-    public string CompanyId { get; set; }
 
 }

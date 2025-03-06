@@ -82,6 +82,10 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
     public async Task<Resultado> CrearAjusteInventario(int? idSolicitud)
     {
 
+        var client = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
+        var url = client?.BaseAddress?.ToString();
+        var idCompania = url?.Split(new[] { "companies(", ")" }, StringSplitOptions.None)[1];
+
         if (idSolicitud.HasValue)
         {
 
@@ -118,7 +122,7 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
                     _settings.LSCentralQueryComunes + "ItemJournalIntegrationHandler_InsertLine"
                 );
 
-                request.Headers.Add("company", _settings.CompanyId);
+                request.Headers.Add("company", idCompania);
                 request.Headers.Add("Authorization", "Bearer " + token.AccessToken);
 
                 var json = new
