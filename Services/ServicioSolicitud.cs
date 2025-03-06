@@ -81,7 +81,7 @@ public class ServicioSolicitud : IServicioSolicitud
             { 2, new List<int> { estadoSolicitudPendiente } },                                                                                                                                                          // Director
             { 3, new List<int> { estadoSolicitudPendiente } },                                                                                                                                                          // Gerente Area
             { 4, new List<int> { estadoSolicitudAprobada } },                                                                                                                                                           // Despachador
-            { 5, new List<int> { estadoSolicitudNueva, estadoSolicitudAprobada, estadoSolicitudRechazada, estadoSolicitudEntregada } }                                                                                  // Solicitante
+            { 5, new List<int> { estadoSolicitudNueva, estadoSolicitudPendiente, estadoSolicitudAprobada, estadoSolicitudRechazada, estadoSolicitudEntregada } }                                                                                  // Solicitante
         };
 
         // Verificar que el perfil del usuario exista en el diccionario
