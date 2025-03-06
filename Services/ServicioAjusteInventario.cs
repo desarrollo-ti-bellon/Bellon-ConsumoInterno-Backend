@@ -133,35 +133,53 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
                 request.Content = content;
                 var response = await httpClient.SendAsync(request);
 
-                if (response.StatusCode != HttpStatusCode.OK)
+                var mensajeError = new StringBuilder();
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
 
                     var mensaje = await response.Content.ReadAsStringAsync();
-                    // var respuesta = JsonSerializer.Deserialize<LSCentralAjusteInventarioRespuesta>(mensaje);
-                    // var respuestaLS = new LSCentralAjusteInventarioRespuesta
-                    // {
-                    //     odataContext = respuesta.odataContext,
-                    //     value = respuesta.value
-                    // };
-                    return new Resultado
-                    {
-                        Exito = false,
-                        Mensaje = string.IsNullOrEmpty(mensaje)
-                             ? "<EjecutarPeticion>: Error: La petición no fue procesada por LS-Central. HttpStatusCode: "
-                                 + response.StatusCode.ToString()
-                             : "<EjecutarPeticion>: Error: La petición no fue procesada por LS-Central. HttpStatusCode: "
-                                 + response.StatusCode.ToString()
-                                 + " : "
-                                 + mensaje,
-                    };
-                }
+                    var respuesta = JsonSerializer.Deserialize<LSCentralAjusteInventarioRespuesta>(mensaje);
+                    var respuestaLS = JsonSerializer.Deserialize<LSCentralAjusteInventarioValor>(respuesta.Value);
+                    var respuestaLSArray = respuestaLS.Result;
 
+                    if (respuestaLS.Exito == false)
+                    {
+                        if (respuestaLSArray.Count > 0)
+                        {
+                            foreach (var item in respuestaLSArray)
+                            {
+                                if (item.Exito == false)
+                                {
+                                    mensajeError.AppendLine($"<li> Producto: {item.NoProducto} - {item.Mensaje} </li>");
+                                }
+                            }
+                        }
+                    }
+
+                }
                 else
                 {
                     return new Resultado
                     {
+                        Exito = false,
+                        Mensaje = "No se pudieron realizar los ajustes de inventario en el LS Central"
+                    };
+                }
+
+                if (mensajeError.Length == 0)
+                {
+                    return new Resultado
+                    {
                         Exito = true,
-                        Mensaje = "Se realizo todos los ajustes de inventarios correctamente."
+                        Mensaje = "Se realizaron todos los ajustes de inventarios correctamente."
+                    };
+                }
+                else
+                {
+                    return new Resultado
+                    {
+                        Exito = false,
+                        Mensaje = mensajeError.ToString()
                     };
                 }
             }
