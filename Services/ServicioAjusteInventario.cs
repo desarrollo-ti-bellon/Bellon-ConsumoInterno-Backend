@@ -104,7 +104,7 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
                         NombreDiario = "ITEM",
                         NombreSeccionDiario = "AJ.COIN",
                         NoLinea = indice * 1000,
-                        TipoMovimiento = "Negative Adjmt.",
+                        // TipoMovimiento = "Negative Adjmt.",
                         NoProducto = item.no_producto,
                         Cantidad = item.cantidad,
                         CodigoAlmacen = item.almacen_codigo,
