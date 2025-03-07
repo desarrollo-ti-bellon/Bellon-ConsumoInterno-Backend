@@ -160,6 +160,9 @@ builder.Services.AddScoped<IServicioAjusteInventario, ServicioAjusteInventario>(
 // INYECTANDO LAS VISTAS
 builder.Services.AddScoped<IServicioImpresionConsumoInterno, ServicioImpresionConsumoInternos>();
 
+// INYECTANDO SERVICIO DE SEGUNDO PLANO
+builder.Services.AddHostedService<ServicioSegundoPlano>();
+
 builder.Services.AddMemoryCache();
 var app = builder.Build();
 
