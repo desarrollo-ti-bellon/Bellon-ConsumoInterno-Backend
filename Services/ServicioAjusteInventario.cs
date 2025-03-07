@@ -158,6 +158,10 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
                                 }
                             }
                         }
+                        else
+                        {
+                            mensajeError.AppendLine($"{respuestaLS.Mensaje}");
+                        }
                     }
 
                 }
