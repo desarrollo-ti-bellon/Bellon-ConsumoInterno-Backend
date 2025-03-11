@@ -825,9 +825,9 @@ public class ServicioSolicitud : IServicioSolicitud
             }
             else
             {
-                var ultimoHistorial = _context.HistorialMovimientosSolicitudesCI
+                var ultimoHistorial = await _context.HistorialMovimientosSolicitudesCI
                                                .Where(i => i.id_cabecera_solicitud == item.IdCabeceraSolicitud)
-                                               .Count();
+                                               .CountAsync();
 
                 int nuevoIndice = ultimoHistorial + 1;
 
