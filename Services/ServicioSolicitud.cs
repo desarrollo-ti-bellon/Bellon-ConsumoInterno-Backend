@@ -787,15 +787,18 @@ public class ServicioSolicitud : IServicioSolicitud
         var mensaje = "";
 
         // Registramos el historial de la solicitud
+        // Obtener el último registro con el mayor índice para la solicitud específica
         var oldItem = await _context.HistorialMovimientosSolicitudesCI
-                            .Where(i => i.id_cabecera_solicitud == item.IdCabeceraSolicitud)
-                            .FirstOrDefaultAsync();
+                                    .Where(i => i.id_cabecera_solicitud == item.IdCabeceraSolicitud)
+                                    .OrderByDescending(i => i.indice)
+                                    .FirstOrDefaultAsync();
 
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
 
         try
         {
-            if (oldItem != null && item.IdEstadoSolicitud == estadoSolicitudNueva) // SOLO SI ES NUEVO 
+
+            if (oldItem != null && oldItem.id_estado_solicitud == item.IdEstadoSolicitud)
             {
                 // Registramos el historial de la nueva solicitud (actualizando el histórico)
                 oldItem.id_cabecera_solicitud = item.IdCabeceraSolicitud;
@@ -816,7 +819,7 @@ public class ServicioSolicitud : IServicioSolicitud
                 oldItem.nombre_creado_por = item.NombreCreadoPor;
                 oldItem.fecha_modificado = DateTime.Now;
                 oldItem.modificado_por = identity!.Name;
-                oldItem.indice = 1;
+                oldItem.indice = oldItem.indice;
 
                 // Invalidate cache to ensure fresh data
                 _memoryCache.Remove("HistorialMovimientosSolicitudesAgrupadosCI");
