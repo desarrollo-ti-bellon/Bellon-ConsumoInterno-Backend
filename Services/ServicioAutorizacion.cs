@@ -1,10 +1,6 @@
-using System.Runtime.CompilerServices;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Bellon.API.ConsumoInterno.Classes;
 using Bellon.API.ConsumoInterno.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -29,6 +25,17 @@ public class ServicioAutorizacion : IServicioAutorizacion
         _settings = settings.Value;
         _httpClientFactory = httpClientFactory;
         _memoryCache = memoryCache;
+    }
+
+    public async Task<bool> ValidarUsuarioPerfilAdminUsuario(string usuario)
+    {
+        var perfil = await _context.Perfil
+        .Where(i => i.aplicacionId == _settings.AplicacionUsuarioId && i.nombre == "Administrador")
+        .FirstOrDefaultAsync() ?? throw new InvalidDataException("Perfil no encontrado");
+        var data = await _context
+                .UsuarioPerfil.Where(i => i.perfilId == perfil.id && i.usuario.ToLower().Equals(usuario.ToLower())).FirstOrDefaultAsync();
+
+        return data != null;
     }
 
     public Task<bool> ValidarUsuarioPerfil(string userName)
@@ -67,10 +74,7 @@ public class ServicioAutorizacion : IServicioAutorizacion
                     "client_secret",
                     _settings.LSCentralTokenClientSecret
                 ),
-                new KeyValuePair<string, string>(
-                    "client_id",
-                    "edfcda13-f11d-49b3-a8fe-e20efd79b06c"
-                ),
+                new KeyValuePair<string, string>("client_id", _settings.LSCentralTokenClientId),
                 new KeyValuePair<string, string>(
                     "scope",
                     "https://api.businesscentral.dynamics.com/.default"
@@ -97,4 +101,5 @@ public class ServicioAutorizacion : IServicioAutorizacion
         }
         return token!;
     }
+
 }

@@ -20,6 +20,7 @@ if (builder.Environment.IsDevelopment())
     appSettings = new AppSettings
     {
         AplicacionId = 4,
+        AplicacionUsuarioId = 7,
         DocumentoConsumoInternoNoSerieId = 1,
         CantidadDigitosDocumento = 8,
         LSCentralTokenClientSecret = "HH~8Q~25I9fMYRw46EIIveAuyWGZnCwtGvbH.aLo",
@@ -60,6 +61,9 @@ else
             AplicacionId = Convert.ToInt32(
                 ((KeyVaultSecret)client.GetSecret("ConsumoInterno-AplicacionId")).Value
             ),
+            AplicacionUsuarioId = Convert.ToInt32(
+                ((KeyVaultSecret)client.GetSecret("AdminUsuarios-AplicacionId")).Value
+            ),
             DocumentoConsumoInternoNoSerieId = Convert.ToInt32(
                 (
                     (KeyVaultSecret)client.GetSecret("ConsumoInterno-DocumentoConsumoInternoNoSerieId")
@@ -90,6 +94,7 @@ else
 builder.Services.Configure<AppSettings>(options =>
 {
     options.AplicacionId = appSettings!.AplicacionId;
+    options.AplicacionUsuarioId = appSettings!.AplicacionUsuarioId;
     options.DocumentoConsumoInternoNoSerieId = appSettings.DocumentoConsumoInternoNoSerieId;
     options.CantidadDigitosDocumento = appSettings.CantidadDigitosDocumento;
     options.LSCentralTokenUrl = appSettings.LSCentralTokenUrl;
@@ -156,6 +161,7 @@ builder.Services.AddScoped<IServicioUsuarioCI, ServicioUsuarioCI>();
 builder.Services.AddScoped<IServicioUsuario, ServicioUsuario>();
 builder.Services.AddScoped<IServicioPosicion, ServicioPosicion>();
 builder.Services.AddScoped<IServicioAjusteInventario, ServicioAjusteInventario>();
+builder.Services.AddScoped<IServicioDatosCache, ServicioDatosCache>();
 
 // INYECTANDO LAS VISTAS
 builder.Services.AddScoped<IServicioImpresionConsumoInterno, ServicioImpresionConsumoInternos>();
