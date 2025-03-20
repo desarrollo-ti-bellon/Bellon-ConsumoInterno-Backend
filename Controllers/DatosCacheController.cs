@@ -2,7 +2,7 @@ using System.Text;
 using Bellon.API.ConsumoInterno.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Bellon.API.Liquidacion.Controllers;
+namespace Bellon.API.ConsumoInterno.Controllers;
 
 [ApiController]
 [Route("App.ConsumoInterno")]
