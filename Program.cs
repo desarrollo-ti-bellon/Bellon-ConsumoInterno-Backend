@@ -20,6 +20,7 @@ if (builder.Environment.IsDevelopment())
         AplicacionUsuarioId = 7,
         DocumentoConsumoInternoNoSerieId = 1,
         CantidadDigitosDocumento = 8,
+        LSCentralTokenClientId = "edfcda13-f11d-49b3-a8fe-e20efd79b06c",
         LSCentralTokenClientSecret = "HH~8Q~25I9fMYRw46EIIveAuyWGZnCwtGvbH.aLo",
         LSCentralTokenUrl =
             "https://login.microsoftonline.com/a5aba6fb-8964-45ce-835a-20614cc908d3/oauth2/v2.0/token",
@@ -69,6 +70,9 @@ else
             CantidadDigitosDocumento = Convert.ToInt32(
                 ((KeyVaultSecret)client.GetSecret("ConsumoInterno-CantidadDigitosDocumento")).Value
             ),
+            LSCentralTokenClientId = (
+                (KeyVaultSecret)client.GetSecret("Comun-LSCentralTokenClientId")
+            ).Value,
             LSCentralTokenClientSecret = (
                 (KeyVaultSecret)client.GetSecret("Comun-LSCentralTokenClientSecret")
             ).Value,
@@ -94,6 +98,7 @@ builder.Services.Configure<AppSettings>(options =>
     options.AplicacionUsuarioId = appSettings!.AplicacionUsuarioId;
     options.DocumentoConsumoInternoNoSerieId = appSettings.DocumentoConsumoInternoNoSerieId;
     options.CantidadDigitosDocumento = appSettings.CantidadDigitosDocumento;
+    options.LSCentralTokenClientId = appSettings.LSCentralTokenClientId;
     options.LSCentralTokenUrl = appSettings.LSCentralTokenUrl;
     options.LSCentralTokenClientSecret = appSettings.LSCentralTokenClientSecret;
     options.LSCentralAPIsComunes = appSettings.LSCentralAPIsComunes;
