@@ -1,13 +1,10 @@
 using Azure.Core;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
-using Bellon.API.ConsumoInterno.Authorization;
 using Bellon.API.ConsumoInterno.Classes;
 using Bellon.API.ConsumoInterno.Interfaces;
 using Bellon.API.ConsumoInterno.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
