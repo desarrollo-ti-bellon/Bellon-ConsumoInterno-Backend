@@ -5,11 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace Bellon.API.ConsumoInterno.Controllers;
 
 [ApiController]
-[Route("App.ConsumoInterno")]
+[Route("[controller]")]
 public class DatosCacheController : ControllerBase
 {
     private readonly IServicioDatosCache _servicioDatosCache;
     private readonly IServicioAutorizacion _servicioAutorizacion;
+
     public DatosCacheController(
         IServicioDatosCache servicioDatosCache,
         IServicioAutorizacion servicioAutorizacion
@@ -19,7 +20,7 @@ public class DatosCacheController : ControllerBase
         _servicioAutorizacion = servicioAutorizacion;
     }
 
-    [HttpDelete("Cache/Usuarios")]
+    [HttpDelete("Usuarios")]
     public async Task<IActionResult> Eliminar([FromHeader] string Authorization)
     {
         if (string.IsNullOrEmpty(Authorization))
@@ -36,7 +37,9 @@ public class DatosCacheController : ControllerBase
                 return BadRequest(new { mensaje = "Usuario invalido." });
             }
             var username = decodedAuth[(separatorIndex + 1)..];
-            var isAuthorizedUser = await _servicioAutorizacion.ValidarUsuarioPerfilAdminUsuario(username);
+            var isAuthorizedUser = await _servicioAutorizacion.ValidarUsuarioPerfilAdminUsuario(
+                username
+            );
             if (!isAuthorizedUser)
             {
                 return Unauthorized(new { mensaje = "Acción no permitida." });
@@ -50,5 +53,4 @@ public class DatosCacheController : ControllerBase
             return StatusCode(500, new { mensaje = ex.Message });
         }
     }
-
 }
