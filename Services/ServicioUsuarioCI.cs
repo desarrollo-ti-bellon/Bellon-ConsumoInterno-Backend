@@ -89,6 +89,7 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
                     RechazarSolicitud = i.posicion.rechazar_solicitud,
                     ConfirmarSolicitud = i.posicion.confirmar_solicitud,
                     EntregarSolicitud = i.posicion.entregar_solicitud,
+                    CancelarSolicitud = i.posicion.cancelar_solicitud
                 }
             }).ToList();
 
