@@ -53,7 +53,8 @@ public class ServicioPosicion : IServicioPosicion
                 AprobarSolicitud = i.aprobar_solicitud,
                 RechazarSolicitud = i.rechazar_solicitud,
                 ConfirmarSolicitud = i.confirmar_solicitud,
-                EntregarSolicitud = i.entregar_solicitud
+                EntregarSolicitud = i.entregar_solicitud,
+                CancelarSolicitud = i.cancelar_solicitud
             })
             .ToList();
             _memoryCache.Set<List<PosicionUsuarioCI>>(

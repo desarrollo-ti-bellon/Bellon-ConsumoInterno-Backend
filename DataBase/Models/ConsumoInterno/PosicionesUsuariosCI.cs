@@ -28,6 +28,8 @@ public partial class PosicionesUsuariosCI
 
     public bool? entregar_solicitud { get; set; }
 
+    public bool? cancelar_solicitud { get; set; }
+
     [InverseProperty("posicion")]
     public virtual ICollection<UsuariosCI> UsuariosCI { get; set; } = new List<UsuariosCI>();
 }

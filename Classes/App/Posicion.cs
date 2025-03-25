@@ -30,4 +30,7 @@ public class PosicionUsuarioCI
     [JsonPropertyName("entregar_solicitud")]
     public bool? EntregarSolicitud { get; set; }
 
+    [JsonPropertyName("cancelar_solicitud")]
+    public bool? CancelarSolicitud { get; set; }
+
 }
