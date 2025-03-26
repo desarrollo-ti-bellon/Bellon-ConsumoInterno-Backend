@@ -102,7 +102,7 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
                     {
                         NoDocumento = solicitud.no_documento,
                         NombreDiario = "ITEM",
-                        NombreSeccionDiario = "AJ.COIN",
+                        NombreSeccionDiario = "CINT",
                         NoLinea = indice * 1000,
                         // TipoMovimiento = "Negative Adjmt.",
                         NoProducto = item.no_producto,
