@@ -196,6 +196,8 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseMiddleware<ManejadorErroresMiddleware>();
+
 app.MapControllers();
 
 app.Run();
