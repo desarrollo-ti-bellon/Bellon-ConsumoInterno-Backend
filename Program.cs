@@ -36,63 +36,53 @@ else
 {
     //******************************************  AZURE (PRODUCCION Y DESARROLLO)  ********************************************
     //SI ES AMBIENTE DE AZURE (DESARROLLO O PRODUCCION) LOS VALORES SE LEEN DEL SERVICIO DE KEYVAULT DE AZURE
-    try
-    {
-        SecretClientOptions options = new SecretClientOptions()
-        {
-            Retry =
-            {
-                Delay = TimeSpan.FromSeconds(2),
-                MaxDelay = TimeSpan.FromSeconds(16),
-                MaxRetries = 5,
-                Mode = RetryMode.Exponential,
-            },
-        };
-        var client = new SecretClient(
-            new Uri(builder.Configuration["AzureKeyVault:Url"]!),
-            new DefaultAzureCredential(),
-            options
-        );
 
-        appSettings = new AppSettings
-        {
-            AplicacionId = Convert.ToInt32(
-                ((KeyVaultSecret)client.GetSecret("ConsumoInterno-AplicacionId")).Value
-            ),
-            AplicacionUsuarioId = Convert.ToInt32(
-                ((KeyVaultSecret)client.GetSecret("AdminUsuarios-AplicacionId")).Value
-            ),
-            DocumentoConsumoInternoNoSerieId = Convert.ToInt32(
-                (
-                    (KeyVaultSecret)
-                        client.GetSecret("ConsumoInterno-DocumentoConsumoInternoNoSerieId")
-                ).Value
-            ),
-            CantidadDigitosDocumento = Convert.ToInt32(
-                ((KeyVaultSecret)client.GetSecret("ConsumoInterno-CantidadDigitosDocumento")).Value
-            ),
-            LSCentralTokenClientId = (
-                (KeyVaultSecret)client.GetSecret("Comun-LSCentralTokenClientId")
-            ).Value,
-            LSCentralTokenClientSecret = (
-                (KeyVaultSecret)client.GetSecret("Comun-LSCentralTokenClientSecret")
-            ).Value,
-            LSCentralTokenUrl = ((KeyVaultSecret)client.GetSecret("Comun-LSCentralTokenUrl")).Value,
-            LSCentralAPIsComunes = (
-                (KeyVaultSecret)client.GetSecret("Comun-LSCentralAPIUrl")
-            ).Value,
-            LSCentralQueryComunes = (
-                (KeyVaultSecret)client.GetSecret("Comun-LSCentralCodeUnitAPIs")
-            ).Value,
-            DataBaseConnection = (
-                (KeyVaultSecret)client.GetSecret("Comun-DataBaseConnection")
-            ).Value,
-        };
-    }
-    catch (Exception ex)
+    SecretClientOptions options = new SecretClientOptions()
     {
-        appSettings = new AppSettings { LSCentralTokenUrl = ex.Message };
-    }
+        Retry =
+        {
+            Delay = TimeSpan.FromSeconds(2),
+            MaxDelay = TimeSpan.FromSeconds(16),
+            MaxRetries = 5,
+            Mode = RetryMode.Exponential,
+        },
+    };
+    var client = new SecretClient(
+        new Uri(builder.Configuration["AzureKeyVault:Url"]!),
+        new DefaultAzureCredential(),
+        options
+    );
+
+    appSettings = new AppSettings
+    {
+        AplicacionId = Convert.ToInt32(
+            ((KeyVaultSecret)client.GetSecret("ConsumoInterno-AplicacionId")).Value
+        ),
+        AplicacionUsuarioId = Convert.ToInt32(
+            ((KeyVaultSecret)client.GetSecret("AdminUsuarios-AplicacionId")).Value
+        ),
+        DocumentoConsumoInternoNoSerieId = Convert.ToInt32(
+            (
+                (KeyVaultSecret)client.GetSecret("ConsumoInterno-DocumentoConsumoInternoNoSerieId")
+            ).Value
+        ),
+        CantidadDigitosDocumento = Convert.ToInt32(
+            ((KeyVaultSecret)client.GetSecret("ConsumoInterno-CantidadDigitosDocumento")).Value
+        ),
+        LSCentralTokenClientId = (
+            (KeyVaultSecret)client.GetSecret("Comun-LSCentralTokenClientId")
+        ).Value,
+        LSCentralTokenClientSecret = (
+            (KeyVaultSecret)client.GetSecret("Comun-LSCentralTokenClientSecret")
+        ).Value,
+        LSCentralTokenUrl = ((KeyVaultSecret)client.GetSecret("Comun-LSCentralTokenUrl")).Value,
+        LSCentralAPIsComunes = ((KeyVaultSecret)client.GetSecret("Comun-LSCentralAPIUrl")).Value,
+        LSCentralQueryComunes = (
+            (KeyVaultSecret)client.GetSecret("Comun-LSCentralCodeUnitAPIs")
+        ).Value,
+        DataBaseConnection = ((KeyVaultSecret)client.GetSecret("Comun-DataBaseConnection")).Value,
+    };
+
     //*************************************************************************************************************************
 }
 builder.Services.Configure<AppSettings>(options =>
