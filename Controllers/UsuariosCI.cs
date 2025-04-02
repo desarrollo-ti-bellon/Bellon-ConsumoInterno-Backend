@@ -46,7 +46,8 @@ public class UsuariosCIController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
 
     }
@@ -54,8 +55,16 @@ public class UsuariosCIController : ControllerBase
     [HttpGet("Activos")]
     public async Task<IActionResult> ObtenerActivos()
     {
-        var data = await _servicioUsuarioCI.ObtenerUsuariosActivos();
-        return data != null && data.Count > 0 ? Ok(data) : NoContent();
+        try
+        {
+            var data = await _servicioUsuarioCI.ObtenerUsuariosActivos();
+            return data != null && data.Count > 0 ? Ok(data) : NoContent();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
     }
 
     [HttpGet("Correo")]
@@ -76,7 +85,8 @@ public class UsuariosCIController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
 
     }
@@ -99,16 +109,25 @@ public class UsuariosCIController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
 
     }
 
     [HttpPost]
     public async Task<IActionResult> Guardar([FromBody] Classes.UsuarioCI item)
-    {
-        var result = await _servicioUsuarioCI.GuardarUsuario(item);
-        return result != null ? Ok(result) : NoContent();
+    {   
+        try
+        {
+            var result = await _servicioUsuarioCI.GuardarUsuario(item);
+            return result != null ? Ok(result) : NoContent();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
     }
 
     [HttpDelete]
@@ -121,7 +140,8 @@ public class UsuariosCIController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 

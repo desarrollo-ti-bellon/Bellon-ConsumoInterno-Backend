@@ -31,8 +31,16 @@ public class NotasController : ControllerBase
     [HttpGet("Cantidad")]
     public async Task<IActionResult> ObtenerCantidadNotas([FromQuery] string usuarioDestino)
     {
-        var data = await _servicioNotas.ObtenerCantidadDeNotas(usuarioDestino);
-        return data > 0 ? Ok(data) : Ok(0);
+        try
+        {
+            var data = await _servicioNotas.ObtenerCantidadDeNotas(usuarioDestino);
+            return data > 0 ? Ok(data) : Ok(0);
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
     }
 
     [HttpGet]
@@ -45,21 +53,37 @@ public class NotasController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
     [HttpPost]
     public async Task<IActionResult> Guardar([FromBody] Classes.Notas item)
     {
-        var result = await _servicioNotas.GuardarNotas(item);
-        return result != null ? Ok(result) : NoContent();
+        try
+        {
+            var result = await _servicioNotas.GuardarNotas(item);
+            return result != null ? Ok(result) : NoContent();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
     }
 
     [HttpDelete]
     public async Task<IActionResult> Eliminar([FromQuery] int id)
     {
-        var result = await _servicioNotas.EliminarNotas(id);
-        return result != null ? Ok(result) : NoContent();
+        try
+        {
+            var result = await _servicioNotas.EliminarNotas(id);
+            return result != null ? Ok(result) : NoContent();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
     }
 }

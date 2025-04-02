@@ -31,41 +31,70 @@ public class HistorialMovimientoSolicitudesCIController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Obtener([FromQuery] int? id)
     {
-        if (id.HasValue)
+        try
         {
-            var data = await _servicioSHistorialMovimientosSolicitudes.ObtenerHistorialMovimientoSolicitud(id);
-            return data != null ? Ok(data) : NoContent();
+            if (id.HasValue)
+            {
+                var data = await _servicioSHistorialMovimientosSolicitudes.ObtenerHistorialMovimientoSolicitud(id);
+                return data != null ? Ok(data) : NoContent();
+            }
+            else
+            {
+                var data = await _servicioSHistorialMovimientosSolicitudes.ObtenerHistorialMovimientosSolicitudes();
+                return data != null && data.Count > 0 ? Ok(data) : NoContent();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            var data = await _servicioSHistorialMovimientosSolicitudes.ObtenerHistorialMovimientosSolicitudes();
-            return data != null && data.Count > 0 ? Ok(data) : NoContent();
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
     [HttpGet("Agrupado")]
     public async Task<IActionResult> ObtenerAgrupados()
     {
-        var data = await _servicioSHistorialMovimientosSolicitudes.ObtenerHistorialMovimientosSolicitudesAgrupados();
-        return data != null && data.Count > 0 ? Ok(data) : NoContent();
+        try
+        {
+            var data = await _servicioSHistorialMovimientosSolicitudes.ObtenerHistorialMovimientosSolicitudesAgrupados();
+            return data != null && data.Count > 0 ? Ok(data) : NoContent();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
     }
 
     [HttpPost("Agrupado")]
     public async Task<IActionResult> ObtenerAgrupadosCOnFiltrosGenerales([FromBody] FiltroGeneral filtros)
     {
-        var data = await _servicioSHistorialMovimientosSolicitudes.ObtenerHistorialMovimientosSolicitudesAgrupadosConFiltrosGenerales(filtros);
-        return data != null && data.Count > 0 ? Ok(data) : NoContent();
+        try
+        {
+            var data = await _servicioSHistorialMovimientosSolicitudes.ObtenerHistorialMovimientosSolicitudesAgrupadosConFiltrosGenerales(filtros);
+            return data != null && data.Count > 0 ? Ok(data) : NoContent();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
     }
 
     [HttpGet("Historial")]
     public async Task<IActionResult> ObtenerHistorico([FromQuery] string? id)
     {
-        if (string.IsNullOrEmpty(id))
+        try
         {
-            return BadRequest("Debe proporcionar el número de documento.");
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest("Debe proporcionar el número de documento.");
+            }
+            var data = await _servicioSHistorialMovimientosSolicitudes.ObtenerHistorialMovimientosSolicitudes(id);
+            return data != null && data.Count > 0 ? Ok(data) : NoContent();
         }
-        var data = await _servicioSHistorialMovimientosSolicitudes.ObtenerHistorialMovimientosSolicitudes(id);
-        return data != null && data.Count > 0 ? Ok(data) : NoContent();
+        catch (Exception ex)
+        {
+            throw ex;
+        }
     }
 
     [HttpGet("Cantidad")]
@@ -78,7 +107,8 @@ public class HistorialMovimientoSolicitudesCIController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 

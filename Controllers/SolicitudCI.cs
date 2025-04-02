@@ -38,58 +38,76 @@ public class SolicitudController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
     [HttpGet("EstadoSolicitud")]
     public async Task<IActionResult> ObtenerSolicitudesPorEstadoSolicitud([FromQuery] int? estadoSolicitudId)
     {
-        if (estadoSolicitudId.HasValue)
+        try
         {
-            var data = await _servicioSolicitud.ObtenerSolicitudesDelUsuarioSolicitantePorEstado(estadoSolicitudId.Value);
-            return data != null ? Ok(data) : NoContent();
+            if (estadoSolicitudId.HasValue)
+            {
+                var data = await _servicioSolicitud.ObtenerSolicitudesDelUsuarioSolicitantePorEstado(estadoSolicitudId.Value);
+                return data != null ? Ok(data) : NoContent();
+            }
+            else
+            {
+                var data = await _servicioSolicitud.ObtenerSolicitudesPorEstadoSolicitud(null);
+                return data != null && data.Count > 0 ? Ok(data) : NoContent();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            var data = await _servicioSolicitud.ObtenerSolicitudesPorEstadoSolicitud(null);
-            return data != null && data.Count > 0 ? Ok(data) : NoContent();
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
     [HttpGet]
     public async Task<IActionResult> Obtener([FromQuery] int? id)
     {
-        if (id.HasValue)
+        try
         {
-            var data = await _servicioSolicitud.ObtenerSolicitud(id.Value);
-            return data != null ? Ok(data) : NoContent();
+            if (id.HasValue)
+            {
+                var data = await _servicioSolicitud.ObtenerSolicitud(id.Value);
+                return data != null ? Ok(data) : NoContent();
+            }
+            else
+            {
+                var data = await _servicioSolicitud.ObtenerSolicitudes();
+                return data != null && data.Count > 0 ? Ok(data) : NoContent();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            var data = await _servicioSolicitud.ObtenerSolicitudes();
-            return data != null && data.Count > 0 ? Ok(data) : NoContent();
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
     [HttpGet("SolicitudGeneral")]
     public async Task<IActionResult> ObtenerSolicitudGeneral([FromQuery] int? id)
     {
-        if (id.HasValue)
+        try
         {
-            try
+            if (id.HasValue)
             {
                 var data = await _servicioSolicitud.VerSolicitudesGenerales(id.Value);
                 return data != null ? Ok(data) : NoContent();
             }
-            catch (Exception ex)
+            else
             {
-                return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+                return StatusCode(400, new Classes.Resultado { Exito = false, Mensaje = "Falta el id de solicitud." });
             }
         }
-        else
+        catch (Exception ex)
         {
-            return StatusCode(400, new Classes.Resultado { Exito = false, Mensaje = "Falta el id de solicitud." });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -103,7 +121,8 @@ public class SolicitudController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -117,7 +136,8 @@ public class SolicitudController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
 
     }
@@ -132,7 +152,8 @@ public class SolicitudController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -146,7 +167,8 @@ public class SolicitudController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -160,7 +182,8 @@ public class SolicitudController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 

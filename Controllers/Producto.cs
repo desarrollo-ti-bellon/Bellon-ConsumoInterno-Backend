@@ -46,7 +46,8 @@ public class ProductosController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -67,7 +68,8 @@ public class ProductosController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -88,7 +90,8 @@ public class ProductosController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 

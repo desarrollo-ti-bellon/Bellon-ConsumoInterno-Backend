@@ -31,15 +31,29 @@ public class ImpresionConsumoInternoController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Obtener()
     {
-        var data = await _servicioImpresionConsumoInterno.ObtenerImpresionConsumosInternos();
-        return data != null ? Ok(data) : NoContent();
+        try
+        {
+            var data = await _servicioImpresionConsumoInterno.ObtenerImpresionConsumosInternos();
+            return data != null ? Ok(data) : NoContent();
+        }
+        catch (System.Exception ex)
+        {
+            throw ex;
+        }
     }
 
     [HttpPost]
     public async Task<IActionResult> ObtenerConFiltros([FromBody] FiltroGeneral filtros)
     {
-        var data = await _servicioImpresionConsumoInterno.ObtenerImpresionConsumosInternosConFiltros(filtros);
-        return data != null ? Ok(data) : NoContent();
+        try
+        {
+            var data = await _servicioImpresionConsumoInterno.ObtenerImpresionConsumosInternosConFiltros(filtros);
+            return data != null ? Ok(data) : NoContent();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
     }
-    
+
 }

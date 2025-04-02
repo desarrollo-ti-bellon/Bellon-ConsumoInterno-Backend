@@ -31,30 +31,51 @@ public class ConsumoInternoController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Obtener([FromQuery] int? id)
     {
-        if (id.HasValue)
+        try
         {
-            var data = await _servicioConsumoInterno.ObtenerConsumoInterno(id.Value);
-            return data != null ? Ok(data) : NoContent();
+            if (id.HasValue)
+            {
+                var data = await _servicioConsumoInterno.ObtenerConsumoInterno(id.Value);
+                return data != null ? Ok(data) : NoContent();
+            }
+            else
+            {
+                var data = await _servicioConsumoInterno.ObtenerConsumosInternosSegunPosicionUsuario();
+                return data != null && data.Count > 0 ? Ok(data) : NoContent();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            var data = await _servicioConsumoInterno.ObtenerConsumosInternosSegunPosicionUsuario();
-            return data != null && data.Count > 0 ? Ok(data) : NoContent();
+            throw ex;
         }
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> ObtenerConsumosInternosFiltrados([FromBody] FiltroGeneral filtro)
     {
-        var data = await _servicioConsumoInterno.ObtenerConsumosInternosSegunPosicionUsuarioYFiltrosGenerales(filtro);
-        return data != null && data.Count > 0 ? Ok(data) : NoContent();
+        try
+        {
+            var data = await _servicioConsumoInterno.ObtenerConsumosInternosSegunPosicionUsuarioYFiltrosGenerales(filtro);
+            return data != null && data.Count > 0 ? Ok(data) : NoContent();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
     }
 
     [HttpGet("Cantidad")]
     public async Task<IActionResult> ObtenerEstadoConsumoInterno()
     {
-        var result = await _servicioConsumoInterno.ObtenerCantidadConsumoInternos();
-        return result != null ? Ok(result) : Ok(0);
+        try
+        {
+            var result = await _servicioConsumoInterno.ObtenerCantidadConsumoInternos();
+            return result != null ? Ok(result) : Ok(0);
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
     }
 
 }

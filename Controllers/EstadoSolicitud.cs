@@ -31,15 +31,23 @@ public class EstadoSolicitudController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Obtener([FromQuery] int? id)
     {
-        if (id.HasValue)
+        try
         {
-            var data = await _servicioEstadoSolicitud.ObtenerEstadoSolicitud(id.Value);
-            return data != null ? Ok(data) : NoContent();
+            if (id.HasValue)
+            {
+                var data = await _servicioEstadoSolicitud.ObtenerEstadoSolicitud(id.Value);
+                return data != null ? Ok(data) : NoContent();
+            }
+            else
+            {
+                var data = await _servicioEstadoSolicitud.ObtenerEstadoSolicitudes();
+                return data != null && data.Count > 0 ? Ok(data) : NoContent();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            var data = await _servicioEstadoSolicitud.ObtenerEstadoSolicitudes();
-            return data != null && data.Count > 0 ? Ok(data) : NoContent();
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -53,7 +61,8 @@ public class EstadoSolicitudController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -67,7 +76,8 @@ public class EstadoSolicitudController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
 
     }
@@ -82,7 +92,8 @@ public class EstadoSolicitudController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+            throw ex;
+            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 }
