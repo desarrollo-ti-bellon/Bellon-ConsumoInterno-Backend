@@ -36,7 +36,11 @@ public class ImpresionConsumoInternoController : ControllerBase
             var data = await _servicioImpresionConsumoInterno.ObtenerImpresionConsumosInternos();
             return data != null ? Ok(data) : NoContent();
         }
-        catch (System.Exception ex)
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
+        catch (Exception ex)
         {
             throw ex;
         }
@@ -49,6 +53,10 @@ public class ImpresionConsumoInternoController : ControllerBase
         {
             var data = await _servicioImpresionConsumoInterno.ObtenerImpresionConsumosInternosConFiltros(filtros);
             return data != null ? Ok(data) : NoContent();
+        }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
         catch (Exception ex)
         {

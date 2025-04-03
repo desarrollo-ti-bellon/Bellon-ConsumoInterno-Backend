@@ -44,10 +44,13 @@ public class EstadoSolicitudController : ControllerBase
                 return data != null && data.Count > 0 ? Ok(data) : NoContent();
             }
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -59,10 +62,13 @@ public class EstadoSolicitudController : ControllerBase
             var result = await _servicioEstadoSolicitud.GuardarEstadoSolicitud(item);
             return result != null ? Ok(result) : NoContent();
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -74,10 +80,13 @@ public class EstadoSolicitudController : ControllerBase
             var result = await _servicioEstadoSolicitud.EliminarEstadoSolicitud(id);
             return result != null ? Ok(result) : NoContent();
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
 
     }
@@ -90,10 +99,13 @@ public class EstadoSolicitudController : ControllerBase
             var result = await _servicioEstadoSolicitud.EliminarEstadoSolicitud(id);
             return result != null ? Ok(result) : NoContent();
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 }

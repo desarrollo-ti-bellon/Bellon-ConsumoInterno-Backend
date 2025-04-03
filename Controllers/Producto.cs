@@ -44,10 +44,13 @@ public class ProductosController : ControllerBase
                 return data != null && data.Count > 0 ? Ok(data) : NoContent();
             }
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -66,10 +69,13 @@ public class ProductosController : ControllerBase
                 throw new Exception($"debes indicar un codigo almacen");
             }
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -88,10 +94,13 @@ public class ProductosController : ControllerBase
                 return BadRequest(new Classes.Resultado { Exito = false, Mensaje = "No se han proporcionado los identificadores de los productos" });
             }
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 

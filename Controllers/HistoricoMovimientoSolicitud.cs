@@ -44,10 +44,13 @@ public class HistorialMovimientoSolicitudesCIController : ControllerBase
                 return data != null && data.Count > 0 ? Ok(data) : NoContent();
             }
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -58,6 +61,10 @@ public class HistorialMovimientoSolicitudesCIController : ControllerBase
         {
             var data = await _servicioSHistorialMovimientosSolicitudes.ObtenerHistorialMovimientosSolicitudesAgrupados();
             return data != null && data.Count > 0 ? Ok(data) : NoContent();
+        }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
         catch (Exception ex)
         {
@@ -72,6 +79,10 @@ public class HistorialMovimientoSolicitudesCIController : ControllerBase
         {
             var data = await _servicioSHistorialMovimientosSolicitudes.ObtenerHistorialMovimientosSolicitudesAgrupadosConFiltrosGenerales(filtros);
             return data != null && data.Count > 0 ? Ok(data) : NoContent();
+        }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
         catch (Exception ex)
         {
@@ -91,6 +102,10 @@ public class HistorialMovimientoSolicitudesCIController : ControllerBase
             var data = await _servicioSHistorialMovimientosSolicitudes.ObtenerHistorialMovimientosSolicitudes(id);
             return data != null && data.Count > 0 ? Ok(data) : NoContent();
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
@@ -105,10 +120,13 @@ public class HistorialMovimientoSolicitudesCIController : ControllerBase
             var result = await _servicioSHistorialMovimientosSolicitudes.ObtenerCantidadHistorialMovimientoSolicitud();
             return Ok(result);
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 

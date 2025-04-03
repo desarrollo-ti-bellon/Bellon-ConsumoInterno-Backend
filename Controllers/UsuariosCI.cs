@@ -44,12 +44,14 @@ public class UsuariosCIController : ControllerBase
                 return data != null && data.Count > 0 ? Ok(data) : NoContent();
             }
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
-
     }
 
     [HttpGet("Activos")]
@@ -60,10 +62,13 @@ public class UsuariosCIController : ControllerBase
             var data = await _servicioUsuarioCI.ObtenerUsuariosActivos();
             return data != null && data.Count > 0 ? Ok(data) : NoContent();
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -83,12 +88,14 @@ public class UsuariosCIController : ControllerBase
                 return data != null && data.Count > 0 ? Ok(data) : NoContent();
             }
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
-
     }
 
     [HttpGet("Departamento")]
@@ -107,26 +114,31 @@ public class UsuariosCIController : ControllerBase
                 return data != null && data.Count > 0 ? Ok(data) : NoContent();
             }
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
-
     }
 
     [HttpPost]
     public async Task<IActionResult> Guardar([FromBody] Classes.UsuarioCI item)
-    {   
+    {
         try
         {
             var result = await _servicioUsuarioCI.GuardarUsuario(item);
             return result != null ? Ok(result) : NoContent();
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -138,10 +150,13 @@ public class UsuariosCIController : ControllerBase
             var result = await _servicioUsuarioCI.EliminarUsuario(id);
             return result != null ? Ok(result) : NoContent();
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
