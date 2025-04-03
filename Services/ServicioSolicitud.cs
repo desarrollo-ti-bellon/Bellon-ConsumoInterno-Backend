@@ -11,6 +11,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Bellon.API.ConsumoInterno.DataBase;
 using Microsoft.Data.SqlClient;
+using System.Data.Common;
 
 namespace Bellon.API.ConsumoInterno.Services;
 
@@ -124,6 +125,12 @@ public class ServicioSolicitud : IServicioSolicitud
 
     public async Task<List<CabeceraSolicitudCI>> ObtenerSolicitudesDelUsuarioSolicitantePorEstado(int? estadoSolicitudId)
     {
+
+        if (estadoSolicitudId == null || estadoSolicitudId == 0)
+        {
+            throw new InvalidDataException("El estado de la solicitud no puede ser nulo");
+        }
+
         var allItems = await ObtenerSolicitudes();
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         var usuario = await _context.UsuariosCI.FirstOrDefaultAsync(el => el.correo == identity.Name);
@@ -186,6 +193,12 @@ public class ServicioSolicitud : IServicioSolicitud
 
     public async Task<CabeceraSolicitudCI> ObtenerSolicitudesPorId(int idSolicitud)
     {
+
+        if (idSolicitud == 0 || idSolicitud == null)
+        {
+            throw new InvalidDataException("El id de la solicitud no puede ser nulo");
+        }
+
         var allItems = await ObtenerSolicitudes();
         var item = allItems.Where(i => i.IdCabeceraSolicitud == idSolicitud).FirstOrDefault().Clone();
         if (item != null)
@@ -214,12 +227,23 @@ public class ServicioSolicitud : IServicioSolicitud
 
     public async Task<List<CabeceraSolicitudCI>> ObtenerSolicitudesPorEstadoSolicitud(int? estadoSolicitudId)
     {
+        if (estadoSolicitudId.HasValue == false || estadoSolicitudId == 0)
+        {
+            throw new InvalidDataException("El estado de la solicitud no puede ser nulo");
+        }
+
         var allItems = await ObtenerSolicitudes();
         return allItems.Where(i => i.IdEstadoSolicitud == estadoSolicitudId).ToList();
     }
 
     public async Task<int> ObtenerCantidadSolicitudesPorEstadoSolicitud(int estadoSolicitudId)
     {
+
+        if (estadoSolicitudId == 0 || estadoSolicitudId == null)
+        {
+            throw new InvalidDataException("El estado de la solicitud no puede ser nulo");
+        }
+
         var allItems = await ObtenerSolicitudes();
         var identity = _httpContextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
         var usuario = await _context.UsuariosCI.FirstOrDefaultAsync(el => el.correo == identity!.Name);
@@ -253,6 +277,12 @@ public class ServicioSolicitud : IServicioSolicitud
 
     public async Task<CabeceraSolicitudCI> ObtenerSolicitud(int id)
     {
+
+        if (id == 0 || id == null)
+        {
+            throw new InvalidDataException("El id de la solicitud no puede ser nulo");
+        }
+
         var allItems = await ObtenerSolicitudes();
         var item = allItems.Where(i => i.IdCabeceraSolicitud == id).FirstOrDefault().Clone();
         if (item != null)
@@ -284,6 +314,12 @@ public class ServicioSolicitud : IServicioSolicitud
 
     public async Task<CabeceraSolicitudCI> GuardarSolicitud(CabeceraSolicitudCI item)
     {
+
+        if (item == null)
+        {
+            throw new InvalidDataException("El objeto CabeceraSolicitudCI no puede ser nulo");
+        }
+
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         if (item.IdCabeceraSolicitud.HasValue)
         {
@@ -294,7 +330,7 @@ public class ServicioSolicitud : IServicioSolicitud
 
             if (oldItem == null)
             {
-                throw new Exception("El registro no existe para ser actualizado.");
+                throw new InvalidDataException("El registro no existe para ser actualizado.");
             }
 
             var cambioEstadoSolicitud = oldItem.id_estado_solicitud != item.IdEstadoSolicitud;
@@ -366,7 +402,7 @@ public class ServicioSolicitud : IServicioSolicitud
                         var resultadoGuardarHistorialCambio = await GuardarHistoricoSolicitudes(item);
                         if (!resultadoGuardarHistorialCambio.Exito)
                         {
-                            throw new Exception(resultadoGuardarHistorialCambio.Mensaje);
+                            throw new InvalidDataException(resultadoGuardarHistorialCambio.Mensaje);
                         }
 
                         // AQUI SE AGREGAN LAS SOLICITUDES AL CONSUMO INTERNO CUANDO TERMINA EL PROCESO CORRECTAMENTE EN EL LS CENTRAL
@@ -377,14 +413,14 @@ public class ServicioSolicitud : IServicioSolicitud
                             var verificarArchivado = await Archivar(oldItem.id_cabecera_solicitud);
                             if (!verificarArchivado.Exito)
                             {
-                                throw new Exception("Error al archivar la solicitud, transacción revertida.");
+                                throw new InvalidDataException("Error al archivar la solicitud, transacción revertida.");
                             }
 
                             // AQUI SE CREAN LOS AJUSTES DE LA TABLA DE CONSUMOS INTERNOS EN EL LS CENTRAL DESDE EL BACKEND 
                             var seHizoAjusteInventario = await _servicioAjusteInventario.CrearAjusteInventario(oldItem.id_cabecera_solicitud);
                             if (!seHizoAjusteInventario.Exito)
                             {
-                                throw new Exception(seHizoAjusteInventario.Mensaje);
+                                throw new InvalidDataException(seHizoAjusteInventario.Mensaje);
                             }
 
                         }
@@ -396,18 +432,24 @@ public class ServicioSolicitud : IServicioSolicitud
                         var resultadoGuardarHistorial = await GuardarHistoricoSolicitudes(item);
                         if (!resultadoGuardarHistorial.Exito)
                         {
-                            throw new Exception(resultadoGuardarHistorial.Mensaje);
+                            throw new InvalidDataException(resultadoGuardarHistorial.Mensaje);
                         }
                     }
 
                     // Completamos la transacción si todo ha sido exitoso
                     await transaction.CommitAsync();
                 }
+                catch (DbException ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw new Exception(ex.Message);
+                }
                 catch (Exception ex)
                 {
                     // Si ocurre un error, deshacemos la transacción
                     await transaction.RollbackAsync();
-                    throw new Exception("Error al actualizar el registro: " + ex.Message, ex);
+                    var mensaje = ex.InnerException?.Message ?? ex.Message;
+                    throw new InvalidDataException("Error al crear el registro: " + mensaje);
                 }
             }
 
@@ -464,17 +506,23 @@ public class ServicioSolicitud : IServicioSolicitud
                     var resultadoGuardarHistorial = await GuardarHistoricoSolicitudes(item);
                     if (!resultadoGuardarHistorial.Exito)
                     {
-                        throw new Exception(resultadoGuardarHistorial.Mensaje);
+                        throw new InvalidDataException(resultadoGuardarHistorial.Mensaje);
                     }
 
                     // Completamos la transacción si todo ha sido exitoso
                     await transaction.CommitAsync();
                 }
+                catch (DbException ex)
+                {
+                    await transaction.RollbackAsync();
+                    throw new Exception(ex.Message);
+                }
                 catch (Exception ex)
                 {
                     // Si ocurre un error, deshacemos la transacción
                     await transaction.RollbackAsync();
-                    throw new Exception("Error al crear el registro: " + ex.Message);
+                    var mensaje = ex.InnerException?.Message ?? ex.Message;
+                    throw new InvalidDataException("Error al crear el registro: " + mensaje);
                 }
             }
 
@@ -492,6 +540,12 @@ public class ServicioSolicitud : IServicioSolicitud
 
     public async Task<CabeceraSolicitudCI> GuardarLineasSolicitud(List<LineasSolicitudCI> items)
     {
+
+        if (items == null || items.Count == 0)
+        {
+            throw new InvalidDataException("La lista de LineasSolicitudCI no puede ser nula o vacía");
+        }
+
         if (items.Count > 0)
         {
             var parent = _context
@@ -530,11 +584,14 @@ public class ServicioSolicitud : IServicioSolicitud
                             {
                                 _context.SaveChanges();
                             }
+                            catch (DbException ex)
+                            {
+                                throw new Exception(ex.Message);
+                            }
                             catch (Exception ex)
                             {
-                                throw new Exception(
-                                    "Error al actualizar el registro: <" + ex.Message + ">"
-                                );
+                                var mensaje = ex.InnerException?.Message ?? ex.Message;
+                                throw new InvalidDataException("Error al actualizar el registro: <" + mensaje + ">");
                             }
                         }
                     }
@@ -562,18 +619,21 @@ public class ServicioSolicitud : IServicioSolicitud
                         {
                             _context.SaveChanges();
                         }
+                        catch (DbException ex)
+                        {
+                            throw new Exception(ex.Message);
+                        }
                         catch (Exception ex)
                         {
-                            throw new Exception(
-                                "Error al crear el registro: <" + ex.Message + ">"
-                            );
+                            var mensaje = ex.InnerException?.Message ?? ex.Message;
+                            throw new InvalidDataException("Error al crear el registro: <" + mensaje + ">");
                         }
                     }
                 }
             }
             else
             {
-                throw new Exception("El registro no existe para ser actualizado.");
+                throw new InvalidDataException("El registro no existe para ser actualizado.");
             }
 
             //SE ACTUALIZA EL TOTAL DE LA CABECERA
@@ -590,9 +650,7 @@ public class ServicioSolicitud : IServicioSolicitud
         }
         else
         {
-            throw new Exception(
-                string.Format("No se encontró la solicitud {0}", items[0].CabeceraSolicitudId)
-            );
+            throw new InvalidDataException(string.Format("No se encontró la solicitud {0}", items[0].CabeceraSolicitudId));
         }
     }
 
@@ -615,6 +673,12 @@ public class ServicioSolicitud : IServicioSolicitud
 
     public async Task<CabeceraSolicitudCI> EliminarSolicitud(int id)
     {
+
+        if (id == 0 || id == null)
+        {
+            throw new InvalidDataException("El id de la solicitud no puede ser nulo");
+        }
+
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         var oldItem = _context.CabeceraSolicitudesCI.Where(i => i.id_cabecera_solicitud == id).FirstOrDefault();
         if (oldItem != null)
@@ -624,9 +688,13 @@ public class ServicioSolicitud : IServicioSolicitud
             {
                 _context.SaveChanges();
             }
+            catch (DbException ex)
+            {
+                throw new Exception(ex.Message);
+            }
             catch (Exception ex)
             {
-                throw new Exception("Error al eliminar el registro: <" + ex.Message + ">");
+                throw new InvalidDataException("Error al eliminar el registro: <" + ex.Message + ">");
             }
             await RefrescarCache();
             return await ObtenerSolicitudesPorId(oldItem.id_cabecera_solicitud);
@@ -636,6 +704,12 @@ public class ServicioSolicitud : IServicioSolicitud
 
     public async Task<CabeceraSolicitudCI> EliminarLineaSolicitud(int id)
     {
+
+        if (id == 0 || id == null)
+        {
+            throw new InvalidDataException("El id de linea la solicitud no puede ser nulo");
+        }
+
         var oldItem = _context.LineasSolicitudesCI.Where(i => i.id_linea_solicitud == id).FirstOrDefault();
         if (oldItem != null)
         {
@@ -644,9 +718,13 @@ public class ServicioSolicitud : IServicioSolicitud
             {
                 _context.SaveChanges();
             }
-            catch (Exception ex)
+            catch (DbException ex)
             {
                 throw new Exception("Error al eliminar el registro: <" + ex.Message + ">");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidDataException("Error al eliminar el registro: <" + ex.Message + ">");
             }
             CalcularTotalCabecera(oldItem.cabecera_solicitud_id);
             CalcularTotalHistorial(oldItem.cabecera_solicitud_id);
@@ -658,14 +736,21 @@ public class ServicioSolicitud : IServicioSolicitud
 
     public async Task<Resultado> Archivar(int id)
     {
+
+        if (id == 0 || id == null)
+        {
+            throw new InvalidDataException("El id de la solicitud no puede ser nulo");
+        }
+
         var item = await ObtenerSolicitud(id);
         if (item == null)
         {
-            return new Resultado
-            {
-                Exito = false,
-                Mensaje = $"No se encontró la Solicitud {id} para archivar"
-            };
+            // return new Resultado
+            // {
+            //     Exito = false,
+            //     Mensaje = $"No se encontró la Solicitud {id} para archivar"
+            // };
+            throw new InvalidDataException($"No se encontró la Solicitud {id} para archivar");
         }
 
         // Usamos una transacción para asegurar que todo se haga de manera atómica
@@ -711,11 +796,12 @@ public class ServicioSolicitud : IServicioSolicitud
 
                 if (!existeCabeceraConsumo)
                 {
-                    return new Resultado
-                    {
-                        Exito = false,
-                        Mensaje = $"No existe un consumo interno con el ID {consumoInterno.id_cabecera_consumo_interno}"
-                    };
+                    // return new Resultado
+                    // {
+                    //     Exito = false,
+                    //     Mensaje = $"No existe un consumo interno con el ID {consumoInterno.id_cabecera_consumo_interno}"
+                    // };
+                    throw new InvalidDataException($"No se encontró un consumo interno con el ID {consumoInterno.id_cabecera_consumo_interno}");
                 }
 
                 // Agregar las líneas de consumo en bloque
@@ -745,7 +831,7 @@ public class ServicioSolicitud : IServicioSolicitud
             var resultadoGuardarHistorial = await GuardarHistoricoSolicitudes(item);
             if (!resultadoGuardarHistorial.Exito)
             {
-                throw new Exception($"Error al agregar el registro al historial de movimientos de las solicitadores del consumo interno");
+                throw new InvalidDataException($"Error al agregar el registro al historial de movimientos de las solicitadores del consumo interno");
             }
 
             // SE ELIMINAN LOS DETALLES DE LA TABLA DE PRODUCCIÓN
@@ -770,19 +856,30 @@ public class ServicioSolicitud : IServicioSolicitud
 
             return new Resultado { Exito = true };
         }
+        catch (DbException ex)
+        {
+            throw new Exception("Error al eliminar el registro: <" + ex.Message + ">");
+        }
         catch (Exception ex)
         {
             // Loguear el error si es necesario
-            return new Resultado
-            {
-                Exito = false,
-                Mensaje = "Ocurrió un error al archivar la solicitud: " + ex.Message
-            };
+            // return new Resultado
+            // {
+            //     Exito = false,
+            //     Mensaje = "Ocurrió un error al archivar la solicitud: " + ex.Message
+            // };
+            throw new InvalidDataException("Error al archivar la solicitud: <" + ex.Message + ">");
         }
     }
 
     public async Task<Resultado> GuardarHistoricoSolicitudes(CabeceraSolicitudCI item)
     {
+
+        if (item == null)
+        {
+            throw new InvalidDataException("El objeto GuardarHistoricoSolicitudes no puede ser nulo");
+        }
+
         var resultado = false;
         var mensaje = "";
 
@@ -868,10 +965,15 @@ public class ServicioSolicitud : IServicioSolicitud
 
             resultado = true;
         }
+        catch (DbException ex)
+        {
+            throw new Exception("Error al eliminar el registro: <" + ex.Message + ">");
+        }
         catch (Exception ex)
         {
             // Log the error (optional, consider using a logging framework like Serilog, NLog, etc.)
             mensaje = $"Error al agregar el registro al historial de movimientos de las solicitadores del consumo interno: {ex.Message}";
+            throw new InvalidDataException(mensaje);
         }
 
         return new Resultado
@@ -900,6 +1002,12 @@ public class ServicioSolicitud : IServicioSolicitud
 
     public async Task<CabeceraSolicitudCI> VerSolicitudesGenerales(int id)
     {
+
+        if (id == 0 || id == null)
+        {
+            throw new InvalidDataException("El id de la solicitud no puede ser nulo o cero");
+        }
+
         var solicitud = await _context.CabeceraSolicitudesCI
             .Where(s => s.id_cabecera_solicitud == id)
             .Select(s => new CabeceraSolicitudCI

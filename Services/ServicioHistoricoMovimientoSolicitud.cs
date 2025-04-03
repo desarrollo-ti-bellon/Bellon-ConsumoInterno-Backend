@@ -133,6 +133,12 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
 
     public async Task<List<HistorialMovimientoSolicitudCI>> ObtenerHistorialMovimientosSolicitudes(string documento)
     {
+
+        if (String.IsNullOrEmpty(documento))
+        {
+            throw new InvalidDataException("El documento no puede ser nulo o vacío");
+        }
+
         var allItems = await ObtenerHistorialMovimientosSolicitudes();
         var items = allItems.Where(i => i.NoDocumento == documento).ToList();
         return items;
@@ -140,6 +146,12 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
 
     public async Task<HistorialMovimientoSolicitudCI> ObtenerHistorialMovimientoSolicitud(int? id)
     {
+
+        if (id == 0 || id == null)
+        {
+            throw new InvalidDataException("El id del historial de movimiento de la solicitud no puede ser nulo o vacío");
+        }
+
         var allItems = await ObtenerHistorialMovimientosSolicitudes();
         var items = allItems.Where(i => i.IdCabeceraSolicitud == id).FirstOrDefault().Clone();
         return items;
@@ -161,6 +173,12 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
 
     public async Task<List<HistorialMovimientoSolicitudCI>> ObtenerHistorialMovimientosSolicitudesAgrupadosConFiltrosGenerales(FiltroGeneral filtro)
     {
+
+        if (filtro == null)
+        {
+            throw new InvalidDataException("los filtros no puede ser nulo o vacios");
+        }
+
         // Iniciamos la consulta con el conjunto de datos de 'HistorialMovimientosSolicitudesCI'
         var consulta = _context.HistorialMovimientosSolicitudesCI.AsQueryable();
         var identity = _httpContextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
@@ -210,5 +228,6 @@ public class ServicioHistoricoMovimientoSolicitud : IServicioHistorialMovimiento
 
         return resultado;
     }
+
 }
 

@@ -26,7 +26,8 @@ public class ServicioSegundoPlano : BackgroundService
                 catch (Exception ex)
                 {
                     // Manejo de excepciones
-                    Console.WriteLine($"Error al obtener productos: {ex.Message}");
+                    // Console.WriteLine($"Error al obtener productos: {ex.Message}");
+                    throw ex;
                 }
             }
 
@@ -34,4 +35,5 @@ public class ServicioSegundoPlano : BackgroundService
             await Task.Delay(5000, stoppingToken);
         }
     }
+
 }

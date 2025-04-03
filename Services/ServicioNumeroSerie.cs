@@ -39,6 +39,12 @@ public class ServicioNumeroSerie : IServicioNumeroSerie
 
     public async Task<string> ObtenerNumeroDocumento(int id)
     {
+
+        if (id == 0 && id == null)
+        {
+            throw new InvalidDataException("No se encontró numero de documento");
+        }
+
         var item = _context.NoSeries.Where(i => i.id_no_serie == id).FirstOrDefault();
         if (item != null)
         {
@@ -61,4 +67,5 @@ public class ServicioNumeroSerie : IServicioNumeroSerie
             throw new Exception("No se encontró NoSerie");
         }
     }
+
 }

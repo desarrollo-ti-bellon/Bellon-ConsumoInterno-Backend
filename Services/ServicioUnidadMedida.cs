@@ -81,6 +81,11 @@ public class ServicioUnidadMedida : IServicioUnidadMedida
 
     public async Task<LSCentralUnidadMedida> ObtenerUnidadMedida(string id)
     {
+        if (String.IsNullOrEmpty(id))
+        {
+            throw new InvalidDataException("El id de la unidad de medida no puede ser nulo");
+        }
+
         var token = await _servicioAutorizacion.ObtenerTokenBC();
         var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
         httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
@@ -106,4 +111,5 @@ public class ServicioUnidadMedida : IServicioUnidadMedida
         await ObtenerUnidadesMedida(string.Empty);
         return true;
     }
+
 }

@@ -1,3 +1,4 @@
+using System.Data.Common;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
@@ -78,6 +79,12 @@ public class ServicioClasificacion : IServicioClasificacion
 
     public async Task<LSCentralClasificacion> ObtenerClasificacionERP(string id)
     {
+
+        if (String.IsNullOrEmpty(id))
+        {
+            throw new InvalidDataException("El id de la clasificación no puede ser nulo o vacío");
+        }
+
         var token = await _servicioAutorizacion.ObtenerTokenBC();
         var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
@@ -96,6 +103,7 @@ public class ServicioClasificacion : IServicioClasificacion
         {
             throw new Exception("Error en el servicio de Clasificaciones de LS Central");
         }
+
     }
 
     public async Task<List<Classes.ClasificacionCI>> ObtenerClasificaciones()
@@ -149,12 +157,24 @@ public class ServicioClasificacion : IServicioClasificacion
 
     public async Task<Classes.ClasificacionCI> ObtenerClasificacion(int? id)
     {
+
+        if (id.HasValue == false)
+        {
+            throw new InvalidDataException("El id de la clasificación no puede ser nulo o vacío");
+        }
+
         var allItems = await ObtenerClasificaciones();
         return allItems.Where(i => i.IdClasificacion == id).FirstOrDefault().Clone();
     }
 
     public async Task<Classes.ClasificacionCI> GuardarClasificacion(Classes.ClasificacionCI item)
     {
+
+        if (item == null)
+        {
+            throw new InvalidDataException("los datos enviados no pueden ser nulos o vacios");
+        }
+
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         if (item.IdClasificacion.HasValue)
         {
@@ -175,9 +195,14 @@ public class ServicioClasificacion : IServicioClasificacion
                 {
                     _context.SaveChanges();
                 }
+                catch (DbException ex)
+                {
+                    throw new Exception($"Error en la base de datos: < {ex.Message} >");
+                }
                 catch (Exception ex)
                 {
-                    throw new Exception("Error al actualizar el registro: <" + ex.Message + ">");
+                    var mensaje = ex.InnerException?.Message ?? ex.Message;
+                    throw new InvalidDataException("Error al actualizar el registro: <" + mensaje + ">");
                 }
 
                 await RefrescarCache();
@@ -200,9 +225,14 @@ public class ServicioClasificacion : IServicioClasificacion
             {
                 _context.SaveChanges();
             }
+            catch (DbException ex)
+            {
+                throw new Exception($"Error en la base de datos: < {ex.Message} >");
+            }
             catch (Exception ex)
             {
-                throw new Exception("Error al actualizar el registro: <" + ex.Message + ">");
+                var mensaje = ex.InnerException?.Message ?? ex.Message;
+                throw new InvalidDataException("Error al actualizar el registro: <" + mensaje + ">");
             }
 
             await RefrescarCache();
@@ -213,19 +243,32 @@ public class ServicioClasificacion : IServicioClasificacion
 
     public async Task<Classes.ClasificacionCI> EliminarClasificacion(int id)
     {
+
+        if (id == null || id == 0)
+        {
+            throw new InvalidDataException("El id de la clasificación no puede ser nulo o vacío");
+        }
+
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         var oldItem = _context.ClasificacionesCI.Where(i => i.id_clasificacion == id).FirstOrDefault();
         if (oldItem != null)
         {
             _context.ClasificacionesCI.Remove(oldItem);
+
             try
             {
                 _context.SaveChanges();
             }
+            catch (DbException ex)
+            {
+                throw new Exception($"Error en la base de datos: < {ex.Message} >");
+            }
             catch (Exception ex)
             {
-                throw new Exception("Error al eliminar el registro: <" + ex.Message + ">");
+                var mensaje = ex.InnerException?.Message ?? ex.Message;
+                throw new InvalidDataException("Error al eliminar el registro: <" + mensaje + ">");
             }
+
             await RefrescarCache();
             return await ObtenerClasificacion(oldItem.id_clasificacion);
         }
@@ -242,4 +285,5 @@ public class ServicioClasificacion : IServicioClasificacion
         await ObtenerClasificacionesActivas();
         return true;
     }
+
 }

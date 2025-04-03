@@ -71,6 +71,12 @@ public class ServicioPais : IServicioPais
 
     public async Task<LSCentralPais> ObtenerPais(string id)
     {
+
+        if (string.IsNullOrEmpty(id))
+        {
+            throw new InvalidDataException("Debe especificar el id del país");
+        }
+
         var token = await _servicioAutorizacion.ObtenerTokenBC();
         var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
         httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
@@ -94,4 +100,5 @@ public class ServicioPais : IServicioPais
         await ObtenerPaises();
         return true;
     }
+
 }

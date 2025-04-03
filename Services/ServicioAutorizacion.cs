@@ -29,6 +29,12 @@ public class ServicioAutorizacion : IServicioAutorizacion
 
     public async Task<bool> ValidarUsuarioPerfilAdminUsuario(string usuario)
     {
+
+        if (string.IsNullOrEmpty(usuario))
+        {
+            throw new InvalidDataException(nameof(usuario));
+        }
+
         var perfil = await _context.Perfil
         .Where(i => i.aplicacionId == _settings.AplicacionUsuarioId && i.nombre == "Administrador")
         .FirstOrDefaultAsync() ?? throw new InvalidDataException("Perfil no encontrado");

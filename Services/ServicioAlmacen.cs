@@ -71,6 +71,11 @@ public class ServicioAlmacen : IServicioAlmacen
 
     public async Task<LSCentralAlmacen> ObtenerAlmacen(string id)
     {
+        if (String.IsNullOrEmpty(id))
+        {
+            throw new InvalidDataException("El id del almacén no puede ser nulo o vacío");
+        }
+
         var token = await _servicioAutorizacion.ObtenerTokenBC();
         var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
         httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
@@ -96,4 +101,5 @@ public class ServicioAlmacen : IServicioAlmacen
         await ObtenerAlmacenes();
         return true;
     }
+
 }

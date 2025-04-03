@@ -45,6 +45,12 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
 
     public async Task<List<CabeceraConsumoInterno>> ObtenerConsumosInternosSegunPosicionUsuarioYFiltrosGenerales(FiltroGeneral filtro)
     {
+
+        if (filtro == null)
+        {
+            throw new InvalidDataException("El filtro no puede ser nulo.");
+        }
+
         // Iniciamos la consulta con el conjunto de datos de 'HistorialMovimientosSolicitudesCI'
         var consulta = _context.CabeceraConsumosInternos.AsQueryable();
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
@@ -197,6 +203,12 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
 
     public async Task<CabeceraConsumoInterno> ObtenerConsumoInternoPorId(int idSolicitud)
     {
+
+        if (idSolicitud == 0 || idSolicitud  == null)
+        {
+            throw new InvalidDataException("El id de la solicitud no puede ser 0.");
+        }
+
         var allItems = await ObtenerConsumosInternos();
         var item = allItems.Where(i => i.IdCabeceraConsumoInterno == idSolicitud).FirstOrDefault().Clone();
         if (item != null)
@@ -258,6 +270,11 @@ public class ServicioConsumoInterno : IServicioConsumoInterno
 
     public async Task<CabeceraConsumoInterno> ObtenerConsumoInterno(int id)
     {
+        if (id == 0 || id == null)
+        {
+            throw new InvalidDataException("El id del consumo interno no puede ser 0.");
+        }
+
         var allItems = await ObtenerConsumosInternos();
         var item = allItems.Where(i => i.IdCabeceraConsumoInterno == id).FirstOrDefault().Clone();
         if (item != null)

@@ -78,6 +78,12 @@ public class ServicioDepartamento : IServicioDepartamento
 
     public async Task<LSCentralDepartamento> ObtenerDepartamento(string id)
     {
+
+        if (String.IsNullOrEmpty(id))
+        {
+            throw new InvalidDataException("El id del departamento no puede ser nulo o vacío");
+        }
+
         var token = await _servicioAutorizacion.ObtenerTokenBC();
         var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
@@ -104,4 +110,5 @@ public class ServicioDepartamento : IServicioDepartamento
         await ObtenerDepartamentos();
         return true;
     }
+
 }

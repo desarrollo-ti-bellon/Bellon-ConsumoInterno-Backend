@@ -78,6 +78,12 @@ public class ServicioSucursal : IServicioSucursal
 
     public async Task<LSCentralSucursal> ObtenerSucursal(string id)
     {
+
+        if (String.IsNullOrEmpty(id))
+        {
+            throw new InvalidDataException("El id de la sucursal no puede ser nulo");
+        }
+
         var token = await _servicioAutorizacion.ObtenerTokenBC();
         var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token!.AccessToken);
@@ -104,4 +110,5 @@ public class ServicioSucursal : IServicioSucursal
         await ObtenerSucursales();
         return true;
     }
+
 }

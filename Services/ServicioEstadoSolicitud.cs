@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using System.Data.Common;
 
 namespace Bellon.API.ConsumoInterno.Services;
 
@@ -63,14 +64,25 @@ public class ServicioEstadoSolicitud : IServicioEstadoSolicitud
         return Task.FromResult(cache.OrderBy(i => i.IdEstadoSolicitud.Value).ToList());
     }
 
-     public async Task<List<EstadoSolicitudCI>> ObtenerEstadoSolicitud(int id)
+    public async Task<List<EstadoSolicitudCI>> ObtenerEstadoSolicitud(int id)
     {
+        if (id == 0 || id == null)
+        {
+            throw new InvalidDataException("El id del estado de la solicitudes no puede ser nulo o vacío");
+        }
+
         var allItems = await ObtenerEstadoSolicitudes();
         return allItems.Where(i => i.IdEstadoSolicitud == id).ToList();
     }
 
     public async Task<List<EstadoSolicitudCI>> GuardarEstadoSolicitud(EstadoSolicitudCI item)
     {
+
+        if (item == null)
+        {
+            throw new InvalidDataException("El objeto estado de la solicitud no puede ser nulo");
+        }
+
         if (item.IdEstadoSolicitud.HasValue)
         {
             var oldItem = _context
@@ -86,9 +98,14 @@ public class ServicioEstadoSolicitud : IServicioEstadoSolicitud
                 {
                     _context.SaveChanges();
                 }
+                catch (DbException ex)
+                {
+                    throw new Exception(ex.Message);
+                }
                 catch (Exception ex)
                 {
-                    throw new Exception("Error al actualizar el registro: <" + ex.Message + ">");
+                    var mensaje = ex.InnerException?.Message ?? ex.Message;
+                    throw new InvalidDataException("Error al actualizar el registro: <" + mensaje + ">");
                 }
 
                 //SE LIMPIA LA CACHE Y SE VUELVE A POBLAR
@@ -111,9 +128,14 @@ public class ServicioEstadoSolicitud : IServicioEstadoSolicitud
             {
                 _context.SaveChanges();
             }
+            catch (DbException ex)
+            {
+                throw new Exception(ex.Message);
+            }
             catch (Exception ex)
             {
-                throw new Exception("Error al crear el registro: <" + ex.Message + ">");
+                var mensaje = ex.InnerException?.Message ?? ex.Message;
+                throw new InvalidDataException("Error al crear el registro: <" + mensaje + ">");
             }
 
             //SE LIMPIA LA CACHE Y SE VUELVE A POBLAR
@@ -127,6 +149,11 @@ public class ServicioEstadoSolicitud : IServicioEstadoSolicitud
 
     public async Task<List<EstadoSolicitudCI>> EliminarEstadoSolicitud(int id)
     {
+        if (id == 0 || id == null)
+        {
+            throw new InvalidDataException("El id del estado de la solicitudes no puede ser nulo o vacío");
+        }
+
         var oldItem = _context.EstadosSolicitudesCI.Where(i => i.id_estado_solicitud == id).FirstOrDefault();
         if (oldItem != null)
         {
@@ -135,9 +162,14 @@ public class ServicioEstadoSolicitud : IServicioEstadoSolicitud
             {
                 _context.SaveChanges();
             }
+            catch (DbException ex)
+            {
+                throw new Exception(ex.Message);
+            }
             catch (Exception ex)
             {
-                throw new Exception("Error al eliminar el registro: <" + ex.Message + ">");
+                var mensaje = ex.InnerException?.Message ?? ex.Message;
+                throw new InvalidDataException("Error al eliminar el registro: <" + mensaje + ">");
             }
             await RefrescarCache();
             return await ObtenerEstadoSolicitudes();
@@ -151,5 +183,6 @@ public class ServicioEstadoSolicitud : IServicioEstadoSolicitud
         await ObtenerEstadoSolicitudes();
         return true;
     }
+
 }
 
