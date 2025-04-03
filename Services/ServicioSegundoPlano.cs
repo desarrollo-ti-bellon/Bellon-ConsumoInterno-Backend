@@ -1,4 +1,5 @@
 using Bellon.API.ConsumoInterno.Interfaces;
+using Microsoft.Azure.KeyVault.Models;
 
 public class ServicioSegundoPlano : BackgroundService
 {
@@ -26,8 +27,7 @@ public class ServicioSegundoPlano : BackgroundService
                 catch (Exception ex)
                 {
                     // Manejo de excepciones
-                    // Console.WriteLine($"Error al obtener productos: {ex.Message}");
-                    throw ex;
+                    Console.WriteLine($"Error al obtener productos: {ex.Message}");
                 }
             }
 
