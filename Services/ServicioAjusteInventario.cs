@@ -114,14 +114,11 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
                         NombreDiario = "ITEM",
                         NombreSeccionDiario = "CINT",
                         NoLinea = indice * 1000,
-                        // TipoMovimiento = "Negative Adjmt.",
                         NoProducto = item.no_producto,
                         Cantidad = item.cantidad,
                         CodigoAlmacen = item.almacen_codigo,
                     };
-
                     listadoProductosLS.Add(ajusteInventario);
-
                     indice++; // GENERANDO EL NUMERO DE LINEA
                 }
 
@@ -177,12 +174,10 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
                 }
                 else
                 {
-                    // return new Resultado
-                    // {
-                    //     Exito = false,
-                    //     Mensaje = "No se pudieron realizar los ajustes de inventario en el LS Central"
-                    // };
-                    throw new InvalidDataException("No se pudieron realizar los ajustes de inventario en el LS Central");
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    using var errorStream = new MemoryStream(Encoding.UTF8.GetBytes(errorContent));
+                    var errorResponse = await JsonSerializer.DeserializeAsync<LSCentralErrorMessage>(errorStream);
+                    mensajeError.AppendLine("No se pudieron realizar los ajustes de inventario en el LS Central: " + errorResponse!.Error.Message);
                 }
 
                 if (mensajeError.Length == 0)
@@ -195,31 +190,16 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
                 }
                 else
                 {
-                    // return new Resultado
-                    // {
-                    //     Exito = false,
-                    //     Mensaje = mensajeError.ToString()
-                    // };
                     throw new InvalidDataException(mensajeError.ToString());
                 }
             }
             else
             {
-                // return new Resultado
-                // {
-                //     Exito = false,
-                //     Mensaje = "Este documento no tiene productos agregados en la solicitud de consumos internos"
-                // };
                 throw new InvalidDataException("Este documento no tiene productos agregados en la solicitud de consumos internos");
             }
         }
         else
         {
-            // return new Resultado
-            // {
-            //     Exito = false,
-            //     Mensaje = "debe de especificar el codigo de cabecera de la solicitud."
-            // };
             throw new InvalidDataException("Debe de especificar el codigo de cabecera de la solicitud.");
         }
 
