@@ -44,10 +44,13 @@ public class SucursalController : ControllerBase
                 return data != null && data.Count > 0 ? Ok(data) : NoContent();
             }
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 }

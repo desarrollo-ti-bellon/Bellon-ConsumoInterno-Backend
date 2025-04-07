@@ -86,6 +86,12 @@ public class ServicioImpresionConsumoInternos : IServicioImpresionConsumoInterno
 
     public async Task<List<ImpresionConsumoInterno>> ObtenerImpresionConsumosInternosConFiltros(FiltroGeneral filtro)
     {
+
+        if (filtro == null)
+        {
+            throw new InvalidDataException("El filtro no puede ser nulo");
+        }
+
         // Iniciamos la consulta con el conjunto de datos de 'HistorialMovimientosSolicitudesCI'
         var consulta = _context.ImpresionConsumosInternos.AsQueryable();
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;

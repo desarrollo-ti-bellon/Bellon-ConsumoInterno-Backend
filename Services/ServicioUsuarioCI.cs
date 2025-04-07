@@ -1,3 +1,4 @@
+using System.Data.Common;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text.Json;
@@ -111,18 +112,36 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
 
     public async Task<UsuarioCI> ObtenerUsuario(int? id)
     {
+
+        if (id.HasValue == false || id == 0)
+        {
+            throw new InvalidDataException("El id del usuario no puede ser nulo o vacío");
+        }
+
         var allItems = await ObtenerUsuarios();
         return allItems.Where(i => i.IdUsuarioCI == id).FirstOrDefault().Clone();
     }
 
     public async Task<UsuarioCI> ObtenerUsuarioPorCorreo(string? correo)
     {
+
+        if (string.IsNullOrEmpty(correo))
+        {
+            throw new InvalidDataException("El correo del usuario no puede ser nulo");
+        }
+
         var allItems = await ObtenerUsuariosActivos();
         return allItems.Where(i => i.Correo == correo && i.Estado == true).FirstOrDefault().Clone();
     }
 
     public async Task<List<UsuarioCI>> ObtenerUsuarioResponsablesPorDepartamentos(string? departamentoId)
     {
+
+        if (string.IsNullOrEmpty(departamentoId))
+        {
+            throw new InvalidDataException("El id del departamento no puede ser nulo");
+        }
+
         List<int> posiciones = new List<int> {
             2, // Director
             3, // Gerente Area
@@ -135,6 +154,12 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
 
     public async Task<UsuarioCI> GuardarUsuario(UsuarioCI item)
     {
+
+        if (item == null)
+        {
+            throw new InvalidDataException("El objeto usuario no puede ser nulo o vacío");
+        }
+
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         if (item.IdUsuarioCI.HasValue)
         {
@@ -162,9 +187,13 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
                 {
                     _context.SaveChanges();
                 }
+                catch (DbException ex)
+                {
+                    throw new Exception(ex.Message);
+                }
                 catch (Exception ex)
                 {
-                    throw new Exception("Error al actualizar el registro: <" + ex.Message + ">");
+                    throw new InvalidDataException("Error al actualizar el registro: <" + ex.Message + ">");
                 }
 
                 await RefrescarCache();
@@ -194,9 +223,13 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
             {
                 _context.SaveChanges();
             }
+            catch (DbException ex)
+            {
+                throw new Exception(ex.Message);
+            }
             catch (Exception ex)
             {
-                throw new Exception("Error al actualizar el registro: <" + ex.Message + ">");
+                throw new InvalidDataException("Error al actualizar el registro: <" + ex.Message + ">");
             }
 
             await RefrescarCache();
@@ -207,6 +240,12 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
 
     public async Task<UsuarioCI> EliminarUsuario(int id)
     {
+
+        if (id == 0 || id == null)
+        {
+            throw new InvalidDataException("El id del usuario no puede ser nulo o vacío");
+        }
+
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         var oldItem = _context.UsuariosCI.Where(i => i.id_usuario_ci == id).FirstOrDefault();
         if (oldItem != null)
@@ -216,9 +255,13 @@ public class ServicioUsuarioCI : IServicioUsuarioCI
             {
                 _context.SaveChanges();
             }
+            catch (DbException ex)
+            {
+                throw new Exception(ex.Message);
+            }
             catch (Exception ex)
             {
-                throw new Exception("Error al eliminar el registro: <" + ex.Message + ">");
+                throw new InvalidDataException("Error al eliminar el registro: <" + ex.Message + ">");
             }
             await RefrescarCache();
             return await ObtenerUsuario(oldItem.id_usuario_ci);

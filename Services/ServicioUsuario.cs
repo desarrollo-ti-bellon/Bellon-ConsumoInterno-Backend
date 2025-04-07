@@ -71,6 +71,12 @@ public class ServicioUsuario : IServicioUsuario
 
     public async Task<LSCentralUsuario> ObtenerUsuario(string id)
     {
+
+        if (String.IsNullOrEmpty(id))
+        {
+            throw new InvalidDataException("El id no puede ser nulo");
+        }
+
         var token = await _servicioAutorizacion.ObtenerTokenBC();
         var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
         httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
@@ -96,4 +102,5 @@ public class ServicioUsuario : IServicioUsuario
         await ObtenerUsuarios();
         return true;
     }
+
 }

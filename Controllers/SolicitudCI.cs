@@ -36,10 +36,13 @@ public class SolicitudController : ControllerBase
             var data = await _servicioSolicitud.ObtenerSolicitudesPorPerfilUsuario();
             return data != null ? Ok(data) : NoContent();
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -59,10 +62,13 @@ public class SolicitudController : ControllerBase
                 return data != null && data.Count > 0 ? Ok(data) : NoContent();
             }
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -82,10 +88,13 @@ public class SolicitudController : ControllerBase
                 return data != null && data.Count > 0 ? Ok(data) : NoContent();
             }
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -104,10 +113,13 @@ public class SolicitudController : ControllerBase
                 return StatusCode(400, new Classes.Resultado { Exito = false, Mensaje = "Falta el id de solicitud." });
             }
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -119,10 +131,13 @@ public class SolicitudController : ControllerBase
             var result = await _servicioSolicitud.GuardarSolicitud(item);
             return result != null ? Ok(result) : NoContent();
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -134,12 +149,14 @@ public class SolicitudController : ControllerBase
             var result = await _servicioSolicitud.EliminarSolicitud(id);
             return result != null ? Ok(result) : NoContent();
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
-
     }
 
     [HttpPost("Linea")]
@@ -150,10 +167,13 @@ public class SolicitudController : ControllerBase
             var result = await _servicioSolicitud.GuardarLineasSolicitud(items);
             return result != null ? Ok(result) : NoContent();
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -165,10 +185,13 @@ public class SolicitudController : ControllerBase
             var result = await _servicioSolicitud.EliminarLineaSolicitud(id);
             return result != null ? Ok(result) : NoContent();
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -180,10 +203,13 @@ public class SolicitudController : ControllerBase
             var result = await _servicioSolicitud.ObtenerCantidadSolicitudesPorEstadoSolicitud(estadoSolicitudId.Value);
             return result != null ? Ok(result) : Ok(0);
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 

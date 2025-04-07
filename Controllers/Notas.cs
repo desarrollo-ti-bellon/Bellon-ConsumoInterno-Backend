@@ -36,10 +36,13 @@ public class NotasController : ControllerBase
             var data = await _servicioNotas.ObtenerCantidadDeNotas(usuarioDestino);
             return data > 0 ? Ok(data) : Ok(0);
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -50,6 +53,10 @@ public class NotasController : ControllerBase
         {
             var data = await _servicioNotas.ObtenerNotasPorParametros(usuarioDestino, tipoDocumento);
             return data != null ? Ok(data) : NoContent();
+        }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
         catch (Exception ex)
         {
@@ -66,10 +73,13 @@ public class NotasController : ControllerBase
             var result = await _servicioNotas.GuardarNotas(item);
             return result != null ? Ok(result) : NoContent();
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
-            // return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
     }
 
@@ -80,6 +90,10 @@ public class NotasController : ControllerBase
         {
             var result = await _servicioNotas.EliminarNotas(id);
             return result != null ? Ok(result) : NoContent();
+        }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
         catch (Exception ex)
         {

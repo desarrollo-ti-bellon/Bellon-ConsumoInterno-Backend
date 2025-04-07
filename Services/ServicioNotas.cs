@@ -1,3 +1,4 @@
+using System.Data.Common;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text.Json;
@@ -74,6 +75,12 @@ public class ServicioNotas : IServicioNotas
 
     public async Task<Notas> ObtenerNota(int id)
     {
+
+        if (id == 0 || id == null)
+        {
+            throw new InvalidDataException("Debe especificar el parámetro Id");
+        }
+
         var allItems = await ObtenerNotas();
         return allItems.Where(i => i.IdNota == id).FirstOrDefault().Clone() ?? new Notas();
     }
@@ -82,7 +89,7 @@ public class ServicioNotas : IServicioNotas
     {
         if (string.IsNullOrEmpty(UsuarioDestino) && string.IsNullOrEmpty(TipoDocumento))
         {
-            throw new Exception("Debe especificar uno de los tres parámetros ( CreadoPor | UsuarioDestino | TipoDocumento )");
+            throw new InvalidDataException("Debe especificar uno de los tres parámetros ( CreadoPor | UsuarioDestino | TipoDocumento )");
         }
 
         var allItems = await ObtenerNotas();
@@ -100,18 +107,24 @@ public class ServicioNotas : IServicioNotas
 
     public async Task<List<Notas>> ObtenerNotasDelUsuario(string UsuarioDestino)
     {
+
         if (string.IsNullOrEmpty(UsuarioDestino))
         {
-            throw new Exception(
-                "Debe especificar uno de los dos parámetros UsuarioDestino"
-            );
+            throw new InvalidDataException("Debe especificar uno de los dos parámetros UsuarioDestino");
         }
+
         var allItems = await ObtenerNotas();
         return allItems.Where(i => i.UsuarioDestino == UsuarioDestino).ToList();
     }
 
     public async Task<int> ObtenerCantidadDeNotas(string UsuarioDestino)
     {
+
+        if (string.IsNullOrEmpty(UsuarioDestino))
+        {
+            throw new InvalidDataException("Debe especificar uno de los dos parámetros del Usuario Destino");
+        }
+
         var allItems = await ObtenerNotas();
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         return allItems
@@ -126,6 +139,12 @@ public class ServicioNotas : IServicioNotas
 
     public async Task<List<Notas>> GuardarNotas(Notas item)
     {
+
+        if (item == null)
+        {
+            throw new InvalidDataException("El objeto Notas no puede ser nulo");
+        }
+
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         try
         {
@@ -165,9 +184,14 @@ public class ServicioNotas : IServicioNotas
                 return await ObtenerNotasPorParametros(identity.Name, newItem.Entity.tipo_documento);
             }
         }
+        catch (DbException ex)
+        {
+            throw new Exception(ex.Message);
+        }
         catch (Exception ex)
         {
-            throw new Exception($"Error al intentar guardar o modificar una nota {ex.Message}");
+            var mensaje = ex.InnerException?.Message ?? ex.Message;
+            throw new InvalidDataException($"Error al intentar guardar o modificar una nota {mensaje}");
         }
 
         return null;
@@ -175,6 +199,12 @@ public class ServicioNotas : IServicioNotas
 
     public async Task<List<Classes.Notas>> EliminarNotas(int id)
     {
+
+        if (id == 0 || id == null)
+        {
+            throw new InvalidDataException("El id de la nota no puede ser nulo o vacío");
+        }
+
         var identity = _httpContextAccessor.HttpContext.User.Identity as ClaimsIdentity;
         var oldItem = _context.Notas.Where(i => i.id_nota == id).FirstOrDefault();
         if (oldItem != null)
@@ -184,9 +214,14 @@ public class ServicioNotas : IServicioNotas
             {
                 _context.SaveChanges();
             }
+            catch (DbException ex)
+            {
+                throw new Exception(ex.Message);
+            }
             catch (Exception ex)
             {
-                throw new Exception("Error al eliminar el registro: <" + ex.Message + ">");
+                var mensaje = ex.InnerException?.Message ?? ex.Message;
+                throw new Exception("Error al eliminar el registro: <" + mensaje + ">");
             }
             await RefrescarCache();
             return await ObtenerNotasPorParametros(identity.Name, oldItem.tipo_documento);

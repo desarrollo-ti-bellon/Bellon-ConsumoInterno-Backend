@@ -75,12 +75,22 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
 
     public async Task<LSCentralAjusteInventario> ObtenerAjusteDeInventario(string no_documento)
     {
+        if (String.IsNullOrEmpty(no_documento))
+        {
+            throw new InvalidDataException("El numero de documento no puede ser nulo o vacío");
+        }
+
         var allItems = await ObtenerAjustesDeInventarios();
         return allItems.Where(i => i.NoDocumento == no_documento).FirstOrDefault();
     }
 
     public async Task<Resultado> CrearAjusteInventario(int? idSolicitud)
     {
+
+        if (idSolicitud == null || idSolicitud == 0)
+        {
+            throw new InvalidDataException("El id de la solicitud no puede ser nulo o cero");
+        }
 
         var client = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
         var url = client?.BaseAddress?.ToString();
@@ -167,11 +177,12 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
                 }
                 else
                 {
-                    return new Resultado
-                    {
-                        Exito = false,
-                        Mensaje = "No se pudieron realizar los ajustes de inventario en el LS Central"
-                    };
+                    // return new Resultado
+                    // {
+                    //     Exito = false,
+                    //     Mensaje = "No se pudieron realizar los ajustes de inventario en el LS Central"
+                    // };
+                    throw new InvalidDataException("No se pudieron realizar los ajustes de inventario en el LS Central");
                 }
 
                 if (mensajeError.Length == 0)
@@ -184,29 +195,32 @@ public class ServicioAjusteInventario : IServicioAjusteInventario
                 }
                 else
                 {
-                    return new Resultado
-                    {
-                        Exito = false,
-                        Mensaje = mensajeError.ToString()
-                    };
+                    // return new Resultado
+                    // {
+                    //     Exito = false,
+                    //     Mensaje = mensajeError.ToString()
+                    // };
+                    throw new InvalidDataException(mensajeError.ToString());
                 }
             }
             else
             {
-                return new Resultado
-                {
-                    Exito = false,
-                    Mensaje = "Este documento no tiene productos agregados en la solicitud de consumos internos"
-                };
+                // return new Resultado
+                // {
+                //     Exito = false,
+                //     Mensaje = "Este documento no tiene productos agregados en la solicitud de consumos internos"
+                // };
+                throw new InvalidDataException("Este documento no tiene productos agregados en la solicitud de consumos internos");
             }
         }
         else
         {
-            return new Resultado
-            {
-                Exito = false,
-                Mensaje = "debe de especificar el codigo de cabecera de la solicitud."
-            };
+            // return new Resultado
+            // {
+            //     Exito = false,
+            //     Mensaje = "debe de especificar el codigo de cabecera de la solicitud."
+            // };
+            throw new InvalidDataException("Debe de especificar el codigo de cabecera de la solicitud.");
         }
 
     }

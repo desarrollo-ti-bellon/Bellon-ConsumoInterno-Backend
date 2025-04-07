@@ -1,4 +1,5 @@
 using Bellon.API.ConsumoInterno.Interfaces;
+using Microsoft.Azure.KeyVault.Models;
 
 public class ServicioSegundoPlano : BackgroundService
 {
@@ -34,4 +35,5 @@ public class ServicioSegundoPlano : BackgroundService
             await Task.Delay(5000, stoppingToken);
         }
     }
+
 }

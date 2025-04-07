@@ -71,6 +71,12 @@ public class ServicioProveedor : IServicioProveedor
 
     public async Task<LSCentralProveedor> ObtenerProveedor(string id)
     {
+
+        if (String.IsNullOrEmpty(id))
+        {
+            throw new InvalidDataException("El id del proveedor no puede ser nulo o vacío");
+        }
+
         var token = await _servicioAutorizacion.ObtenerTokenBC();
         var httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
         httpClient = _httpClientFactory.CreateClient("LSCentral-APIs-Comunes");
@@ -96,4 +102,5 @@ public class ServicioProveedor : IServicioProveedor
         await ObtenerProveedores();
         return true;
     }
+
 }

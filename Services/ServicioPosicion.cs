@@ -68,6 +68,12 @@ public class ServicioPosicion : IServicioPosicion
 
     public async Task<PosicionUsuarioCI> ObtenerPosicion(int? id)
     {
+
+        if (id.HasValue == false || id == 0)
+        {
+            throw new InvalidDataException("El id de la posición no puede ser nulo o vacío");
+        }
+
         var allItems = await ObtenerPosiciones();
         return allItems.Where(i => i.PosicionId == id).FirstOrDefault().Clone() ?? null;
     }

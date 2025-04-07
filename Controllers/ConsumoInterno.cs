@@ -44,6 +44,10 @@ public class ConsumoInternoController : ControllerBase
                 return data != null && data.Count > 0 ? Ok(data) : NoContent();
             }
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
@@ -58,6 +62,10 @@ public class ConsumoInternoController : ControllerBase
             var data = await _servicioConsumoInterno.ObtenerConsumosInternosSegunPosicionUsuarioYFiltrosGenerales(filtro);
             return data != null && data.Count > 0 ? Ok(data) : NoContent();
         }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
+        }
         catch (Exception ex)
         {
             throw ex;
@@ -71,6 +79,10 @@ public class ConsumoInternoController : ControllerBase
         {
             var result = await _servicioConsumoInterno.ObtenerCantidadConsumoInternos();
             return result != null ? Ok(result) : Ok(0);
+        }
+        catch (InvalidDataException ex)
+        {
+            return StatusCode(500, new Classes.Resultado { Exito = false, Mensaje = ex.Message });
         }
         catch (Exception ex)
         {
